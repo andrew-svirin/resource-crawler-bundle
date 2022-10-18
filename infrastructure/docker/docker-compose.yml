@@ -1,0 +1,23 @@
+version: '3.2'
+
+services:
+  php-cli-resource-crawler-bundle:
+    container_name: php-cli-resource-crawler-bundle
+    build:
+      context: php-cli
+    volumes:
+      - ../../:/var/www/resource-crawler-bundle
+      - ./php-cli/.bashrc:/home/.bashrc:cached
+      - ./php-cli/php.ini:/usr/local/etc/php/custom.d/php.ini:ro
+      - ./php-cli/xdebug.ini:/usr/local/etc/php/custom.d/xdebug.ini:ro
+      - /var/www/resource-crawler-bundle/.git
+      - /var/www/resource-crawler-bundle/.idea
+      - /var/www/resource-crawler-bundle/infrastructure
+    expose:
+      - 9003
+    tty: true
+    environment:
+      PHP_IDE_CONFIG: "serverName=localhost"
+      XDEBUG_MODE: "develop,debug"
+      PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
+      XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003 start_with_request=yes"
