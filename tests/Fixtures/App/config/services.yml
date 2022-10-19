@@ -1,0 +1,4 @@
+services:
+  http_client_mocker:
+    class: Symfony\Component\HttpClient\MockHttpClient
+    public: true

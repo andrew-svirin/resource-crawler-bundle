@@ -7,7 +7,7 @@ services:
       context: php-cli
     volumes:
       - ../../:/var/www/resource-crawler-bundle
-      - ./php-cli/.bashrc:/home/.bashrc:cached
+      - ./php-cli/.bashrc:/root/.bashrc:cached
       - ./php-cli/php.ini:/usr/local/etc/php/custom.d/php.ini:ro
       - ./php-cli/xdebug.ini:/usr/local/etc/php/custom.d/xdebug.ini:ro
       - /var/www/resource-crawler-bundle/.git

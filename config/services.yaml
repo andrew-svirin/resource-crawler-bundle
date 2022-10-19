@@ -1,3 +1,0 @@
-services:
-  AndrewSvirin\ResourceCrawlerBundle\ResourceCrawler:
-    public: true

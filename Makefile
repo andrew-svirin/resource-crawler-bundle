@@ -25,6 +25,10 @@ start:
 stop:
 	cd $(DOCKER_DIR) && $(DC_DOWN)
 
+restart:
+	make stop
+	make start
+
 ssh:
 	cd $(DOCKER_DIR) && $(PHP_CLI_CONTAINER_EXEC) $(BASH)
 

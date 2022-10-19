@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Entity;
+namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
  * Resource based on graph.

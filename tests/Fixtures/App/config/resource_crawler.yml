@@ -1,0 +1,3 @@
+resource_crawler:
+  crawler:
+    http_client_mocked: true
