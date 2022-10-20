@@ -16,13 +16,21 @@ final class Configuration implements ConfigurationInterface
             ->arrayNode('process')
             ->addDefaultsIfNotSet()
             ->children()
-            ->scalarNode('saver')->end()
+            ->scalarNode('saver')->defaultNull()->info('Use saver for process.')->end()
+            ->arrayNode('file_saver')
+            ->children()
+            ->scalarNode('dir')->defaultNull()->info('Directory for file saver.')->end()
+            ->end()
+            ->end()
             ->end()
             ->end() // process
             ->arrayNode('crawler')
             ->addDefaultsIfNotSet()
             ->children()
-            ->booleanNode('http_client_mocked')->defaultNull()->info('Use mocker for http_client.')->end()
+            ->arrayNode('http_client')
+            ->children()
+            ->scalarNode('mocker')->defaultNull()->info('Use mocker for http_client.')->end()
+            ->end()
             ->end()
             ->end() // crawler
             ->end();

@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
 /**
  * Model implements crawling process.
@@ -9,18 +9,12 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  */
 final class CrawlingProcess
 {
-    public function forProgressTasks(): iterable
+    public function __construct(private readonly string $id)
     {
-
     }
 
-    public function inProcessTasks(): iterable
+    public function getId(): string
     {
-
-    }
-
-    public function processedTasks(): iterable
-    {
-
+        return $this->id;
     }
 }

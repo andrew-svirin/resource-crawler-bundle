@@ -1,6 +1,8 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process;
+
+use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
 
 /**
  * Model implements crawling task.
@@ -9,11 +11,11 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  */
 final class CrawlingTask
 {
-    public function __construct(private readonly Node $node)
+    public function __construct(private readonly NodeInterface $node)
     {
     }
 
-    public function getNode(): Node
+    public function getNode(): NodeInterface
     {
         return $this->node;
     }

@@ -16,7 +16,7 @@ final class FsResource implements ResourceInterface
     /**
      * {@inheritDoc}
      */
-    public function getRoot(): Node
+    public function getRoot(): NodeInterface
     {
         return $this->uri;
     }

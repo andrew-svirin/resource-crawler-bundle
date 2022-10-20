@@ -16,7 +16,7 @@ final class HttpResource implements ResourceInterface
     /**
      * {@inheritDoc}
      */
-    public function getRoot(): Node
+    public function getRoot(): NodeInterface
     {
         return new HtmlNode(new HttpUri($this->url));
     }

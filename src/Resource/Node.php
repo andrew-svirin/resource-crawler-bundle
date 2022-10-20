@@ -7,7 +7,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  *
  * @interal
  */
-abstract class Node
+abstract class Node implements NodeInterface
 {
     private string $content;
 

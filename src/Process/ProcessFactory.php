@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
 /**
  * Factory for the process.
@@ -9,8 +9,8 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  */
 final class ProcessFactory
 {
-    public function create(): CrawlingProcess
+    public function create(string $id): CrawlingProcess
     {
-        return new CrawlingProcess();
+        return new CrawlingProcess($id);
     }
 }

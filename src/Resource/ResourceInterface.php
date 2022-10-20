@@ -11,5 +11,5 @@ interface ResourceInterface
     /**
      * Get root node.
      */
-    public function getRoot(): Node;
+    public function getRoot(): NodeInterface;
 }

@@ -25,25 +25,20 @@ class Kernel extends BaseKernel
         ];
     }
 
-    public function getRootDir(): string
-    {
-        return __DIR__ . '/';
-    }
-
     public function getCacheDir(): string
     {
-        return $this->getRootDir() . 'storage/symfony-cache';
+        return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
     }
 
     public function getLogDir(): string
     {
-        return $this->getRootDir() . 'storage/symfony-cache';
+        return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
     }
 
     public function registerContainerConfiguration(LoaderInterface $loader)
     {
-        $loader->load($this->getRootDir() . 'config/framework.yml');
-        $loader->load($this->getRootDir() . 'config/services.yml');
-        $loader->load($this->getRootDir() . 'config/resource_crawler.yml');
+        $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/framework.yml');
+        $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/services.yml');
+        $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/resource_crawler.yml');
     }
 }

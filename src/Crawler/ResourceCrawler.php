@@ -2,20 +2,18 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Reader\ResourceReader;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\CrawlingTask;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\HtmlExtractor;
+use AndrewSvirin\ResourceCrawlerBundle\Extractor\HtmlExtractor;
+use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingTask;
+use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\HtmlNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Node;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\ProcessManager;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use LogicException;
 
 final class ResourceCrawler
 {
     public function __construct(
-        private readonly ResourceReader $reader,
-        private readonly ResourceFactory $resourceFactory,
+        private readonly ResourceManager $resourceManager,
         private readonly ProcessManager $processManager,
         private readonly HtmlExtractor $htmlExtractor
     ) {
@@ -23,7 +21,7 @@ final class ResourceCrawler
 
     public function crawlHttpResource(string $url): void
     {
-        $resource = $this->resourceFactory->createHttp($url);
+        $resource = $this->resourceManager->createHttpResource($url);
 
         $process = $this->processManager->load($resource);
 
@@ -45,7 +43,7 @@ final class ResourceCrawler
      * Crawl node.
      * Here is distinguishing task type.
      */
-    private function crawlNode(Node $node): void
+    private function crawlNode(NodeInterface $node): void
     {
         if ($node instanceof HtmlNode) {
             $this->crawlHtmlNode($node);
@@ -59,7 +57,7 @@ final class ResourceCrawler
      */
     private function crawlHtmlNode(HtmlNode $node): void
     {
-        $html = $this->reader->read($node->getUri());
+        $html = $this->resourceManager->readUri($node->getUri());
 
         $node->setContent($html);
 

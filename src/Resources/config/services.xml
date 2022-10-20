@@ -7,14 +7,36 @@
     <services>
         <service id="resource_crawler.crawler"
                  class="AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler"
+                 autowire="true"
                  public="true">
-            <argument type="service" id="resource_crawler.reader"/>
+            <argument key="$processManager" type="service" id="resource_crawler.process_manager"/>
         </service>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager" autowire="true" public="false">
+            <argument key="$reader" type="service" id="resource_crawler.reader"/>
+        </service>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Extractor\HtmlExtractor" autowire="true" public="false"/>
         <service id="resource_crawler.reader"
                  class="AndrewSvirin\ResourceCrawlerBundle\Reader\ResourceReader"
+                 autowire="true"
                  public="false">
-            <argument type="service" id="http_client"/>
-            <argument type="service" id="filesystem"/>
+            <argument key="$httpClient" type="service" id="http_client"/>
         </service>
+        <service id="resource_crawler.process_manager"
+                 class="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager"
+                 autowire="true"
+                 public="false">
+            <argument key="$processSaver"
+                      type="service"
+                      id="resource_crawler.file_process_saver"/>
+        </service>
+        <service
+                id="resource_crawler.file_process_saver"
+                class="AndrewSvirin\ResourceCrawlerBundle\Process\FileProcessSaver"
+                autowire="true"
+                public="false"
+        />
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\TaskFactory" autowire="true" public="false"/>
     </services>
 </container>

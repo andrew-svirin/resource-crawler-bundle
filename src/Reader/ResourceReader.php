@@ -3,10 +3,8 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Reader;
 
 use AndrewSvirin\ResourceCrawlerBundle\Resource\HttpUri;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\UriInterface;
 use LogicException;
-use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -16,7 +14,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
  */
 final class ResourceReader
 {
-    public function __construct(private readonly HttpClientInterface $httpClient, private Filesystem $filesystem)
+    public function __construct(private readonly HttpClientInterface $httpClient)
     {
     }
 

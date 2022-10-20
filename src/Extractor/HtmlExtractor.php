@@ -1,6 +1,8 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
+namespace AndrewSvirin\ResourceCrawlerBundle\Extractor;
+
+use AndrewSvirin\ResourceCrawlerBundle\Resource\HtmlNode;
 
 /**
  * Service to extract elements from nodes.
