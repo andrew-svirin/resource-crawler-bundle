@@ -7,7 +7,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  *
  * @interal
  */
-class FsResource implements ResourceInterface
+final class FsResource implements ResourceInterface
 {
     public function __construct(private $uri)
     {

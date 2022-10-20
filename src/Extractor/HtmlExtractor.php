@@ -3,12 +3,17 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
- * Service to extract links on nodes.
+ * Service to extract elements from nodes.
+ *
+ * @interal
  */
 final class HtmlExtractor
 {
-    public function getLastHtmlNode(): Node
+    public function extractLinks(HtmlNode $node): iterable
     {
-
+        return [
+            'a',
+            'b',
+        ];
     }
 }

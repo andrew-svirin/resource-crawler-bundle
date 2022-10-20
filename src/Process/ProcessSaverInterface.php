@@ -3,10 +3,9 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
- * HTML node.
- *
- * @interal
+ * Interface for process saving.
  */
-final class HtmlNode extends Node
+interface ProcessSaverInterface
 {
+
 }

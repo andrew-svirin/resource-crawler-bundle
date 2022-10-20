@@ -4,8 +4,10 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
  * HTTP resource.
+ *
+ * @interal
  */
-class HttpResource implements ResourceInterface
+final class HttpResource implements ResourceInterface
 {
     public function __construct(private $url)
     {

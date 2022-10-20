@@ -4,8 +4,10 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
  * Filesystem URI.
+ *
+ * @interal
  */
-class FsUri implements UriInterface
+final class FsUri implements UriInterface
 {
     public function __construct(string $uri)
     {

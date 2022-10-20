@@ -4,7 +4,9 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
  * Img node.
+ *
+ * @interal
  */
-class ImgNode extends Node
+final class ImgNode extends Node
 {
 }

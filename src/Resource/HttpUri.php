@@ -4,8 +4,10 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
  * HTTP URI.
+ *
+ * @interal
  */
-class HttpUri implements UriInterface
+final class HttpUri implements UriInterface
 {
     public function __construct(private readonly string $uri)
     {
@@ -13,6 +15,6 @@ class HttpUri implements UriInterface
 
     public function getPath(): string
     {
-       return $this->uri;
+        return $this->uri;
     }
 }

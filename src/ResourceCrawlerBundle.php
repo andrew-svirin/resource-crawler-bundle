@@ -7,6 +7,6 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
 /**
  * ResourceCrawlerBundle
  */
-class ResourceCrawlerBundle extends Bundle
+final class ResourceCrawlerBundle extends Bundle
 {
 }
