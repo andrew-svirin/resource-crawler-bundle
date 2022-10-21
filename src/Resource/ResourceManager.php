@@ -3,6 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 use AndrewSvirin\ResourceCrawlerBundle\Reader\ResourceReader;
+use LogicException;
 
 /**
  * Manager for resources.
@@ -31,31 +32,57 @@ final class ResourceManager
         return $this->reader->read($uri);
     }
 
-    public function createHttpHtmlNode(string $path): NodeInterface
+    private function createHttpHtmlNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createHttp($path);
 
         return $this->nodeFactory->createHtml($uri);
     }
 
-    public function createHttpImgNode(string $path): NodeInterface
+    private function createHttpImgNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createHttp($path);
 
         return $this->nodeFactory->createImg($uri);
     }
 
-    public function createFsHtmlNode(string $path): NodeInterface
+    private function createFsHtmlNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createFs($path);
 
         return $this->nodeFactory->createHtml($uri);
     }
 
-    public function createFsImgNode(string $path): NodeInterface
+    private function createFsImgNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createFs($path);
 
         return $this->nodeFactory->createImg($uri);
+    }
+
+    public function createHtmlNode(ResourceInterface $resource, mixed $path): NodeInterface
+    {
+        if ($resource instanceof HttpResource) {
+            $node = $this->createHttpHtmlNode($path);
+        } elseif ($resource instanceof FsResource) {
+            $node = $this->createFsHtmlNode($path);
+        } else {
+            throw new LogicException('Resource is incorrect.');
+        }
+
+        return $node;
+    }
+
+    public function createImgNode(ResourceInterface $resource, string $path): NodeInterface
+    {
+        if ($resource instanceof HttpResource) {
+            $node = $this->createHttpImgNode($path);
+        } elseif ($resource instanceof FsResource) {
+            $node = $this->createFsImgNode($path);
+        } else {
+            throw new LogicException('Resource is incorrect.');
+        }
+
+        return $node;
     }
 }

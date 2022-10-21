@@ -17,8 +17,8 @@
     </php>
 
     <testsuites>
-        <testsuite name="Resource Crawler Unit">
-            <directory>tests/Unit</directory>
+        <testsuite name="Resource Crawler Functional">
+            <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
 

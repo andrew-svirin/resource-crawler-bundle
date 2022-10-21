@@ -5,9 +5,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 use AndrewSvirin\ResourceCrawlerBundle\Extractor\HtmlExtractor;
 use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\FsResource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\HtmlNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\HttpResource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ImgNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
@@ -79,11 +77,7 @@ final class ResourceCrawler
     private function processAnchors(CrawlingTask $task, HtmlNode $node): void
     {
         foreach ($this->htmlExtractor->extractAHrefs($node->getDocument()) as $path) {
-            if ($task->getProcess()->getResource() instanceof HttpResource) {
-                $node = $this->resourceManager->createHttpHtmlNode($path);
-            } elseif ($task->getProcess()->getResource() instanceof FsResource) {
-                $node = $this->resourceManager->createFsHtmlNode($path);
-            }
+            $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $path);
 
             $this->processManager->pushTask($task->getProcess(), $node);
         }
@@ -92,11 +86,7 @@ final class ResourceCrawler
     private function processImgs(CrawlingTask $task, HtmlNode $node): void
     {
         foreach ($this->htmlExtractor->extractImgSrcs($node->getDocument()) as $path) {
-            if ($task->getProcess()->getResource() instanceof HttpResource) {
-                $node = $this->resourceManager->createHttpImgNode($path);
-            } elseif ($task->getProcess()->getResource() instanceof FsResource) {
-                $node = $this->resourceManager->createFsImgNode($path);
-            }
+            $node = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $path);
 
             $this->processManager->pushTask($task->getProcess(), $node);
         }
