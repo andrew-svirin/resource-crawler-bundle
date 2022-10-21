@@ -11,8 +11,8 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
  */
 final class TaskFactory
 {
-    public function create(NodeInterface $node): CrawlingTask
+    public function create(CrawlingProcess $process, NodeInterface $node): CrawlingTask
     {
-        return new CrawlingTask($node);
+        return new CrawlingTask($process, $node);
     }
 }

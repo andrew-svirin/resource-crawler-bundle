@@ -50,7 +50,7 @@ final class FileProcessStore implements ProcessStoreInterface
 
         $this->writeProcessData($process, $processData);
 
-        return $this->unpackTask($packedTask);
+        return $this->unpackTask($process, $packedTask);
     }
 
     public function popInProcessTask(CrawlingProcess $process): ?CrawlingTask
@@ -63,7 +63,7 @@ final class FileProcessStore implements ProcessStoreInterface
             return null;
         }
 
-        return $this->unpackTask($packedTask);
+        return $this->unpackTask($process, $packedTask);
     }
 
     private function readProcessData(CrawlingProcess $process): array
@@ -138,11 +138,11 @@ final class FileProcessStore implements ProcessStoreInterface
         ];
     }
 
-    private function unpackTask(array $packedTask): CrawlingTask
+    private function unpackTask(CrawlingProcess $process, array $packedTask): CrawlingTask
     {
         $uri  = $this->taskPacker->unpackUri($packedTask['uri']['type'], $packedTask['uri']['path']);
         $node = $this->taskPacker->unpackNode($packedTask['type'], $uri);
 
-        return $this->taskFactory->create($node);
+        return $this->taskFactory->create($process, $node);
     }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Unit\Crawler;
+namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;

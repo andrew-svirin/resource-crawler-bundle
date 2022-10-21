@@ -11,8 +11,13 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
  */
 final class CrawlingTask
 {
-    public function __construct(private readonly NodeInterface $node)
+    public function __construct(private readonly CrawlingProcess $process, private readonly NodeInterface $node)
     {
+    }
+
+    public function getProcess(): CrawlingProcess
+    {
+        return $this->process;
     }
 
     public function getNode(): NodeInterface

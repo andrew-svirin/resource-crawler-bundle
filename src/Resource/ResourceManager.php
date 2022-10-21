@@ -19,10 +19,9 @@ final class ResourceManager
     ) {
     }
 
-    public function createHttpResource(string $url): HttpResource
+    public function createHttpHtmlResource(string $path): HttpResource
     {
-        $uri = $this->uriFactory->createHttp($url);
-        $node = $this->nodeFactory->createHtml($uri);
+        $node = $this->createHttpHtmlNode($path);
 
         return $this->resourceFactory->createHttp($node);
     }
@@ -30,5 +29,33 @@ final class ResourceManager
     public function readUri(UriInterface $uri): string
     {
         return $this->reader->read($uri);
+    }
+
+    public function createHttpHtmlNode(string $path): NodeInterface
+    {
+        $uri = $this->uriFactory->createHttp($path);
+
+        return $this->nodeFactory->createHtml($uri);
+    }
+
+    public function createHttpImgNode(string $path): NodeInterface
+    {
+        $uri = $this->uriFactory->createHttp($path);
+
+        return $this->nodeFactory->createImg($uri);
+    }
+
+    public function createFsHtmlNode(string $path): NodeInterface
+    {
+        $uri = $this->uriFactory->createFs($path);
+
+        return $this->nodeFactory->createHtml($uri);
+    }
+
+    public function createFsImgNode(string $path): NodeInterface
+    {
+        $uri = $this->uriFactory->createFs($path);
+
+        return $this->nodeFactory->createImg($uri);
     }
 }
