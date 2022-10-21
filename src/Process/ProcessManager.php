@@ -13,7 +13,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
 final class ProcessManager
 {
     public function __construct(
-        private readonly ProcessSaverInterface $processSaver,
+        private readonly ProcessStoreInterface $processStore,
         private readonly ProcessFactory $processFactory,
         private readonly TaskFactory $taskFactory
     ) {
@@ -31,16 +31,21 @@ final class ProcessManager
         return $process;
     }
 
-    public function popTask(CrawlingProcess $process): CrawlingTask
+    public function popTask(CrawlingProcess $process): ?CrawlingTask
     {
-        return $this->taskFactory->create($node);
+        $task = $this->processStore->popForProcessingTask($process);
+        if(!empty($task)){
+            return $task;
+        }
+
+        return $this->processStore->popInProcessTask($process);
     }
 
     public function pushTask(CrawlingProcess $process, NodeInterface $node): void
     {
         $task = $this->taskFactory->create($node);
 
-        $this->processSaver->addForProcessingTask($process, $task);
+        $this->processStore->pushForProcessingTask($process, $task);
     }
 
     public function destroyTask(CrawlingProcess $process, CrawlingTask $task): void

@@ -12,8 +12,16 @@ final class ResourceFactory
     /**
      * Create HTTP resource.
      */
-    public function createHttp(string $url): HttpResource
+    public function createHttp(NodeInterface $node): HttpResource
     {
-        return new HttpResource($url);
+        return new HttpResource($node);
+    }
+
+    /**
+     * Create Filesystem resource.
+     */
+    public function createFs(NodeInterface $node): FsResource
+    {
+        return new FsResource($node);
     }
 }

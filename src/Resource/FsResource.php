@@ -7,17 +7,6 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  *
  * @interal
  */
-final class FsResource implements ResourceInterface
+final class FsResource extends Resource
 {
-    public function __construct(private $uri)
-    {
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function getRoot(): NodeInterface
-    {
-        return $this->uri;
-    }
 }

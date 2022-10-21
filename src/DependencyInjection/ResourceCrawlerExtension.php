@@ -24,18 +24,18 @@ final class ResourceCrawlerExtension extends Extension
                 ->setArgument(0, new Reference($config['crawler']['http_client']['mocker']));
         }
 
-        if ($config['process']['saver']) {
+        if ($config['process']['store']) {
             $container
                 ->getDefinition('resource_crawler.process_manager')
-                ->setArgument(0, new Reference($config['process']['saver']));
+                ->setArgument(0, new Reference($config['process']['store']));
         }
 
-        if ($container->hasDefinition('resource_crawler.file_process_saver')) {
-            $dir = $config['process']['file_saver']['dir'] ?? sys_get_temp_dir();
-            $dir .= '/file_saver';
+        if ($container->hasDefinition('resource_crawler.process_file_store')) {
+            $dir = $config['process']['file_store']['dir'] ?? sys_get_temp_dir();
+            $dir .= '/file_store';
 
             $container
-                ->getDefinition('resource_crawler.file_process_saver')
+                ->getDefinition('resource_crawler.process_file_store')
                 ->setArgument(0, $dir);
         }
     }

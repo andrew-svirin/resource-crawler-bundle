@@ -3,5 +3,5 @@ resource_crawler:
     http_client:
       mocker: http_client_mocker
   process:
-    file_saver:
+    file_store:
       dir: "%kernel.project_dir%/tests/Fixtures/App/storage/saver"

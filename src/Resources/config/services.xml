@@ -26,17 +26,20 @@
                  class="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager"
                  autowire="true"
                  public="false">
-            <argument key="$processSaver"
+            <argument key="$processStore"
                       type="service"
-                      id="resource_crawler.file_process_saver"/>
+                      id="resource_crawler.process_file_store"/>
         </service>
         <service
-                id="resource_crawler.file_process_saver"
-                class="AndrewSvirin\ResourceCrawlerBundle\Process\FileProcessSaver"
+                id="resource_crawler.process_file_store"
+                class="AndrewSvirin\ResourceCrawlerBundle\Process\FileProcessStore"
                 autowire="true"
                 public="false"
         />
         <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessFactory" autowire="true" public="false"/>
         <service id="AndrewSvirin\ResourceCrawlerBundle\Process\TaskFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\NodeFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\UriFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\TaskPacker" autowire="true" public="false"/>
     </services>
 </container>
