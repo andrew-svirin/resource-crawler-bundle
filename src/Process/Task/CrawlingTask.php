@@ -1,8 +1,9 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Process;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process\Task;
 
-use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 
 /**
  * Model implements crawling task.

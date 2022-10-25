@@ -2,6 +2,9 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator;
+
 /**
  * Factory for resource.
  *
@@ -9,19 +12,28 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  */
 final class ResourceFactory
 {
-    /**
-     * Create HTTP resource.
-     */
-    public function createHttp(NodeInterface $node): HttpResource
-    {
-        return new HttpResource($node);
+    public function __construct(
+        private readonly PathRegexCreator $pathRegexCreator
+    ) {
     }
 
     /**
-     * Create Filesystem resource.
+     * Create Web resource.
      */
-    public function createFs(NodeInterface $node): FsResource
+    public function createWeb(NodeInterface $node, ?array $pathMasks = null): WebResource
     {
-        return new FsResource($node);
+        $pathRegex = $this->pathRegexCreator->create($pathMasks);
+
+        return new WebResource($node, $pathRegex);
+    }
+
+    /**
+     * Create Disk resource.
+     */
+    public function createDisk(NodeInterface $node, ?array $pathMasks = null): DiskResource
+    {
+        $pathRegex = $this->pathRegexCreator->create($pathMasks);
+
+        return new DiskResource($node, $pathRegex);
     }
 }

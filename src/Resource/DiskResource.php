@@ -3,10 +3,10 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
- * HTTP resource.
+ * Disk resource.
  *
  * @interal
  */
-final class HttpResource extends Resource
+final class DiskResource extends Resource
 {
 }

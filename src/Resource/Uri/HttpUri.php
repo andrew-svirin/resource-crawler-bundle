@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
+namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Uri;
 
 /**
  * HTTP URI.

@@ -22,6 +22,12 @@
         </testsuite>
     </testsuites>
 
+    <testsuites>
+        <testsuite name="Resource Crawler Unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+    </testsuites>
+
     <filter>
         <whitelist>
             <directory suffix=".php">./src</directory>

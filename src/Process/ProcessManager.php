@@ -2,11 +2,13 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
-use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Resource;
 
 /**
- * Facade for processes and tasks.
+ * Facade for Process domain.
  *
  * @interal
  */
@@ -24,7 +26,7 @@ final class ProcessManager
         $process = $this->processFactory->create($resource);
         $node    = $resource->getRoot();
 
-        $this->pushTask($process, $node);
+        $this->pushTaskIfNotExists($process, $node);
 
         return $process;
     }
@@ -32,6 +34,7 @@ final class ProcessManager
     public function popTask(CrawlingProcess $process): ?CrawlingTask
     {
         $task = $this->processStore->popForProcessingTask($process);
+
         if (!empty($task)) {
             return $task;
         }
@@ -39,9 +42,13 @@ final class ProcessManager
         return $this->processStore->popInProcessTask($process);
     }
 
-    public function pushTask(CrawlingProcess $process, NodeInterface $node): void
+    public function pushTaskIfNotExists(CrawlingProcess $process, NodeInterface $node): void
     {
         $task = $this->taskFactory->create($process, $node);
+
+        if ($this->processStore->taskExists($process, $task)) {
+            return;
+        }
 
         $this->processStore->pushForProcessingTask($process, $task);
     }

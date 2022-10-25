@@ -2,6 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+
 /**
  * Filesystem resource.
  *
@@ -9,15 +11,17 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
  */
 abstract class Resource implements ResourceInterface
 {
-    public function __construct(private readonly NodeInterface $node)
+    public function __construct(private readonly NodeInterface $node, private readonly string $pathRegex)
     {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public function getRoot(): NodeInterface
     {
         return $this->node;
+    }
+
+    public function pathRegex(): string
+    {
+        return $this->pathRegex;
     }
 }

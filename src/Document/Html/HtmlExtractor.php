@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Extractor;
+namespace AndrewSvirin\ResourceCrawlerBundle\Document\Html;
 
 use DOMDocument;
 
@@ -11,19 +11,6 @@ use DOMDocument;
  */
 final class HtmlExtractor
 {
-    public function extractDocument(string $html): DOMDocument
-    {
-        $dom = new DOMDocument;
-
-        $dom->substituteEntities = false;
-
-        $sourceUtf8 = mb_convert_encoding($html, 'html-entities', 'utf-8');
-
-        @$dom->loadHTML($sourceUtf8, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-
-        return $dom;
-    }
-
     /**
      * @param \DOMDocument $dom
      * @return string[]

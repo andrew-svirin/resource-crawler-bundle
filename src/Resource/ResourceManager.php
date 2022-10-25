@@ -2,11 +2,15 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
-use AndrewSvirin\ResourceCrawlerBundle\Reader\ResourceReader;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
 
 /**
- * Manager for resources.
+ * Manager for Resource domain.
  *
  * @interal
  */
@@ -16,15 +20,16 @@ final class ResourceManager
         private readonly ResourceReader $reader,
         private readonly ResourceFactory $resourceFactory,
         private readonly NodeFactory $nodeFactory,
-        private readonly UriFactory $uriFactory
+        private readonly UriFactory $uriFactory,
+        private readonly PathRegexMatcher $pathRegexMatcher,
     ) {
     }
 
-    public function createHttpHtmlResource(string $path): HttpResource
+    public function createWebHtmlResource(string $path, ?array $pathMasks): WebResource
     {
-        $node = $this->createHttpHtmlNode($path);
+        $node = $this->createWebHtmlNode($path);
 
-        return $this->resourceFactory->createHttp($node);
+        return $this->resourceFactory->createWeb($node, $pathMasks);
     }
 
     public function readUri(UriInterface $uri): string
@@ -32,28 +37,28 @@ final class ResourceManager
         return $this->reader->read($uri);
     }
 
-    private function createHttpHtmlNode(string $path): NodeInterface
+    private function createWebHtmlNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createHttp($path);
 
         return $this->nodeFactory->createHtml($uri);
     }
 
-    private function createHttpImgNode(string $path): NodeInterface
+    private function createWebImgNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createHttp($path);
 
         return $this->nodeFactory->createImg($uri);
     }
 
-    private function createFsHtmlNode(string $path): NodeInterface
+    private function createDiskHtmlNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createFs($path);
 
         return $this->nodeFactory->createHtml($uri);
     }
 
-    private function createFsImgNode(string $path): NodeInterface
+    private function createDiskImgNode(string $path): NodeInterface
     {
         $uri = $this->uriFactory->createFs($path);
 
@@ -62,10 +67,10 @@ final class ResourceManager
 
     public function createHtmlNode(ResourceInterface $resource, mixed $path): NodeInterface
     {
-        if ($resource instanceof HttpResource) {
-            $node = $this->createHttpHtmlNode($path);
-        } elseif ($resource instanceof FsResource) {
-            $node = $this->createFsHtmlNode($path);
+        if ($resource instanceof WebResource) {
+            $node = $this->createWebHtmlNode($path);
+        } elseif ($resource instanceof DiskResource) {
+            $node = $this->createDiskHtmlNode($path);
         } else {
             throw new LogicException('Resource is incorrect.');
         }
@@ -75,14 +80,19 @@ final class ResourceManager
 
     public function createImgNode(ResourceInterface $resource, string $path): NodeInterface
     {
-        if ($resource instanceof HttpResource) {
-            $node = $this->createHttpImgNode($path);
-        } elseif ($resource instanceof FsResource) {
-            $node = $this->createFsImgNode($path);
+        if ($resource instanceof WebResource) {
+            $node = $this->createWebImgNode($path);
+        } elseif ($resource instanceof DiskResource) {
+            $node = $this->createDiskImgNode($path);
         } else {
             throw new LogicException('Resource is incorrect.');
         }
 
         return $node;
+    }
+
+    public function isMatchingPathRegex(string $pathRegex, string $path): bool
+    {
+        return $this->pathRegexMatcher->isMatching($pathRegex, $path);
     }
 }

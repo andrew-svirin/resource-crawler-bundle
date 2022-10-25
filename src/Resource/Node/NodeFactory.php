@@ -1,6 +1,8 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
+namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Node;
+
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 
 /**
  * Factory for node.

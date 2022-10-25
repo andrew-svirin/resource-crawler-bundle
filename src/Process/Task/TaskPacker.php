@@ -1,15 +1,15 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Process;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process\Task;
 
-use AndrewSvirin\ResourceCrawlerBundle\Resource\FsUri;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\HtmlNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\HttpUri;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\ImgNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeFactory;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\UriFactory;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\UriInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
 
 /**

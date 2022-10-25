@@ -24,6 +24,9 @@ class ResourceCrawlerTest extends TestCase
         /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
         $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-        $resourceCrawler->crawlHttpResource('http://site.com/index.html');
+        $resourceCrawler->crawlHttpResource('http://site.com/index.html', [
+            '+site.com/',
+            '-embed',
+        ]);
     }
 }

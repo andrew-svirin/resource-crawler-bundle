@@ -11,17 +11,8 @@
                  public="true">
             <argument key="$processManager" type="service" id="resource_crawler.process_manager"/>
         </service>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager" autowire="true" public="false">
-            <argument key="$reader" type="service" id="resource_crawler.reader"/>
-        </service>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceFactory" autowire="true" public="false"/>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Extractor\HtmlExtractor" autowire="true" public="false"/>
-        <service id="resource_crawler.reader"
-                 class="AndrewSvirin\ResourceCrawlerBundle\Reader\ResourceReader"
-                 autowire="true"
-                 public="false">
-            <argument key="$httpClient" type="service" id="http_client"/>
-        </service>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Crawler\NodeCrawler" autowire="true" public="false"/>
+
         <service id="resource_crawler.process_manager"
                  class="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager"
                  autowire="true"
@@ -36,10 +27,31 @@
                 autowire="true"
                 public="false"
         />
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessStoreInterface"
+                 alias="resource_crawler.process_file_store"/>
         <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessFactory" autowire="true" public="false"/>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\TaskFactory" autowire="true" public="false"/>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\NodeFactory" autowire="true" public="false"/>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\UriFactory" autowire="true" public="false"/>
-        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\TaskPacker" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskPacker" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager" autowire="true" public="false"/>
+
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager" autowire="true" public="false">
+            <argument key="$reader" type="service" id="resource_crawler.reader"/>
+        </service>
+        <service id="resource_crawler.reader"
+                 class="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceReader"
+                 autowire="true"
+                 public="false">
+            <argument key="$httpClient" type="service" id="http_client"/>
+        </service>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher" autowire="true" public="false"/>
+
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Document\Html\HtmlExtractor" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentFactory" autowire="true" public="false"/>
     </services>
 </container>

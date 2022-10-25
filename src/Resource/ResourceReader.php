@@ -1,9 +1,9 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Reader;
+namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
-use AndrewSvirin\ResourceCrawlerBundle\Resource\HttpUri;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\UriInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 

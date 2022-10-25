@@ -2,28 +2,33 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Extractor\HtmlExtractor;
-use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\HtmlNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\ImgNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
-use LogicException;
-use RuntimeException;
 
+/**
+ * Crawler for resource.
+ */
 final class ResourceCrawler
 {
     public function __construct(
         private readonly ResourceManager $resourceManager,
         private readonly ProcessManager $processManager,
-        private readonly HtmlExtractor $htmlExtractor
+        private readonly NodeCrawler $nodeCrawler
     ) {
     }
 
-    public function crawlHttpResource(string $url): void
+    /**
+     * @param string $url Enter URL.
+     * @param array|null $pathMasks Mask for path.
+     *                              `+<rule>` - to allow, `-<rule>` - to disallow.
+     *                              `+site.com/page` - allowing mask
+     *                              `-embed` - disallowing mask
+     * @return void
+     */
+    public function crawlHttpResource(string $url, ?array $pathMasks): void
     {
-        $resource = $this->resourceManager->createHttpHtmlResource($url);
+        $resource = $this->resourceManager->createWebHtmlResource($url, $pathMasks);
 
         $process = $this->processManager->load($resource);
 
@@ -38,57 +43,6 @@ final class ResourceCrawler
     {
         $node = $task->getNode();
 
-        $this->crawlNode($task, $node);
-    }
-
-    /**
-     * Crawl node.
-     * Here is distinguishing task type.
-     */
-    private function crawlNode(CrawlingTask $task, NodeInterface $node): void
-    {
-        if ($node instanceof HtmlNode) {
-            $this->crawlHtmlNode($task, $node);
-        } elseif ($node instanceof ImgNode) {
-            throw new RuntimeException('Handle img.');
-        } else {
-            throw new LogicException('Incorrect node.');
-        }
-    }
-
-    /**
-     * Walk other html nodes graph.
-     */
-    private function crawlHtmlNode(CrawlingTask $task, HtmlNode $node): void
-    {
-        $html = $this->resourceManager->readUri($node->getUri());
-
-        $node->setContent($html);
-
-        $document = $this->htmlExtractor->extractDocument($node->getContent());
-
-        $node->setDocument($document);
-
-        $this->processAnchors($task, $node);
-
-        $this->processImgs($task, $node);
-    }
-
-    private function processAnchors(CrawlingTask $task, HtmlNode $node): void
-    {
-        foreach ($this->htmlExtractor->extractAHrefs($node->getDocument()) as $path) {
-            $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $path);
-
-            $this->processManager->pushTask($task->getProcess(), $node);
-        }
-    }
-
-    private function processImgs(CrawlingTask $task, HtmlNode $node): void
-    {
-        foreach ($this->htmlExtractor->extractImgSrcs($node->getDocument()) as $path) {
-            $node = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $path);
-
-            $this->processManager->pushTask($task->getProcess(), $node);
-        }
+        $this->nodeCrawler->crawl($task, $node);
     }
 }

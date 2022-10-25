@@ -2,6 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
+
 /**
  * Interface for process store.
  */
@@ -21,4 +23,9 @@ interface ProcessStoreInterface
      * Pop task from in_process stack.
      */
     public function popInProcessTask(CrawlingProcess $process): ?CrawlingTask;
+
+    /**
+     * Does task already exists.
+     */
+    public function taskExists(CrawlingProcess $process, CrawlingTask $task): bool;
 }

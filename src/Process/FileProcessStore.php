@@ -2,6 +2,10 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskPacker;
+
 /**
  * Primitive store in the file.
  * Very limited usage.
@@ -15,8 +19,12 @@ final class FileProcessStore implements ProcessStoreInterface
     ) {
     }
 
-    private function taskExists(array $processData, string $taskHash): bool
+    public function taskExists(CrawlingProcess $process, CrawlingTask $task): bool
     {
+        $processData = $this->readProcessData($process);
+
+        $taskHash = $this->genTaskHash($task);
+
         return in_array($taskHash, array_keys($processData['for_processing'])) ||
             in_array($taskHash, array_keys($processData['in_process'])) ||
             in_array($taskHash, array_keys($processData['processed']));
@@ -28,11 +36,9 @@ final class FileProcessStore implements ProcessStoreInterface
 
         $taskHash = $this->genTaskHash($task);
 
-        if (!$this->taskExists($processData, $taskHash)) {
-            $processData['for_processing'][$taskHash] = $this->packTask($task);
+        $processData['for_processing'][$taskHash] = $this->packTask($task);
 
-            $this->writeProcessData($process, $processData);
-        }
+        $this->writeProcessData($process, $processData);
     }
 
     public function popForProcessingTask(CrawlingProcess $process): ?CrawlingTask

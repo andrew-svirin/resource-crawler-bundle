@@ -3,10 +3,10 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 /**
- * Filesystem resource.
+ * Web resource.
  *
  * @interal
  */
-final class FsResource extends Resource
+final class WebResource extends Resource
 {
 }
