@@ -3,6 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
 
 /**
  * Filesystem resource.
@@ -11,7 +12,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
  */
 abstract class Resource implements ResourceInterface
 {
-    public function __construct(private readonly NodeInterface $node, private readonly string $pathRegex)
+    public function __construct(private readonly NodeInterface $node, private readonly PathRegex $pathRegex)
     {
     }
 
@@ -20,7 +21,7 @@ abstract class Resource implements ResourceInterface
         return $this->node;
     }
 
-    public function pathRegex(): string
+    public function pathRegex(): PathRegex
     {
         return $this->pathRegex;
     }

@@ -3,6 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
 
 /**
  * Resource based on graph.
@@ -18,5 +19,5 @@ interface ResourceInterface
     /**
      * Path regex for crawling.
      */
-    public function pathRegex(): string;
+    public function pathRegex(): PathRegex;
 }

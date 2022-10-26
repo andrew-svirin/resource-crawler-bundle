@@ -9,9 +9,9 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path;
  */
 final class PathRegexMatcher
 {
-    public function isMatching(string $pathRegex, string $path): bool
+    public function isMatching(PathRegex $pathRegex, string $path): bool
     {
-        preg_match_all($pathRegex, $path, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
+        preg_match_all($pathRegex->getExpression(), $path, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
 
         $disallowedMatches = &$matches[1];
         $allowedMatches    = &$matches[2];

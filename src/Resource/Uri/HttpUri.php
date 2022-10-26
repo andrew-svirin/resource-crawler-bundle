@@ -7,14 +7,6 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Uri;
  *
  * @interal
  */
-final class HttpUri implements UriInterface
+final class HttpUri extends Uri
 {
-    public function __construct(private readonly string $uri)
-    {
-    }
-
-    public function getPath(): string
-    {
-        return $this->uri;
-    }
 }

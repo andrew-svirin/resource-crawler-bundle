@@ -12,25 +12,30 @@ use RuntimeException;
  */
 final class PathRegexCreator
 {
-    public function create(array $pathMasks): string
+    public function create(array $pathMasks): PathRegex
     {
-        $allowedExs    = [];
-        $disallowedExs = [];
+        $pathRegex = new PathRegex();
 
         foreach ($pathMasks as $pathMask) {
             $op = $this->resolveOp($pathMask);
             $ex = $this->resolveEx($pathMask);
 
             if ('+' === $op) {
-                $allowedExs[] = $ex;
+                $pathRegex->addAllowed($ex);
             } elseif ('-' === $op) {
-                $disallowedExs[] = $ex;
+                $pathRegex->addDisallowed($ex);
             } else {
                 throw new LogicException('First symbol incorrect.');
             }
         }
 
-        return $this->createFromExs($allowedExs, $disallowedExs);
+        $expression = $this->resolveExpression(
+            $pathRegex->getAllowedExpressions(),
+            $pathRegex->getDisallowedExpressions()
+        );
+        $pathRegex->setExpression($expression);
+
+        return $pathRegex;
     }
 
     private function resolveOp(string $pathMask): string
@@ -55,7 +60,7 @@ final class PathRegexCreator
      * Convert from `+site -sitt +sitte -erd +kitte -emb.ed`
      *         to `/(sitt|emb\.ed|embb)|(site|sitte|kitte)/`
      */
-    private function createFromExs(array $allowedExs, array $disallowedExs): string
+    private function resolveExpression(array $allowedExs, array $disallowedExs): string
     {
         $disallowed = implode('|', $disallowedExs);
         if (empty($disallowed)) {

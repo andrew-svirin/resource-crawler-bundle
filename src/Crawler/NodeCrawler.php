@@ -64,7 +64,7 @@ final class NodeCrawler
     private function processAnchors(CrawlingTask $task, HtmlNode $node): void
     {
         foreach ($this->documentManager->extractAHrefs($node) as $path) {
-            $normalizedPath = $this->pathNormalizer->normalize($path);
+            $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
 
             $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
 
@@ -75,7 +75,7 @@ final class NodeCrawler
     private function processImgs(CrawlingTask $task, HtmlNode $node): void
     {
         foreach ($this->documentManager->extractImgSrcs($node) as $path) {
-            $normalizedPath = $this->pathNormalizer->normalize($path);
+            $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
 
             $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
 

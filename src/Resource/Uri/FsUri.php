@@ -7,14 +7,6 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Uri;
  *
  * @interal
  */
-final class FsUri implements UriInterface
+final class FsUri extends Uri
 {
-    public function __construct(string $uri)
-    {
-    }
-
-    public function getPath()
-    {
-        // TODO: Implement getPath() method.
-    }
 }
