@@ -14,7 +14,7 @@ class PathNormalizerTest extends TestCase
     /**
      * @dataProvider normalizeProvider
      */
-    public function testNormalizeHttp(string $parentPath, string $path, string $normalizedPath)
+    public function testNormalizeHttp(string $parentPath, string $path, string $normalizedPath): void
     {
         $normalizer = new PathNormalizer();
         $uriFactory = new UriFactory();
@@ -24,6 +24,9 @@ class PathNormalizerTest extends TestCase
         $this->assertEquals($normalizedPath, $normalizer->normalize($parentUri, $path));
     }
 
+    /**
+     * @return non-empty-array<array>
+     */
     public function normalizeProvider(): array
     {
         return [

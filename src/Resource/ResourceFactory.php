@@ -20,6 +20,7 @@ final class ResourceFactory
 
     /**
      * Create Web resource.
+     * @param string[]|null $pathMasks
      */
     public function createWeb(NodeInterface $node, ?array $pathMasks = null): WebResource
     {
@@ -30,6 +31,7 @@ final class ResourceFactory
 
     /**
      * Create Disk resource.
+     * @param string[]|null $pathMasks
      */
     public function createDisk(NodeInterface $node, ?array $pathMasks = null): DiskResource
     {
@@ -38,6 +40,9 @@ final class ResourceFactory
         return new DiskResource($node, $pathRegex);
     }
 
+    /**
+     * @param string[]|null $pathMasks
+     */
     private function resolvePathRegex(?array $pathMasks = null): ?PathRegex
     {
         if (null === $pathMasks) {

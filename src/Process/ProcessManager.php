@@ -53,6 +53,8 @@ final class ProcessManager
     {
         $task = $this->taskFactory->create($process, $node);
 
+        $task->setStatus(CrawlingTask::STATUS_FOR_PROCESSING);
+
         if ($this->processStore->taskExists($process, $task)) {
             return;
         }
@@ -63,5 +65,10 @@ final class ProcessManager
     public function destroyTask(CrawlingProcess $process, CrawlingTask $task): void
     {
         $this->processStore->pushProcessedTask($process, $task);
+    }
+
+    public function ignoreTask(CrawlingProcess $process, CrawlingTask $task): void
+    {
+        $this->processStore->pushIgnoredTask($process, $task);
     }
 }

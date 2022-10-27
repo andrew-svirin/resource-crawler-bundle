@@ -19,6 +19,9 @@ final class PathRegexMatcher
         return !$this->isMatchingMatch($disallowedMatches) && $this->isMatchingMatch($allowedMatches);
     }
 
+    /**
+     * @param array<array<int, null|string>> $matches
+     */
     private function isMatchingMatch(array $matches): bool
     {
         if (empty($matches)) {

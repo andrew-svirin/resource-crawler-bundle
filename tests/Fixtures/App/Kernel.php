@@ -10,7 +10,7 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class Kernel extends BaseKernel
 {
-    public function __construct($environment, $debug)
+    public function __construct(string $environment, bool $debug)
     {
         parent::__construct($environment, $debug);
 
@@ -35,7 +35,7 @@ class Kernel extends BaseKernel
         return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
     }
 
-    public function registerContainerConfiguration(LoaderInterface $loader)
+    public function registerContainerConfiguration(LoaderInterface $loader): void
     {
         $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/framework.yml');
         $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/services.yml');

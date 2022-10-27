@@ -74,7 +74,7 @@ final class PathNormalizer
 
     private function normalizePathRel(string $path): string
     {
-        $explode = explode('/', $path ?? '/');
+        $explode = explode('/', $path);
 
         $pathSegments = [];
 

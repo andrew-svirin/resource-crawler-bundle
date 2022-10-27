@@ -13,7 +13,7 @@ final class HtmlNode extends Node
 {
     private DOMDocument $document;
 
-    public function setDocument(DOMDocument $document)
+    public function setDocument(DOMDocument $document): void
     {
         $this->document = $document;
     }

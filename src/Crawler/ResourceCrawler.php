@@ -24,12 +24,12 @@ final class ResourceCrawler
      * As a result task return performed task with link on node that was crawled in iteration.
      *
      * @param string $url Enter URL.
-     * @param array|null $pathMasks Mask for path.
+     * @param string[]|null $pathMasks Mask for path.
      *                              `+<rule>` - to allow, `-<rule>` - to disallow.
      *                              `+site.com/page` - allowing mask
      *                              `-embed` - disallowing mask
      */
-    public function crawlHttpResource(string $url, ?array $pathMasks): ?CrawlingTask
+    public function crawlWebResource(string $url, ?array $pathMasks = null): ?CrawlingTask
     {
         $resource = $this->resourceManager->createWebHtmlResource($url, $pathMasks);
 
@@ -41,9 +41,18 @@ final class ResourceCrawler
             return null;
         }
 
-        $this->performTask($task);
+        $isTaskPerformable = $this->resourceManager->isMatchingPathRegex(
+            $resource->pathRegex(),
+            $task->getNode()->getUri()->getPath()
+        );
 
-        $this->processManager->destroyTask($process, $task);
+        if ($isTaskPerformable) {
+            $this->performTask($task);
+
+            $this->processManager->destroyTask($process, $task);
+        } else {
+            $this->processManager->ignoreTask($process, $task);
+        }
 
         return $task;
     }

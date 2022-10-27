@@ -14,7 +14,7 @@ class PathRegexMatcherTest extends TestCase
     /**
      * @dataProvider isMatchingProvider
      */
-    public function testIsMatching(string $path, bool $isMatching)
+    public function testIsMatching(string $path, bool $isMatching): void
     {
         $matcher = new PathRegexMatcher();
 
@@ -30,6 +30,9 @@ class PathRegexMatcherTest extends TestCase
         $this->assertEquals($isMatching, $matcher->isMatching($pathRegex, $path));
     }
 
+    /**
+     * @return non-empty-array<array>
+     */
     public function isMatchingProvider(): array
     {
         return [

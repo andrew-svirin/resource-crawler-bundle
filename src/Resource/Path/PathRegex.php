@@ -9,8 +9,14 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path;
  */
 final class PathRegex
 {
+    /**
+     * @var string[]
+     */
     private array $allowedExpressions = [];
 
+    /**
+     * @var string[]
+     */
     private array $disallowedExpressions = [];
 
     private string $expression;
@@ -25,11 +31,17 @@ final class PathRegex
         $this->disallowedExpressions[] = $expression;
     }
 
+    /**
+     * @return string[]
+     */
     public function getAllowedExpressions(): array
     {
         return $this->allowedExpressions;
     }
 
+    /**
+     * @return string[]
+     */
     public function getDisallowedExpressions(): array
     {
         return $this->disallowedExpressions;

@@ -12,18 +12,21 @@ use RuntimeException;
  */
 final class PathRegexCreator
 {
+    /**
+     * @param string[] $pathMasks
+     */
     public function create(array $pathMasks): PathRegex
     {
         $pathRegex = new PathRegex();
 
         foreach ($pathMasks as $pathMask) {
-            $op = $this->resolveOp($pathMask);
-            $ex = $this->resolveEx($pathMask);
+            $pathMaskOperation  = $this->resolvePathMaskOperation($pathMask);
+            $pathMaskExpression = $this->resolvePathMaskExpression($pathMask);
 
-            if ('+' === $op) {
-                $pathRegex->addAllowed($ex);
-            } elseif ('-' === $op) {
-                $pathRegex->addDisallowed($ex);
+            if ('+' === $pathMaskOperation) {
+                $pathRegex->addAllowed($pathMaskExpression);
+            } elseif ('-' === $pathMaskOperation) {
+                $pathRegex->addDisallowed($pathMaskExpression);
             } else {
                 throw new LogicException('First symbol incorrect.');
             }
@@ -38,27 +41,29 @@ final class PathRegexCreator
         return $pathRegex;
     }
 
-    private function resolveOp(string $pathMask): string
+    private function resolvePathMaskOperation(string $pathMask): string
     {
-        $op = substr($pathMask, 0, 1);
+        $operation = substr($pathMask, 0, 1);
 
-        if (!in_array($op, ['+', '-'])) {
+        if (!in_array($operation, ['+', '-'])) {
             throw new RuntimeException('First symbol incorrect. Allowed: "+", "-"');
         }
 
-        return $op;
+        return $operation;
     }
 
-    private function resolveEx(string $pathMask): string
+    private function resolvePathMaskExpression(string $pathMask): string
     {
-        $ex = substr($pathMask, 1);
+        $expression = substr($pathMask, 1);
 
-        return str_replace(['.', '/', '*'], ['\.', '\/', '.*'], $ex);
+        return str_replace(['.', '/', '*'], ['\.', '\/', '.*'], $expression);
     }
 
     /**
      * Convert from `+site -sitt +sitte -erd +kitte -emb.ed`
      *         to `/(sitt|emb\.ed|embb)|(site|sitte|kitte)/`
+     * @param string[] $allowedExs
+     * @param string[] $disallowedExs
      */
     private function resolveExpression(array $allowedExs, array $disallowedExs): string
     {

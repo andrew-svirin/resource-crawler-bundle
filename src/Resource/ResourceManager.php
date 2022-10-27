@@ -4,6 +4,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
@@ -25,6 +26,9 @@ final class ResourceManager
     ) {
     }
 
+    /**
+     * @param string[]|null $pathMasks
+     */
     public function createWebHtmlResource(string $path, ?array $pathMasks = null): WebResource
     {
         $node = $this->createWebHtmlNode($path);
@@ -91,7 +95,7 @@ final class ResourceManager
         return $node;
     }
 
-    public function isMatchingPathRegex(string $pathRegex, string $path): bool
+    public function isMatchingPathRegex(PathRegex $pathRegex, string $path): bool
     {
         return $this->pathRegexMatcher->isMatching($pathRegex, $path);
     }

@@ -16,22 +16,28 @@ interface ProcessStoreInterface
     public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): void;
 
     /**
-     * Pop task from for_processing stack.
-     * Take a task form for_processing stack and move task to in_process stack.
+     * Pop task from `for_processing` stack.
+     * Take a task form `for_processing` stack and move task to `in_process` stack.
      */
     public function popForProcessingTask(CrawlingProcess $process): ?CrawlingTask;
 
     /**
-     * Pop task from in_process stack.
-     * Take a task form in_process stack.
+     * Pop task from `in_process` stack.
+     * Take a task form `in_process` stack.
      */
     public function popInProcessTask(CrawlingProcess $process): ?CrawlingTask;
 
     /**
-     * Push task to processed stack.
-     * Move task from in_process stack to processed stack.
+     * Push task to `processed` stack.
+     * Move task from `in_process` stack to `processed` stack.
      */
     public function pushProcessedTask(CrawlingProcess $process, CrawlingTask $task): void;
+
+    /**
+     * Push task to `ignored` stack.
+     * Move task from `in_process` stack to `ignored` stack.
+     */
+    public function pushIgnoredTask(CrawlingProcess $process, CrawlingTask $task): void;
 
     /**
      * Does task already exists.

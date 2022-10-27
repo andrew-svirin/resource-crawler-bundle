@@ -25,9 +25,10 @@ final class FileProcessStore implements ProcessStoreInterface
 
         $taskHash = $this->genTaskHash($task);
 
-        return in_array($taskHash, array_keys($processData['for_processing'])) ||
-            in_array($taskHash, array_keys($processData['in_process'])) ||
-            in_array($taskHash, array_keys($processData['processed']));
+        return in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_FOR_PROCESSING])) ||
+            in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_IN_PROCESS])) ||
+            in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_PROCESSED])) ||
+            in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_IGNORED]));
     }
 
     public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): void
@@ -36,7 +37,7 @@ final class FileProcessStore implements ProcessStoreInterface
 
         $taskHash = $this->genTaskHash($task);
 
-        $processData['for_processing'][$taskHash] = $this->packTask($task);
+        $processData[CrawlingTask::STATUS_FOR_PROCESSING][$taskHash] = $this->packTask($task);
 
         $this->writeProcessData($process, $processData);
     }
@@ -45,48 +46,72 @@ final class FileProcessStore implements ProcessStoreInterface
     {
         $processData = $this->readProcessData($process);
 
-        $taskHash   = array_key_last($processData['for_processing']);
-        $packedTask = array_pop($processData['for_processing']);
+        $taskHash = array_key_last($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
 
-        if (empty($packedTask)) {
+        if (empty($taskHash)) {
             return null;
         }
 
-        $processData['in_process'][$taskHash] = $packedTask;
+        $packedTask = array_pop($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
+
+        $processData[CrawlingTask::STATUS_IN_PROCESS][$taskHash] = $packedTask;
 
         $this->writeProcessData($process, $processData);
 
-        return $this->unpackTask($process, $packedTask);
+        $task = $this->unpackTask($process, $packedTask);
+
+        $task->setStatus(CrawlingTask::STATUS_IN_PROCESS);
+
+        return $task;
     }
 
     public function popInProcessTask(CrawlingProcess $process): ?CrawlingTask
     {
         $processData = $this->readProcessData($process);
 
-        $packedTask = array_pop($processData['in_process']);
+        $packedTask = array_pop($processData[CrawlingTask::STATUS_IN_PROCESS]);
 
         if (empty($packedTask)) {
             return null;
         }
 
-        return $this->unpackTask($process, $packedTask);
+        $task = $this->unpackTask($process, $packedTask);
+
+        $task->setStatus(CrawlingTask::STATUS_IN_PROCESS);
+
+        return $task;
     }
 
     public function pushProcessedTask(CrawlingProcess $process, CrawlingTask $task): void
+    {
+        $this->pushTask($process, $task, CrawlingTask::STATUS_PROCESSED);
+    }
+
+    public function pushIgnoredTask(CrawlingProcess $process, CrawlingTask $task): void
+    {
+        $this->pushTask($process, $task, CrawlingTask::STATUS_IGNORED);
+    }
+
+    private function pushTask(CrawlingProcess $process, CrawlingTask $task, string $status): void
     {
         $processData = $this->readProcessData($process);
 
         $taskHash = $this->genTaskHash($task);
 
-        $packedTask = $processData['in_process'][$taskHash];
+        $packedTask = $processData[$task->getStatus()][$taskHash];
 
-        unset($processData['in_process'][$taskHash]);
+        unset($processData[$task->getStatus()][$taskHash]);
 
-        $processData['processed'][$taskHash] = $packedTask;
+        $processData[$status][$taskHash] = $packedTask;
+
+        $task->setStatus($status);
 
         $this->writeProcessData($process, $processData);
     }
 
+    /**
+     * @return array<string, array<string, string|array<string, string>>>
+     */
     private function readProcessData(CrawlingProcess $process): array
     {
         $content = $this->readProcessContent($process);
@@ -110,6 +135,9 @@ final class FileProcessStore implements ProcessStoreInterface
         }
     }
 
+    /**
+     * @param array<string, array<string, string|array<string, string>>> $processData
+     */
     private function writeProcessData(CrawlingProcess $process, array $processData): void
     {
         $content = json_encode($processData, JSON_PRETTY_PRINT);
@@ -135,12 +163,16 @@ final class FileProcessStore implements ProcessStoreInterface
         }
     }
 
+    /**
+     * @return array<string, array<null>>
+     */
     private function defaultProcessData(): array
     {
         return [
-            'for_processing' => [],
-            'in_process'     => [],
-            'processed'      => [],
+            CrawlingTask::STATUS_FOR_PROCESSING => [],
+            CrawlingTask::STATUS_IN_PROCESS     => [],
+            CrawlingTask::STATUS_PROCESSED      => [],
+            CrawlingTask::STATUS_IGNORED        => [],
         ];
     }
 
@@ -154,6 +186,10 @@ final class FileProcessStore implements ProcessStoreInterface
         return hash('sha256', $task->getNode()->getUri()->getPath());
     }
 
+    /**
+     * @param \AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask $task
+     * @return array<string, string|array<string, string>>
+     */
     private function packTask(CrawlingTask $task): array
     {
         $nodeType = $this->taskPacker->packNodeType($task->getNode());
@@ -168,6 +204,9 @@ final class FileProcessStore implements ProcessStoreInterface
         ];
     }
 
+    /**
+     * @param array<string, string|array<string, string>> $packedTask
+     */
     private function unpackTask(CrawlingProcess $process, array $packedTask): CrawlingTask
     {
         $uri  = $this->taskPacker->unpackUri($packedTask['uri']['type'], $packedTask['uri']['path']);
