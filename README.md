@@ -8,3 +8,6 @@ Exmpl:
 https://github.com/FriendsOfSymfony/FOSCommentBundle
 https://github.com/HEKET313/health-check
 https://github.com/symfony-bundles/bundle-dependency
+
+TODO:
+- apply pathregex

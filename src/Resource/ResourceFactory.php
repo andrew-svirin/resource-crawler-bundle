@@ -3,6 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator;
 
 /**
@@ -22,7 +23,7 @@ final class ResourceFactory
      */
     public function createWeb(NodeInterface $node, ?array $pathMasks = null): WebResource
     {
-        $pathRegex = $this->pathRegexCreator->create($pathMasks);
+        $pathRegex = $this->resolvePathRegex($pathMasks);
 
         return new WebResource($node, $pathRegex);
     }
@@ -32,8 +33,17 @@ final class ResourceFactory
      */
     public function createDisk(NodeInterface $node, ?array $pathMasks = null): DiskResource
     {
-        $pathRegex = $this->pathRegexCreator->create($pathMasks);
+        $pathRegex = $this->resolvePathRegex($pathMasks);
 
         return new DiskResource($node, $pathRegex);
+    }
+
+    private function resolvePathRegex(?array $pathMasks = null): ?PathRegex
+    {
+        if (null === $pathMasks) {
+            return null;
+        }
+
+        return $this->pathRegexCreator->create($pathMasks);
     }
 }

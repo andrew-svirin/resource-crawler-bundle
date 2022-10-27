@@ -12,7 +12,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
  */
 abstract class Resource implements ResourceInterface
 {
-    public function __construct(private readonly NodeInterface $node, private readonly PathRegex $pathRegex)
+    public function __construct(private readonly NodeInterface $node, private readonly ?PathRegex $pathRegex = null)
     {
     }
 
@@ -21,7 +21,7 @@ abstract class Resource implements ResourceInterface
         return $this->node;
     }
 
-    public function pathRegex(): PathRegex
+    public function pathRegex(): ?PathRegex
     {
         return $this->pathRegex;
     }

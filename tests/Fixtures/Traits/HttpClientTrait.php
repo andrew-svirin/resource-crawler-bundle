@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits;
 
+use RuntimeException;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 /**
@@ -19,16 +20,29 @@ trait HttpClientTrait
         /** @var \Symfony\Component\HttpClient\MockHttpClient $httpClient */
         $httpClient = $this->getContainer()->get('http_client_mocker');
 
+        $responseFactory = function ($method, $url, $options) {
+            $responses = [
+                'http://site.com/index.html'        => $this->getMock('/http/index.html'),
+                'http://site.com/pages/page-1.html' => $this->getMock('/http/pages/page-1.html'),
+                'http://site.com/pages/page-2.html' => $this->getMock('/http/pages/page-2.html'),
+                'http://site.com/images/img-1.jpg'  => $this->getMock('/http/images/img-1.jpg'),
+                'http://site.com/images/img-2.jpg'  => $this->getMock('/http/images/img-2.jpg'),
+            ];
+
+            if (empty($responses[$url])) {
+                throw new RuntimeException(sprintf('URL `%s` not mocked.', $url));
+            }
+
+            return $responses[$url];
+        };
+
+        $httpClient->setResponseFactory($responseFactory);
+    }
+
+    private function getMock(string $path): MockResponse
+    {
         $resourceDir = $this->getResourcesDir();
 
-        $responses = [
-            '/index.html'        => new MockResponse(file_get_contents($resourceDir . '/http/index.html')),
-            '/pages/page-1.html' => new MockResponse(file_get_contents($resourceDir . '/http/pages/page-1.html')),
-            '/pages/page-2.html' => new MockResponse(file_get_contents($resourceDir . '/http/pages/page-2.html')),
-            '/images/img-1.jpg'  => new MockResponse(file_get_contents($resourceDir . '/http/images/img-1.jpg')),
-            '/images/img-2.jpg'  => new MockResponse(file_get_contents($resourceDir . '/http/images/img-2.jpg')),
-        ];
-
-        $httpClient->setResponseFactory($responses);
+        return new MockResponse(file_get_contents($resourceDir . $path));
     }
 }

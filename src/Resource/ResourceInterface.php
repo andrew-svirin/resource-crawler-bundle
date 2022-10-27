@@ -19,5 +19,5 @@ interface ResourceInterface
     /**
      * Path regex for crawling.
      */
-    public function pathRegex(): PathRegex;
+    public function pathRegex(): ?PathRegex;
 }

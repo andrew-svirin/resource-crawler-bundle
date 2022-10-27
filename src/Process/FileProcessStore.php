@@ -72,6 +72,21 @@ final class FileProcessStore implements ProcessStoreInterface
         return $this->unpackTask($process, $packedTask);
     }
 
+    public function pushProcessedTask(CrawlingProcess $process, CrawlingTask $task): void
+    {
+        $processData = $this->readProcessData($process);
+
+        $taskHash = $this->genTaskHash($task);
+
+        $packedTask = $processData['in_process'][$taskHash];
+
+        unset($processData['in_process'][$taskHash]);
+
+        $processData['processed'][$taskHash] = $packedTask;
+
+        $this->writeProcessData($process, $processData);
+    }
+
     private function readProcessData(CrawlingProcess $process): array
     {
         $content = $this->readProcessContent($process);
@@ -84,6 +99,15 @@ final class FileProcessStore implements ProcessStoreInterface
         $filename = $this->getProcessFilename($process);
 
         return file_exists($filename) ? file_get_contents($filename) : null;
+    }
+
+    private function deleteProcessContent(CrawlingProcess $process): void
+    {
+        $filename = $this->getProcessFilename($process);
+
+        if (file_exists($filename)) {
+            unlink($filename);
+        }
     }
 
     private function writeProcessData(CrawlingProcess $process, array $processData): void
@@ -150,5 +174,10 @@ final class FileProcessStore implements ProcessStoreInterface
         $node = $this->taskPacker->unpackNode($packedTask['type'], $uri);
 
         return $this->taskFactory->create($process, $node);
+    }
+
+    public function deleteProcess(CrawlingProcess $process): void
+    {
+        $this->deleteProcessContent($process);
     }
 }

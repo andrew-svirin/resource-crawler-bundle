@@ -21,7 +21,7 @@ final class ProcessManager
     ) {
     }
 
-    public function load(Resource $resource): CrawlingProcess
+    public function loadProcess(Resource $resource): CrawlingProcess
     {
         $process = $this->processFactory->create($resource);
         $node    = $resource->getRoot();
@@ -29,6 +29,13 @@ final class ProcessManager
         $this->pushTaskIfNotExists($process, $node);
 
         return $process;
+    }
+
+    public function killProcess(Resource $resource): void
+    {
+        $process = $this->processFactory->create($resource);
+
+        $this->processStore->deleteProcess($process);
     }
 
     public function popTask(CrawlingProcess $process): ?CrawlingTask
@@ -55,6 +62,6 @@ final class ProcessManager
 
     public function destroyTask(CrawlingProcess $process, CrawlingTask $task): void
     {
-
+        $this->processStore->pushProcessedTask($process, $task);
     }
 }

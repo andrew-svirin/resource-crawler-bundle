@@ -19,14 +19,41 @@ class ResourceCrawlerTest extends TestCase
         $this->setupHttpClient();
     }
 
-    public function testWebResourceCrawl()
+    public function testResetHttpResource()
     {
         /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
         $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-        $resourceCrawler->crawlHttpResource('http://site.com/index.html', [
-            '+site.com/',
-            '-embed',
-        ]);
+        $url = 'http://site.com/index.html';
+
+        $resourceCrawler->resetHttpResource($url);
+    }
+
+    public function testCrawlHttpResource()
+    {
+        /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+        $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+        $url = 'http://site.com/index.html';
+
+        $resourceCrawler->resetHttpResource($url);
+
+        $expectedPaths = [
+            'http://site.com/index.html',
+            'http://site.com/images/img-2.jpg',
+            'http://site.com/images/img-1.jpg',
+            'http://site.com/pages/page-2.html',
+            'http://site.com/pages/page-1.html',
+            null,
+        ];
+
+        for ($i = 0; $i <= 5; $i++) {
+            $task = $resourceCrawler->crawlHttpResource($url, [
+                '+site.com/',
+                '-embed',
+            ]);
+
+            $this->assertEquals($expectedPaths[$i], $task?->getNode()->getUri()->getPath());
+        }
     }
 }

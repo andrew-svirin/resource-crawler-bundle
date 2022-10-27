@@ -5,6 +5,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
+use RuntimeException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 /**
@@ -30,6 +31,10 @@ final class ResourceReader
     private function readByHttp(HttpUri $uri): string
     {
         $response = $this->httpClient->request('GET', $uri->getPath());
+
+        if ($response->getStatusCode() >= 400) {
+            throw new RuntimeException('Response is not correct');
+        }
 
         return $response->getContent();
     }

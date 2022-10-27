@@ -10,22 +10,38 @@ use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 interface ProcessStoreInterface
 {
     /**
-     * Push task for_processing stack.
+     * Push task to for_processing stack.
+     * Put a task to for_processing stack.
      */
     public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): void;
 
     /**
      * Pop task from for_processing stack.
+     * Take a task form for_processing stack and move task to in_process stack.
      */
     public function popForProcessingTask(CrawlingProcess $process): ?CrawlingTask;
 
     /**
      * Pop task from in_process stack.
+     * Take a task form in_process stack.
      */
     public function popInProcessTask(CrawlingProcess $process): ?CrawlingTask;
 
     /**
+     * Push task to processed stack.
+     * Move task from in_process stack to processed stack.
+     */
+    public function pushProcessedTask(CrawlingProcess $process, CrawlingTask $task): void;
+
+    /**
      * Does task already exists.
+     * Check if stack exists in any of stack.
      */
     public function taskExists(CrawlingProcess $process, CrawlingTask $task): bool;
+
+    /**
+     * Delete process.
+     * Delete all stacks of tasks.
+     */
+    public function deleteProcess(CrawlingProcess $process): void;
 }

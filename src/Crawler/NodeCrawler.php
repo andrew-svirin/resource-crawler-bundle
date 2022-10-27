@@ -11,7 +11,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use LogicException;
-use RuntimeException;
 
 /**
  * Crawler for node.
@@ -37,7 +36,7 @@ final class NodeCrawler
         if ($node instanceof HtmlNode) {
             $this->crawlHtmlNode($task, $node);
         } elseif ($node instanceof ImgNode) {
-            throw new RuntimeException('Handle img.');
+            $this->crawlImgNode($node);
         } else {
             throw new LogicException('Incorrect node.');
         }
@@ -48,9 +47,9 @@ final class NodeCrawler
      */
     private function crawlHtmlNode(CrawlingTask $task, HtmlNode $node): void
     {
-        $html = $this->resourceManager->readUri($node->getUri());
+        $content = $this->resourceManager->readUri($node->getUri());
 
-        $node->setContent($html);
+        $node->setContent($content);
 
         $document = $this->documentManager->createDocument($node);
 
@@ -77,9 +76,16 @@ final class NodeCrawler
         foreach ($this->documentManager->extractImgSrcs($node) as $path) {
             $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
 
-            $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
+            $node = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $normalizedPath);
 
             $this->processManager->pushTaskIfNotExists($task->getProcess(), $node);
         }
+    }
+
+    private function crawlImgNode(ImgNode $node): void
+    {
+        $content = $this->resourceManager->readUri($node->getUri());
+
+        $node->setContent($content);
     }
 }

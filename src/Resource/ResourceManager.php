@@ -25,7 +25,7 @@ final class ResourceManager
     ) {
     }
 
-    public function createWebHtmlResource(string $path, ?array $pathMasks): WebResource
+    public function createWebHtmlResource(string $path, ?array $pathMasks = null): WebResource
     {
         $node = $this->createWebHtmlNode($path);
 
