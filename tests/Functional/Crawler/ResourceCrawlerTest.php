@@ -82,8 +82,20 @@ class ResourceCrawlerTest extends TestCase
 
         $resourceCrawler->resetDiskResource($path);
 
-        $task = $resourceCrawler->crawlDiskResource($path, $pathMasks);
+        $expectedPaths = [
+            ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/index.html', 'processed'],
+            ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg', 'processed'],
+            ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg', 'processed'],
+            ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html', 'processed'],
+            ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html', 'processed'],
+            [null, null],
+        ];
 
-        return;
+        for ($i = 0; $i < count($expectedPaths); $i++) {
+            $task = $resourceCrawler->crawlDiskResource($path, $pathMasks);
+
+            $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
+            $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
+        }
     }
 }

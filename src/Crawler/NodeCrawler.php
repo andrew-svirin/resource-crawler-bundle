@@ -3,6 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
+use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
@@ -33,10 +34,12 @@ final class NodeCrawler
      * Crawl node.
      * Here is distinguishing task type.
      */
-    public function crawl(CrawlingTask $task, NodeInterface $node): void
+    public function crawl(CrawlingTask $task): void
     {
+        $node = $task->getNode();
+
         if ($node instanceof HtmlNode) {
-            $this->crawlHtmlNode($task, $node);
+            $this->crawlHtmlNode($task->getProcess(), $node);
         } elseif ($node instanceof ImgNode) {
             $this->crawlImgNode($node);
         } else {
@@ -47,7 +50,7 @@ final class NodeCrawler
     /**
      * Walk other html nodes graph.
      */
-    private function crawlHtmlNode(CrawlingTask $task, HtmlNode $node): void
+    private function crawlHtmlNode(CrawlingProcess $process, HtmlNode $node): void
     {
         $content = $this->resourceManager->readUri($node->getUri());
 
@@ -57,38 +60,44 @@ final class NodeCrawler
 
         $node->setDocument($document);
 
-        $this->processAnchors($task, $node);
+        foreach ($this->getAnchorPaths($node) as $anchorPath) {
+            $newNode = $this->resourceManager->createHtmlNode($process->getResource(), $anchorPath);
 
-        $this->processImgs($task, $node);
+            $this->processManager->pushTaskIfNotExists($process, $newNode);
+        }
+
+        foreach ($this->getImgPaths($node) as $imgPath) {
+            $newNode = $this->resourceManager->createImgNode($process->getResource(), $imgPath);
+
+            $this->processManager->pushTaskIfNotExists($process, $newNode);
+        }
     }
 
-    private function processAnchors(CrawlingTask $task, HtmlNode $node): void
+    /**
+     * @return string[]
+     */
+    private function getAnchorPaths(HtmlNode $node): iterable
     {
         foreach ($this->documentManager->extractAHrefs($node) as $path) {
             if (!$this->pathValidator->isValid($node->getUri(), $path)) {
                 continue;
             }
 
-            $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
-
-            $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
-
-            $this->processManager->pushTaskIfNotExists($task->getProcess(), $node);
+            yield $this->pathNormalizer->normalize($node->getUri(), $path);
         }
     }
 
-    private function processImgs(CrawlingTask $task, HtmlNode $node): void
+    /**
+     * @return string[]
+     */
+    private function getImgPaths(HtmlNode $node): iterable
     {
         foreach ($this->documentManager->extractImgSrcs($node) as $path) {
             if (!$this->pathValidator->isValid($node->getUri(), $path)) {
                 continue;
             }
 
-            $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
-
-            $node = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $normalizedPath);
-
-            $this->processManager->pushTaskIfNotExists($task->getProcess(), $node);
+            yield $this->pathNormalizer->normalize($node->getUri(), $path);
         }
     }
 

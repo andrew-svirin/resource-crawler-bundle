@@ -2,7 +2,6 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Unit\Resource\Path;
 
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
@@ -54,7 +53,10 @@ class PathValidatorTest extends TestCase
     public function isValidFsProvider(): array
     {
         return [
-            ['level-1/index.html', 'page-1.html', true],
+            ['/level-1/index.html', 'page-1.html', true],
+            ['/level-1/index.html', '/page-1.html', false],
+            ['/level-1/index.html', 'http://pages/page-1.html', false],
+            ['/level-1/index.html', 'page-科.html', false],
         ];
     }
 }

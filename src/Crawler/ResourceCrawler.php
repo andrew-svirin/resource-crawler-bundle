@@ -78,9 +78,7 @@ final class ResourceCrawler
 
     private function performTask(CrawlingTask $task): void
     {
-        $node = $task->getNode();
-
-        $this->nodeCrawler->crawl($task, $node);
+        $this->nodeCrawler->crawl($task);
     }
 
     public function resetWebResource(string $url): void
