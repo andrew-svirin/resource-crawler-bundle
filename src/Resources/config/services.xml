@@ -21,11 +21,10 @@
                       type="service"
                       id="resource_crawler.process_file_store"/>
         </service>
-        <service
-                id="resource_crawler.process_file_store"
-                class="AndrewSvirin\ResourceCrawlerBundle\Process\FileProcessStore"
-                autowire="true"
-                public="false"
+        <service id="resource_crawler.process_file_store"
+                 class="AndrewSvirin\ResourceCrawlerBundle\Process\FileProcessStore"
+                 autowire="true"
+                 public="false"
         />
         <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessStoreInterface"
                  alias="resource_crawler.process_file_store"/>
@@ -49,6 +48,7 @@
         <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer" autowire="true" public="false"/>
         <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator" autowire="true" public="false"/>
         <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher" autowire="true" public="false"/>
+        <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator" autowire="true" public="false"/>
 
         <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager" autowire="true" public="false"/>
         <service id="AndrewSvirin\ResourceCrawlerBundle\Document\Html\HtmlExtractor" autowire="true" public="false"/>

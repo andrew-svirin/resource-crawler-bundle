@@ -19,14 +19,14 @@ class ResourceCrawlerTest extends TestCase
         $this->setupHttpClient();
     }
 
-    public function testResetHttpResource(): void
+    public function testResetWebResource(): void
     {
         /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
         $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
         $url = 'http://site.com/index.html';
 
-        $resourceCrawler->resetHttpResource($url);
+        $resourceCrawler->resetWebResource($url);
 
         $this->assertTrue(true);
     }
@@ -39,7 +39,7 @@ class ResourceCrawlerTest extends TestCase
         $url       = 'http://site.com/index.html';
         $pathMasks = ['+site.com/', '-embed'];
 
-        $resourceCrawler->resetHttpResource($url);
+        $resourceCrawler->resetWebResource($url);
 
         $expectedPaths = [
             ['http://site.com/index.html', 'processed'],
@@ -60,8 +60,30 @@ class ResourceCrawlerTest extends TestCase
         }
     }
 
+    public function testResetDiskResource(): void
+    {
+        /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+        $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+        $path = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
+
+        $resourceCrawler->resetDiskResource($path);
+
+        $this->assertTrue(true);
+    }
+
     public function testCrawlDiskResource(): void
     {
-        // TODO:
+        /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+        $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+        $path      = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
+        $pathMasks = ['+site.com/', '-embed'];
+
+        $resourceCrawler->resetDiskResource($path);
+
+        $task = $resourceCrawler->crawlDiskResource($path, $pathMasks);
+
+        return;
     }
 }

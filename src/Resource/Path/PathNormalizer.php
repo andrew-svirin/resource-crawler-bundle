@@ -6,6 +6,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
+use RuntimeException;
 
 /**
  * Normalizer for path.
@@ -17,15 +18,17 @@ final class PathNormalizer
     public function normalize(UriInterface $parentUri, string $childPath): string
     {
         if ($parentUri instanceof HttpUri) {
-            return $this->normalizeHttp($parentUri, $childPath);
+            $path = $this->normalizePathHttp($parentUri, $childPath);
         } elseif ($parentUri instanceof FsUri) {
-            return $this->normalizeFs($parentUri, $childPath);
+            $path = $this->normalizePathFs($parentUri, $childPath);
         } else {
             throw new LogicException('Incorrect uri.');
         }
+
+        return $path;
     }
 
-    private function normalizeHttp(HttpUri $parentUri, string $childPath): string
+    private function normalizePathHttp(HttpUri $parentUri, string $childPath): string
     {
         $childParse = parse_url($childPath);
 
@@ -43,7 +46,7 @@ final class PathNormalizer
             $parentParse['path']   ??= '/';
 
             if (empty($parentParse['host'])) {
-                throw new LogicException('Parent Host can not be absent.');
+                throw new RuntimeException('Parent Host can not be absent.');
             }
 
             $normalizedScheme = $parentParse['scheme'];
@@ -52,15 +55,13 @@ final class PathNormalizer
             if (str_starts_with($childParse['path'], '/')) {
                 $normalizedPath = $childParse['path'];
             } else {
-                $explode = explode('/', $parentParse['path']);
+                $parentPathDir = rtrim(dirname($parentParse['path']));
 
-                array_pop($explode);
-
-                $normalizedPath = '/' . implode('/', $explode) . '/' . $childParse['path'];
+                $normalizedPath = $parentPathDir . '/' . $childParse['path'];
             }
         }
 
-        $normalizedPath = $this->normalizePathRel($normalizedPath);
+        $normalizedPath = $this->normalizePathAbs($normalizedPath);
         $normalizedPath = $this->normalizePathPage($normalizedPath);
         $normalizedPath = $this->normalizePathExt($normalizedPath);
 
@@ -70,6 +71,11 @@ final class PathNormalizer
             $normalizedHost,
             $normalizedPath
         );
+    }
+
+    private function normalizePathAbs(string $path): string
+    {
+        return '/' . $this->normalizePathRel($path);
     }
 
     private function normalizePathRel(string $path): string
@@ -89,7 +95,7 @@ final class PathNormalizer
             }
         }
 
-        return '/' . implode('/', $pathSegments);
+        return implode('/', $pathSegments);
     }
 
     private function normalizePathPage(string $path): string
@@ -114,8 +120,10 @@ final class PathNormalizer
         return $path;
     }
 
-    private function normalizeFs(FsUri $parentUri, string $path): string
+    private function normalizePathFs(FsUri $parentUri, string $path): string
     {
-        return '';
+        $normalizedPath = rtrim(dirname($parentUri->getPath())) . '/' . $path;
+
+        return $this->normalizePathAbs($normalizedPath);
     }
 }

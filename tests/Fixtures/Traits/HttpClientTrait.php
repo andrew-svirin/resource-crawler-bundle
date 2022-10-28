@@ -22,11 +22,11 @@ trait HttpClientTrait
 
         $responseFactory = function ($method, $url, $options) {
             $responses = [
-                'http://site.com/index.html'        => $this->getMock('/http/index.html'),
-                'http://site.com/pages/page-1.html' => $this->getMock('/http/pages/page-1.html'),
-                'http://site.com/pages/page-2.html' => $this->getMock('/http/pages/page-2.html'),
-                'http://site.com/images/img-1.jpg'  => $this->getMock('/http/images/img-1.jpg'),
-                'http://site.com/images/img-2.jpg'  => $this->getMock('/http/images/img-2.jpg'),
+                'http://site.com/index.html'        => $this->getMock('/http/site.com/index.html'),
+                'http://site.com/pages/page-1.html' => $this->getMock('/http/site.com/pages/page-1.html'),
+                'http://site.com/pages/page-2.html' => $this->getMock('/http/site.com/pages/page-2.html'),
+                'http://site.com/images/img-1.jpg'  => $this->getMock('/http/site.com/images/img-1.jpg'),
+                'http://site.com/images/img-2.jpg'  => $this->getMock('/http/site.com/images/img-2.jpg'),
             ];
 
             if (empty($responses[$url])) {

@@ -12,12 +12,12 @@ use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 class PathNormalizerTest extends TestCase
 {
     /**
-     * @dataProvider normalizeProvider
+     * @dataProvider normalizeHttpProvider
      */
     public function testNormalizeHttp(string $parentPath, string $path, string $normalizedPath): void
     {
-        $normalizer = new PathNormalizer();
         $uriFactory = new UriFactory();
+        $normalizer = new PathNormalizer();
 
         $parentUri = $uriFactory->createHttp($parentPath);
 
@@ -27,7 +27,7 @@ class PathNormalizerTest extends TestCase
     /**
      * @return non-empty-array<array>
      */
-    public function normalizeProvider(): array
+    public function normalizeHttpProvider(): array
     {
         return [
             ['http://site-2.com/', '//site-1.com', '//site-1.com/index.html'],
@@ -66,6 +66,53 @@ class PathNormalizerTest extends TestCase
                 'http://site-1.com/level-1/level-2/level-3/index.html',
                 './page-1.html',
                 'http://site-1.com/level-1/level-2/level-3/page-1.html',
+            ],
+        ];
+    }
+
+    /**
+     * @dataProvider normalizeFsProvider
+     */
+    public function testNormalizeFs(string $parentPath, string $path, string $normalizedPath): void
+    {
+        $uriFactory = new UriFactory();
+        $normalizer = new PathNormalizer();
+
+        $parentUri = $uriFactory->createFs($parentPath);
+
+        $this->assertEquals($normalizedPath, $normalizer->normalize($parentUri, $path));
+    }
+
+    /**
+     * @return non-empty-array<array>
+     */
+    public function normalizeFsProvider(): array
+    {
+        return [
+            [
+                '/level-1/level-2/level-3/index.html',
+                'page-1.html',
+                '/level-1/level-2/level-3/page-1.html',
+            ],
+            [
+                '/level-1/level-2/level-3/index.html',
+                './page-1.html',
+                '/level-1/level-2/level-3/page-1.html',
+            ],
+            [
+                '/level-1/level-2/level-3/index.html',
+                '../page-1.html',
+                '/level-1/level-2/page-1.html',
+            ],
+            [
+                '/level-1/level-2/level-3/index.html',
+                '../../page-1.html',
+                '/level-1/page-1.html',
+            ],
+            [
+                '/level-1/level-2/level-3/index.html',
+                '.././../page-1.html',
+                '/level-1/page-1.html',
             ],
         ];
     }

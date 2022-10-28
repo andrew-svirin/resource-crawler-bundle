@@ -9,6 +9,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use LogicException;
 
@@ -23,7 +24,8 @@ final class NodeCrawler
         private readonly ResourceManager $resourceManager,
         private readonly ProcessManager $processManager,
         private readonly DocumentManager $documentManager,
-        private readonly PathNormalizer $pathNormalizer
+        private readonly PathNormalizer $pathNormalizer,
+        private readonly PathValidator $pathValidator
     ) {
     }
 
@@ -63,6 +65,10 @@ final class NodeCrawler
     private function processAnchors(CrawlingTask $task, HtmlNode $node): void
     {
         foreach ($this->documentManager->extractAHrefs($node) as $path) {
+            if (!$this->pathValidator->isValid($node->getUri(), $path)) {
+                continue;
+            }
+
             $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
 
             $node = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
@@ -74,6 +80,10 @@ final class NodeCrawler
     private function processImgs(CrawlingTask $task, HtmlNode $node): void
     {
         foreach ($this->documentManager->extractImgSrcs($node) as $path) {
+            if (!$this->pathValidator->isValid($node->getUri(), $path)) {
+                continue;
+            }
+
             $normalizedPath = $this->pathNormalizer->normalize($node->getUri(), $path);
 
             $node = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $normalizedPath);

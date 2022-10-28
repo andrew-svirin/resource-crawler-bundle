@@ -26,6 +26,11 @@ final class ResourceManager
     ) {
     }
 
+    public function readUri(UriInterface $uri): string
+    {
+        return $this->reader->read($uri);
+    }
+
     /**
      * @param string[]|null $pathMasks
      */
@@ -36,9 +41,14 @@ final class ResourceManager
         return $this->resourceFactory->createWeb($node, $pathMasks);
     }
 
-    public function readUri(UriInterface $uri): string
+    /**
+     * @param string[]|null $pathMasks
+     */
+    public function createDiskFsResource(string $path, ?array $pathMasks = null): DiskResource
     {
-        return $this->reader->read($uri);
+        $node = $this->createDiskHtmlNode($path);
+
+        return $this->resourceFactory->createDisk($node, $pathMasks);
     }
 
     private function createWebHtmlNode(string $path): NodeInterface

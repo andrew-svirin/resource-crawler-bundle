@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
@@ -23,6 +24,8 @@ final class ResourceReader
     {
         if ($uri instanceof HttpUri) {
             return $this->readByHttp($uri);
+        } elseif ($uri instanceof FsUri) {
+            return $this->readByFs($uri);
         } else {
             throw new LogicException('URI reader missing');
         }
@@ -37,5 +40,10 @@ final class ResourceReader
         }
 
         return $response->getContent();
+    }
+
+    private function readByFs(FsUri $uri): string
+    {
+        return file_get_contents($uri->getPath());
     }
 }

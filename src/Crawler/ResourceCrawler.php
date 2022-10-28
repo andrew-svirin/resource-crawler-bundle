@@ -2,8 +2,10 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Resource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 
 /**
@@ -19,20 +21,32 @@ final class ResourceCrawler
     }
 
     /**
-     * Crawling gathering all urls on the node and collecting them for next crawling iteration.
-     * In next iteration will be taken next unique node from the collected stack.
-     * As a result task return performed task with link on node that was crawled in iteration.
-     *
-     * @param string $url Enter URL.
-     * @param string[]|null $pathMasks Mask for path.
-     *                              `+<rule>` - to allow, `-<rule>` - to disallow.
-     *                              `+site.com/page` - allowing mask
-     *                              `-embed` - disallowing mask
+     * @param string[]|null $pathMasks
      */
     public function crawlWebResource(string $url, ?array $pathMasks = null): ?CrawlingTask
     {
         $resource = $this->resourceManager->createWebHtmlResource($url, $pathMasks);
 
+        return $this->crawlResource($resource);
+    }
+
+    /**
+     * @param string[]|null $pathMasks
+     */
+    public function crawlDiskResource(string $path, ?array $pathMasks = null): ?CrawlingTask
+    {
+        $resource = $this->resourceManager->createDiskFsResource($path, $pathMasks);
+
+        return $this->crawlResource($resource);
+    }
+
+    /**
+     * Crawling gathering all urls on the node and collecting them for next crawling iteration.
+     * In next iteration will be taken next unique node from the collected stack.
+     * As a result task return performed task with link on node that was crawled in iteration.
+     */
+    private function crawlResource(Resource $resource): ?CrawlingTask
+    {
         $process = $this->processManager->loadProcess($resource);
 
         $task = $this->processManager->popTask($process);
@@ -41,6 +55,13 @@ final class ResourceCrawler
             return null;
         }
 
+        $this->tryPerformTask($resource, $process, $task);
+
+        return $task;
+    }
+
+    private function tryPerformTask(Resource $resource, CrawlingProcess $process, CrawlingTask $task): void
+    {
         $isTaskPerformable = $this->resourceManager->isMatchingPathRegex(
             $resource->pathRegex(),
             $task->getNode()->getUri()->getPath()
@@ -53,8 +74,6 @@ final class ResourceCrawler
         } else {
             $this->processManager->ignoreTask($process, $task);
         }
-
-        return $task;
     }
 
     private function performTask(CrawlingTask $task): void
@@ -64,14 +83,25 @@ final class ResourceCrawler
         $this->nodeCrawler->crawl($task, $node);
     }
 
-    /**
-     * Reset crawling relating data.
-     * @param string $url Enter URL.
-     */
-    public function resetHttpResource(string $url): void
+    public function resetWebResource(string $url): void
     {
         $resource = $this->resourceManager->createWebHtmlResource($url);
 
+        $this->resetResource($resource);
+    }
+
+    public function resetDiskResource(string $path): void
+    {
+        $resource = $this->resourceManager->createDiskFsResource($path);
+
+        $this->resetResource($resource);
+    }
+
+    /**
+     * Reset crawling relating data.
+     */
+    private function resetResource(Resource $resource): void
+    {
         $this->processManager->killProcess($resource);
     }
 }

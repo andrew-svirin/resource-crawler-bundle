@@ -2,7 +2,6 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path;
 
-use LogicException;
 use RuntimeException;
 
 /**
@@ -13,7 +12,10 @@ use RuntimeException;
 final class PathRegexCreator
 {
     /**
-     * @param string[] $pathMasks
+     * @param string[] $pathMasks Mask for path.
+     *                            `+<rule>` - to allow, `-<rule>` - to disallow.
+     *                            `+site.com/page` - allowing mask
+     *                            `-embed` - disallowing mask
      */
     public function create(array $pathMasks): PathRegex
     {
@@ -28,7 +30,7 @@ final class PathRegexCreator
             } elseif ('-' === $pathMaskOperation) {
                 $pathRegex->addDisallowed($pathMaskExpression);
             } else {
-                throw new LogicException('First symbol incorrect.');
+                throw new RuntimeException('Path mask first symbol invalid. Allowed: "+", "-"');
             }
         }
 
@@ -46,7 +48,7 @@ final class PathRegexCreator
         $operation = substr($pathMask, 0, 1);
 
         if (!in_array($operation, ['+', '-'])) {
-            throw new RuntimeException('First symbol incorrect. Allowed: "+", "-"');
+            throw new RuntimeException('Path mask first symbol invalid. Allowed: "+", "-"');
         }
 
         return $operation;
