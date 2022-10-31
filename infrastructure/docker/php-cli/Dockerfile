@@ -2,7 +2,6 @@ FROM php:8.1.7-cli
 
 RUN apt-get update
 RUN apt-get install -y \
-    libmcrypt-dev \
     libxml2-dev \
     zlib1g-dev \
     libzip-dev \
