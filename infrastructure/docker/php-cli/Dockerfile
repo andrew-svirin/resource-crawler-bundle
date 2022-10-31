@@ -1,14 +1,14 @@
 FROM php:8.1.7-cli
 
-RUN apt-get update && apt-get install -y \
+RUN apt-get update
+RUN apt-get install -y \
     libmcrypt-dev \
-    libpq-dev \
     libxml2-dev \
     zlib1g-dev \
-    git \
+    libzip-dev \
     unzip \
-    libssh-dev \
-    libzip-dev
+    git \
+    libssh-dev
 
 RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
