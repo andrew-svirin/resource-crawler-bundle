@@ -22,6 +22,7 @@ trait HttpClientTrait
 
     $responseFactory = function ($method, $url, $options) {
       $responses = [
+        'http://site.com/'                  => $this->getMock('/http/site.com/index.html'),
         'http://site.com/index.html'        => $this->getMock('/http/site.com/index.html'),
         'http://site.com/pages/page-1.html' => $this->getMock('/http/site.com/pages/page-1.html'),
         'http://site.com/pages/page-2.html' => $this->getMock('/http/site.com/pages/page-2.html'),

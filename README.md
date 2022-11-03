@@ -28,7 +28,8 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 ## Development
 
 1. `make build` to prepare infrastructure
-2. `make install` to install dependencies
+2. `make stasrt` to start infrastructure
+3. `make install` to install dependencies
 
 TODO:
 
@@ -37,3 +38,4 @@ TODO:
 - Customize user agent rule (generator).
 - Handle 400+ error codes.
 - Fix inline images.
+- Handle href for `mailto:`, `tel:`, `#section`, `javascript:`, `file:`

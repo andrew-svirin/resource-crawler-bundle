@@ -49,6 +49,7 @@ class ResourceCrawlerTest extends TestCase
       ['http://site.com/pages/page-1.html', 'processed'],
       ['http://site.com/embed/frame.html', 'ignored'],
       ['http://site-2.com/pages/page-3.html', 'ignored'],
+      ['http://site.com/', 'processed'],
       [null, null],
     ];
 

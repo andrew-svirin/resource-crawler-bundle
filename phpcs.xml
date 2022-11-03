@@ -2,6 +2,23 @@
 <ruleset name="PSR2">
   <description>The PSR2 coding standard.</description>
   <rule ref="PSR2"/>
+
+  <rule ref="Generic.WhiteSpace.ScopeIndent">
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+  <rule ref="Squiz.Functions.MultiLineFunctionDeclaration">
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+  <rule ref="PSR2.Methods.FunctionCallSignature">
+    <properties>
+      <property name="indent" value="2"/>
+    </properties>
+  </rule>
+
   <file>src</file>
 
   <!-- Exclude files that do not contain PHP, Javascript or CSS code. -->

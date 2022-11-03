@@ -52,18 +52,16 @@ final class PathNormalizer
       $normalizedScheme = $parentParse['scheme'];
       $normalizedHost   = $parentParse['host'];
 
-      if (str_starts_with($childParse['path'], '/')) {
+      if ($this->isRootPath($childParse['path'])) {
         $normalizedPath = $childParse['path'];
       } else {
         $parentPathDir = rtrim(dirname($parentParse['path']));
 
-        $normalizedPath = $parentPathDir . '/' . $childParse['path'];
+        $normalizedPath = $parentPathDir . '/./' . $childParse['path'];
       }
     }
 
     $normalizedPath = $this->normalizePathAbs($normalizedPath);
-    $normalizedPath = $this->normalizePathPage($normalizedPath);
-    $normalizedPath = $this->normalizePathExt($normalizedPath);
 
     return sprintf(
       '%s//%s%s',
@@ -71,6 +69,11 @@ final class PathNormalizer
       $normalizedHost,
       $normalizedPath
     );
+  }
+
+  private function isRootPath(string $path): bool
+  {
+    return str_starts_with($path, '/');
   }
 
   private function normalizePathAbs(string $path): string
@@ -96,28 +99,6 @@ final class PathNormalizer
     }
 
     return implode('/', $pathSegments);
-  }
-
-  private function normalizePathPage(string $path): string
-  {
-    $defaultPage = 'index';
-
-    if ('/' === $path) {
-      $path .= $defaultPage;
-    }
-
-    return $path;
-  }
-
-  private function normalizePathExt(string $path): string
-  {
-    $defaultExt = 'html';
-
-    if (empty(pathinfo($path, PATHINFO_EXTENSION))) {
-      $path .= '.' . $defaultExt;
-    }
-
-    return $path;
   }
 
   private function normalizePathFs(FsUri $parentUri, string $path): string

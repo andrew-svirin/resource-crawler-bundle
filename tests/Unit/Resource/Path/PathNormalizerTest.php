@@ -30,12 +30,12 @@ class PathNormalizerTest extends TestCase
   public function normalizeHttpProvider(): array
   {
     return [
-      ['http://site-2.com/', '//site-1.com', '//site-1.com/index.html'],
+      ['http://site-2.com/', '//site-1.com', '//site-1.com/'],
       ['http://site-2.com/', 'http://site-1.com/index.html', 'http://site-1.com/index.html'],
-      ['http://site-1.com/', 'http://site-1.com/', 'http://site-1.com/index.html'],
-      ['http://site-1.com/index.html', '/page-1', 'http://site-1.com/page-1.html'],
+      ['http://site-1.com/', 'http://site-1.com/', 'http://site-1.com/'],
+      ['http://site-1.com/index.html', '/page-1', 'http://site-1.com/page-1'],
       ['http://site-1.com/pages/index.html', '/page-1.html', 'http://site-1.com/page-1.html'],
-      ['http://site-1.com/pages/index.html', '/', 'http://site-1.com/index.html'],
+      ['http://site-1.com/pages/index.html', '/', 'http://site-1.com/'],
       ['http://site-1.com/index.html', 'page-1.html', 'http://site-1.com/page-1.html'],
       [
         'http://site-1.com/level-1/level-2/level-3/index.html',
@@ -66,6 +66,16 @@ class PathNormalizerTest extends TestCase
         'http://site-1.com/level-1/level-2/level-3/index.html',
         './page-1.html',
         'http://site-1.com/level-1/level-2/level-3/page-1.html',
+      ],
+      [
+        'http://site-1.com/level-1/level-2/level-3',
+        'level-4',
+        'http://site-1.com/level-1/level-2/level-4',
+      ],
+      [
+        'http://site-1.com/level-1/level-2/level-3/',
+        'level-4',
+        'http://site-1.com/level-1/level-2/level-4',
       ],
     ];
   }

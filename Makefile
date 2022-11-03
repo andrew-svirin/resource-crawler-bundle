@@ -12,6 +12,7 @@ PHPMD := ./vendor/bin/phpmd
 PHPCS := ./vendor/bin/phpcs
 PHPSTAN := ./vendor/bin/phpstan
 PHPUNIT := ./vendor/bin/phpunit
+PHPXDEBUG := /usr/local/bin/php-xdebug
 
 build:
 	cd $(DOCKER_DIR) && $(DC_BUILD)
@@ -42,7 +43,10 @@ phpcs:
 	cd $(DOCKER_DIR) && $(PHP_CLI_CONTAINER_EXEC) $(PHPCS)
 
 phpstan:
-	cd $(DOCKER_DIR) && $(PHP_CLI_CONTAINER_EXEC) $(PHPSTAN)
+	cd $(DOCKER_DIR) && $(PHP_CLI_CONTAINER_EXEC) $(PHPSTAN) --xdebug
 
 phpunit:
 	cd $(DOCKER_DIR) && $(PHP_CLI_CONTAINER_EXEC) $(PHPUNIT)
+
+xdebug:
+	cd $(DOCKER_DIR) && $(PHP_CLI_CONTAINER_EXEC) $(PHPXDEBUG) $(PHPUNIT) --filter=$(filter)
