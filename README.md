@@ -33,7 +33,7 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 TODO:
 
 - Add DbProcessStore
-- Customize path selector.
-- Customize agent.
-- Generate yaml file to packages.
+- Customize path selector rule (randomizer).
+- Customize user agent rule (generator).
 - Handle 400+ error codes.
+- Fix inline images.
