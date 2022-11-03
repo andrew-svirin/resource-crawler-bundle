@@ -2,6 +2,8 @@
   "name": "andrew-svirin/resource-crawler-bundle",
   "description": "Crawler for any sort of resources.",
   "keywords": [
+    "symfony",
+    "symfony bundle",
     "crawler",
     "PHP",
     "spider",
