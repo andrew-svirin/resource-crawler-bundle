@@ -11,6 +11,8 @@
              public="true">
       <argument key="$processManager" type="service" id="resource_crawler.process_manager"/>
     </service>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler"
+             alias="resource_crawler.crawler"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Crawler\NodeCrawler" autowire="true" public="false"/>
 
     <service id="resource_crawler.process_manager"
