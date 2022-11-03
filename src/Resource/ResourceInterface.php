@@ -11,13 +11,13 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
  */
 interface ResourceInterface
 {
-    /**
-     * Get root node.
-     */
-    public function getRoot(): NodeInterface;
+  /**
+   * Get root node.
+   */
+  public function getRoot(): NodeInterface;
 
-    /**
-     * Path regex for crawling.
-     */
-    public function pathRegex(): ?PathRegex;
+  /**
+   * Path regex for crawling.
+   */
+  public function pathRegex(): ?PathRegex;
 }

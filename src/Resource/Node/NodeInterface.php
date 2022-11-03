@@ -11,9 +11,9 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
  */
 interface NodeInterface
 {
-    public function getUri(): UriInterface;
+  public function getUri(): UriInterface;
 
-    public function getContent(): string;
+  public function getContent(): string;
 
-    public function setContent(string $content): void;
+  public function setContent(string $content): void;
 }

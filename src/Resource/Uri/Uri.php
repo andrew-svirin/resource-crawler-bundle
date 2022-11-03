@@ -9,12 +9,12 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Uri;
  */
 abstract class Uri implements UriInterface
 {
-    public function __construct(private readonly string $path)
-    {
-    }
+  public function __construct(private readonly string $path)
+  {
+  }
 
-    public function getPath(): string
-    {
-        return $this->path;
-    }
+  public function getPath(): string
+  {
+    return $this->path;
+  }
 }

@@ -14,42 +14,42 @@ use LogicException;
  */
 final class PathValidator
 {
-    public function isValid(UriInterface $parentUri, string $childPath): bool
-    {
-        if ($parentUri instanceof HttpUri) {
-            $isValid = $this->isValidPathHttp($childPath);
-        } elseif ($parentUri instanceof FsUri) {
-            $isValid = $this->isValidPathFs($childPath);
-        } else {
-            throw new LogicException('Incorrect uri.');
-        }
-
-        return $isValid;
+  public function isValid(UriInterface $parentUri, string $childPath): bool
+  {
+    if ($parentUri instanceof HttpUri) {
+      $isValid = $this->isValidPathHttp($childPath);
+    } elseif ($parentUri instanceof FsUri) {
+      $isValid = $this->isValidPathFs($childPath);
+    } else {
+      throw new LogicException('Incorrect uri.');
     }
 
-    private function isValidPathHttp(string $path): bool
-    {
-        if (0 === preg_match('/^[A-Za-z0-9\-._~!$&\'\(\)*\+\,\;=:@\/?]*$/', $path)) {
-            return false;
-        }
+    return $isValid;
+  }
 
-        return true;
+  private function isValidPathHttp(string $path): bool
+  {
+    if (0 === preg_match('/^[A-Za-z0-9\-._~!$&\'\(\)*\+\,\;=:@\/?]*$/', $path)) {
+      return false;
     }
 
-    private function isValidPathFs(string $path): bool
-    {
-        if (0 === preg_match('/^[A-Za-z0-9\-._~!$&\'\(\)*\+\,\;=:@\/?]*$/', $path)) {
-            return false;
-        }
+    return true;
+  }
 
-        if (str_starts_with($path, '/')) {
-            return false;
-        }
-
-        if (str_contains($path, '//')) {
-            return false;
-        }
-
-        return true;
+  private function isValidPathFs(string $path): bool
+  {
+    if (0 === preg_match('/^[A-Za-z0-9\-._~!$&\'\(\)*\+\,\;=:@\/?]*$/', $path)) {
+      return false;
     }
+
+    if (str_starts_with($path, '/')) {
+      return false;
+    }
+
+    if (str_contains($path, '//')) {
+      return false;
+    }
+
+    return true;
+  }
 }

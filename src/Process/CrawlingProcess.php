@@ -11,17 +11,17 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
  */
 final class CrawlingProcess
 {
-    public function __construct(private readonly string $id, private readonly ResourceInterface $resource)
-    {
-    }
+  public function __construct(private readonly string $id, private readonly ResourceInterface $resource)
+  {
+  }
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
+  public function getId(): string
+  {
+    return $this->id;
+  }
 
-    public function getResource(): ResourceInterface
-    {
-        return $this->resource;
-    }
+  public function getResource(): ResourceInterface
+  {
+    return $this->resource;
+  }
 }

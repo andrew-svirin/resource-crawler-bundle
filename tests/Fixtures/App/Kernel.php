@@ -10,35 +10,35 @@ use Symfony\Component\Config\Loader\LoaderInterface;
 
 class Kernel extends BaseKernel
 {
-    public function __construct(string $environment, bool $debug)
-    {
-        parent::__construct($environment, $debug);
+  public function __construct(string $environment, bool $debug)
+  {
+    parent::__construct($environment, $debug);
 
-        (new Filesystem())->remove($this->getCacheDir());
-    }
+    (new Filesystem())->remove($this->getCacheDir());
+  }
 
-    public function registerBundles(): iterable
-    {
-        return [
-            new FrameworkBundle(),
-            new ResourceCrawlerBundle(),
-        ];
-    }
+  public function registerBundles(): iterable
+  {
+    return [
+      new FrameworkBundle(),
+      new ResourceCrawlerBundle(),
+    ];
+  }
 
-    public function getCacheDir(): string
-    {
-        return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
-    }
+  public function getCacheDir(): string
+  {
+    return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
+  }
 
-    public function getLogDir(): string
-    {
-        return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
-    }
+  public function getLogDir(): string
+  {
+    return $this->getProjectDir() . '/tests/Fixtures/App/storage/symfony-cache';
+  }
 
-    public function registerContainerConfiguration(LoaderInterface $loader): void
-    {
-        $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/framework.yml');
-        $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/services.yml');
-        $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/resource_crawler.yml');
-    }
+  public function registerContainerConfiguration(LoaderInterface $loader): void
+  {
+    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/framework.yml');
+    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/services.yml');
+    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/resource_crawler.yml');
+  }
 }

@@ -11,19 +11,19 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
  */
 final class NodeFactory
 {
-    /**
-     * Create HTML node.
-     */
-    public function createHtml(UriInterface $uri): HtmlNode
-    {
-        return new HtmlNode($uri);
-    }
+  /**
+   * Create HTML node.
+   */
+  public function createHtml(UriInterface $uri): HtmlNode
+  {
+    return new HtmlNode($uri);
+  }
 
-    /**
-     * Create Image node.
-     */
-    public function createImg(UriInterface $uri): ImgNode
-    {
-        return new ImgNode($uri);
-    }
+  /**
+   * Create Image node.
+   */
+  public function createImg(UriInterface $uri): ImgNode
+  {
+    return new ImgNode($uri);
+  }
 }

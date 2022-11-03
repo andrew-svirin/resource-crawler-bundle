@@ -12,33 +12,33 @@ use DOMElement;
  */
 final class HtmlExtractor
 {
-    /**
-     * @return string[]
-     */
-    public function extractAHrefs(DOMDocument $dom): iterable
-    {
-        $nodeList = $dom->getElementsByTagName('a');
+  /**
+   * @return string[]
+   */
+  public function extractAHrefs(DOMDocument $dom): iterable
+  {
+    $nodeList = $dom->getElementsByTagName('a');
 
-        /** @var \DOMNode|null $node */
-        foreach ($nodeList as $node) {
-            if ($node instanceof DOMElement) {
-                yield $node->getAttribute('href');
-            }
-        }
+    /** @var \DOMNode|null $node */
+    foreach ($nodeList as $node) {
+      if ($node instanceof DOMElement) {
+        yield $node->getAttribute('href');
+      }
     }
+  }
 
-    /**
-     * @return string[]
-     */
-    public function extractImgSrcs(DOMDocument $dom): iterable
-    {
-        $nodeList = $dom->getElementsByTagName('img');
+  /**
+   * @return string[]
+   */
+  public function extractImgSrcs(DOMDocument $dom): iterable
+  {
+    $nodeList = $dom->getElementsByTagName('img');
 
-        /** @var \DOMNode $node */
-        foreach ($nodeList as $node) {
-            if ($node instanceof DOMElement) {
-                yield $node->getAttribute('src');
-            }
-        }
+    /** @var \DOMNode $node */
+    foreach ($nodeList as $node) {
+      if ($node instanceof DOMElement) {
+        yield $node->getAttribute('src');
+      }
     }
+  }
 }

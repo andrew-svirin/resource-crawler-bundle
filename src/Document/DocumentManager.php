@@ -14,30 +14,30 @@ use DOMDocument;
  */
 final class DocumentManager
 {
-    public function __construct(
-        private readonly HtmlExtractor $htmlExtractor,
-        private readonly DocumentFactory $documentFactory
-    ) {
-    }
+  public function __construct(
+    private readonly HtmlExtractor $htmlExtractor,
+    private readonly DocumentFactory $documentFactory
+  ) {
+  }
 
-    public function createDocument(Node $node): DOMDocument
-    {
-        return $this->documentFactory->create($node->getContent());
-    }
+  public function createDocument(Node $node): DOMDocument
+  {
+    return $this->documentFactory->create($node->getContent());
+  }
 
-    /**
-     * @return string[]
-     */
-    public function extractAHrefs(HtmlNode $node): iterable
-    {
-        return $this->htmlExtractor->extractAHrefs($node->getDocument());
-    }
+  /**
+   * @return string[]
+   */
+  public function extractAHrefs(HtmlNode $node): iterable
+  {
+    return $this->htmlExtractor->extractAHrefs($node->getDocument());
+  }
 
-    /**
-     * @return string[]
-     */
-    public function extractImgSrcs(HtmlNode $node): iterable
-    {
-        return $this->htmlExtractor->extractImgSrcs($node->getDocument());
-    }
+  /**
+   * @return string[]
+   */
+  public function extractImgSrcs(HtmlNode $node): iterable
+  {
+    return $this->htmlExtractor->extractImgSrcs($node->getDocument());
+  }
 }

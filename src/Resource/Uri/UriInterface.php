@@ -7,5 +7,5 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Uri;
  */
 interface UriInterface
 {
-    public function getPath(): string;
+  public function getPath(): string;
 }

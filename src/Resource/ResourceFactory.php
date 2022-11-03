@@ -13,42 +13,42 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator;
  */
 final class ResourceFactory
 {
-    public function __construct(
-        private readonly PathRegexCreator $pathRegexCreator
-    ) {
+  public function __construct(
+    private readonly PathRegexCreator $pathRegexCreator
+  ) {
+  }
+
+  /**
+   * Create Web resource.
+   * @param string[]|null $pathMasks
+   */
+  public function createWeb(NodeInterface $node, ?array $pathMasks = null): WebResource
+  {
+    $pathRegex = $this->resolvePathRegex($pathMasks);
+
+    return new WebResource($node, $pathRegex);
+  }
+
+  /**
+   * Create Disk resource.
+   * @param string[]|null $pathMasks
+   */
+  public function createDisk(NodeInterface $node, ?array $pathMasks = null): DiskResource
+  {
+    $pathRegex = $this->resolvePathRegex($pathMasks);
+
+    return new DiskResource($node, $pathRegex);
+  }
+
+  /**
+   * @param string[]|null $pathMasks
+   */
+  private function resolvePathRegex(?array $pathMasks = null): ?PathRegex
+  {
+    if (null === $pathMasks) {
+      return null;
     }
 
-    /**
-     * Create Web resource.
-     * @param string[]|null $pathMasks
-     */
-    public function createWeb(NodeInterface $node, ?array $pathMasks = null): WebResource
-    {
-        $pathRegex = $this->resolvePathRegex($pathMasks);
-
-        return new WebResource($node, $pathRegex);
-    }
-
-    /**
-     * Create Disk resource.
-     * @param string[]|null $pathMasks
-     */
-    public function createDisk(NodeInterface $node, ?array $pathMasks = null): DiskResource
-    {
-        $pathRegex = $this->resolvePathRegex($pathMasks);
-
-        return new DiskResource($node, $pathRegex);
-    }
-
-    /**
-     * @param string[]|null $pathMasks
-     */
-    private function resolvePathRegex(?array $pathMasks = null): ?PathRegex
-    {
-        if (null === $pathMasks) {
-            return null;
-        }
-
-        return $this->pathRegexCreator->create($pathMasks);
-    }
+    return $this->pathRegexCreator->create($pathMasks);
+  }
 }

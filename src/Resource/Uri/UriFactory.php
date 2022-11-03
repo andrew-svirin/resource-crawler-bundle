@@ -9,19 +9,19 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Uri;
  */
 final class UriFactory
 {
-    /**
-     * Create HTTP URI.
-     */
-    public function createHttp(string $path): HttpUri
-    {
-        return new HttpUri($path);
-    }
+  /**
+   * Create HTTP URI.
+   */
+  public function createHttp(string $path): HttpUri
+  {
+    return new HttpUri($path);
+  }
 
-    /**
-     * Create FS URI.
-     */
-    public function createFs(string $path): FsUri
-    {
-        return new FsUri($path);
-    }
+  /**
+   * Create FS URI.
+   */
+  public function createFs(string $path): FsUri
+  {
+    return new FsUri($path);
+  }
 }

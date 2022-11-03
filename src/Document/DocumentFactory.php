@@ -11,16 +11,16 @@ use DOMDocument;
  */
 final class DocumentFactory
 {
-    public function create(string $html): DOMDocument
-    {
-        $dom = new DOMDocument;
+  public function create(string $html): DOMDocument
+  {
+    $dom = new DOMDocument;
 
-        $dom->substituteEntities = false;
+    $dom->substituteEntities = false;
 
-        $sourceUtf8 = mb_convert_encoding($html, 'html-entities', 'utf-8');
+    $sourceUtf8 = mb_convert_encoding($html, 'html-entities', 'utf-8');
 
-        @$dom->loadHTML($sourceUtf8, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    @$dom->loadHTML($sourceUtf8, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
-        return $dom;
-    }
+    return $dom;
+  }
 }

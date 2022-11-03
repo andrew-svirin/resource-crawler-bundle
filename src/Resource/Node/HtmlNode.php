@@ -11,15 +11,15 @@ use DOMDocument;
  */
 final class HtmlNode extends Node
 {
-    private DOMDocument $document;
+  private DOMDocument $document;
 
-    public function setDocument(DOMDocument $document): void
-    {
-        $this->document = $document;
-    }
+  public function setDocument(DOMDocument $document): void
+  {
+    $this->document = $document;
+  }
 
-    public function getDocument(): DOMDocument
-    {
-        return $this->document;
-    }
+  public function getDocument(): DOMDocument
+  {
+    return $this->document;
+  }
 }
