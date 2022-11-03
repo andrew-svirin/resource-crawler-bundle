@@ -2,7 +2,7 @@
 
 Symfony bundle for crawling disk/web resource.  
 Spider bot can navigate other disk or web resources.  
-Internet bot can be customized by path mask and other options.
+Internet bot can be customized by path mask and other options.  
 Crawler scan HTML-document extract hyperlinks and push them to the index pool of next iteration.
 
 ## Usage
