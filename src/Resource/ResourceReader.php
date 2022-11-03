@@ -36,7 +36,7 @@ final class ResourceReader
     $response = $this->httpClient->request('GET', $uri->getPath());
 
     if ($response->getStatusCode() >= 400) {
-      throw new RuntimeException('Response is not correct');
+      throw new RuntimeException(sprintf('Response is not correct. Status code is: %d', $response->getStatusCode()));
     }
 
     return $response->getContent();
