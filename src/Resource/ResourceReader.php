@@ -8,7 +8,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
-use RuntimeException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 

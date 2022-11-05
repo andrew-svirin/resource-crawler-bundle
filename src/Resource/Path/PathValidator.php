@@ -29,7 +29,11 @@ final class PathValidator
 
   private function isValidPathHttp(string $path): bool
   {
-    if (0 === preg_match('/^[A-Za-z0-9\-._~!$&\'\(\)*\+\,\;=:@\/?]*$/', $path)) {
+    if ($this->hasDisallowedCharacters($path)) {
+      return false;
+    }
+
+    if ($this->hasDisallowedProtocol($path)) {
       return false;
     }
 
@@ -38,7 +42,11 @@ final class PathValidator
 
   private function isValidPathFs(string $path): bool
   {
-    if (0 === preg_match('/^[A-Za-z0-9\-._~!$&\'\(\)*\+\,\;=:@\/?]*$/', $path)) {
+    if ($this->hasDisallowedCharacters($path)) {
+      return false;
+    }
+
+    if ($this->hasDisallowedProtocol($path)) {
       return false;
     }
 
@@ -51,5 +59,25 @@ final class PathValidator
     }
 
     return true;
+  }
+
+  private function hasDisallowedCharacters(string $path): bool
+  {
+    $pattern = '/^[A-Za-z0-9\-._~!$&\'()*+,;=:@\/?]*$/';
+
+    return 0 === preg_match($pattern, $path);
+  }
+
+  private function hasDisallowedProtocol(string $path): bool
+  {
+    $pattern = '/^(?<protocol>[a-zA-Z_]*):.*$/';
+
+    $matched = preg_match($pattern, $path, $matches);
+
+    if (0 === $matched) {
+      return false;
+    }
+
+    return !in_array($matches['protocol'], ['http', 'https']);
   }
 }

@@ -37,4 +37,3 @@ TODO:
 - Customize path selector rule (randomizer).
 - Customize user agent rule (generator).
 - Fix inline images.
-- Handle href for `mailto:`, `tel:`, `#section`, `javascript:`, `file:`

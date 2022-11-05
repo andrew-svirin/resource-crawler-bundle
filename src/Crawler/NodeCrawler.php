@@ -3,13 +3,11 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
-use AndrewSvirin\ResourceCrawlerBundle\Exception\ResourceReaderException;
 use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;

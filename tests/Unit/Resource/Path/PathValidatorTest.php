@@ -31,6 +31,13 @@ class PathValidatorTest extends TestCase
   {
     return [
       ['https://site-1.com/', 'https://site-1.com/index.html', true],
+      ['https://site-1.com/', '//site.com', true],
+      ['https://site-1.com/', '//site.com:80', true],
+      ['https://site-1.com/', 'mailto:any@email.com', false],
+      ['https://site-1.com/', 'tel:+12345678', false],
+      ['https://site-1.com/', 'javascript:do()', false],
+      ['https://site-1.com/', 'file://some/file.it', false],
+      ['https://site-1.com/', 'https://site-1.com/index.html?q=123#abc(aa)+*;=&$1', false],
     ];
   }
 
