@@ -15,6 +15,4 @@ services:
     tty: true
     environment:
       PHP_IDE_CONFIG: "serverName=localhost"
-      XDEBUG_MODE: "develop,debug"
-      PHP_INI_SCAN_DIR: "/usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d"
-      XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003"
+      XDEBUG_CONFIG: "client_host=host.docker.internal client_port=9003 mode=debug"

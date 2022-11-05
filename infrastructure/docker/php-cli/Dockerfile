@@ -18,9 +18,6 @@ RUN docker-php-ext-install zip
 RUN ln -sf /usr/local/bin/php /usr/bin/php && \
     curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --version=2.3.7 --filename=composer
 
-COPY conf.d/php.ini /usr/local/etc/php/custom.d/php.ini
-COPY conf.d/xdebug.ini /usr/local/etc/php/custom.d/xdebug.ini
-
 COPY commands/php-xdebug /usr/local/bin/php-xdebug
 RUN chmod +x /usr/local/bin/php-xdebug
 

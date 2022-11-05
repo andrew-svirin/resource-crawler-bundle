@@ -22,12 +22,14 @@ trait HttpClientTrait
 
     $responseFactory = function ($method, $url, $options) {
       $responses = [
-        'http://site.com/'                  => $this->getMock('/http/site.com/index.html'),
-        'http://site.com/index.html'        => $this->getMock('/http/site.com/index.html'),
-        'http://site.com/pages/page-1.html' => $this->getMock('/http/site.com/pages/page-1.html'),
-        'http://site.com/pages/page-2.html' => $this->getMock('/http/site.com/pages/page-2.html'),
-        'http://site.com/images/img-1.jpg'  => $this->getMock('/http/site.com/images/img-1.jpg'),
-        'http://site.com/images/img-2.jpg'  => $this->getMock('/http/site.com/images/img-2.jpg'),
+        'https://site.com/'                  => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/index.html'        => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/pages/page-1.html' => $this->getMock('/http/site.com/pages/page-1.html'),
+        'https://site.com/pages/page-2.html' => $this->getMock('/http/site.com/pages/page-2.html'),
+        'https://site.com/pages/page-400'    => $this->getMock('/http/site.com/pages/page-400.html', 400),
+        'https://site.com/pages/page-500'    => $this->getMock('/http/site.com/pages/page-500.html', 500),
+        'https://site.com/images/img-1.jpg'  => $this->getMock('/http/site.com/images/img-1.jpg'),
+        'https://site.com/images/img-2.jpg'  => $this->getMock('/http/site.com/images/img-2.jpg'),
       ];
 
       if (empty($responses[$url])) {
@@ -40,10 +42,12 @@ trait HttpClientTrait
     $httpClient->setResponseFactory($responseFactory);
   }
 
-  private function getMock(string $path): MockResponse
+  private function getMock(string $path, int $code = 200): MockResponse
   {
     $resourceDir = $this->getResourcesDir();
 
-    return new MockResponse(file_get_contents($resourceDir . $path));
+    return new MockResponse(file_get_contents($resourceDir . $path), [
+      'http_code' => $code,
+    ]);
   }
 }

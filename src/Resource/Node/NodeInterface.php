@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Node;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Response\Response;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 
 /**
@@ -13,7 +14,7 @@ interface NodeInterface
 {
   public function getUri(): UriInterface;
 
-  public function getContent(): string;
+  public function getResponse(): ?Response;
 
-  public function setContent(string $content): void;
+  public function setResponse(Response $response): void;
 }

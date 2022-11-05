@@ -25,10 +25,13 @@ final class FileProcessStore implements ProcessStoreInterface
 
     $taskHash = $this->genTaskHash($task);
 
-    return in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_FOR_PROCESSING])) ||
-      in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_IN_PROCESS])) ||
-      in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_PROCESSED])) ||
-      in_array($taskHash, array_keys($processData[CrawlingTask::STATUS_IGNORED]));
+    foreach (CrawlingTask::ALL_STATUSES as $status) {
+      if (in_array($taskHash, array_keys($processData[$status]))) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): void
@@ -92,6 +95,11 @@ final class FileProcessStore implements ProcessStoreInterface
     $this->pushTask($process, $task, CrawlingTask::STATUS_IGNORED);
   }
 
+  public function pushErroredTask(CrawlingProcess $process, CrawlingTask $task): void
+  {
+    $this->pushTask($process, $task, CrawlingTask::STATUS_ERRORED);
+  }
+
   private function pushTask(CrawlingProcess $process, CrawlingTask $task, string $status): void
   {
     $processData = $this->readProcessData($process);
@@ -99,6 +107,8 @@ final class FileProcessStore implements ProcessStoreInterface
     $taskHash = $this->genTaskHash($task);
 
     $packedTask = $processData[$task->getStatus()][$taskHash];
+
+    $packedTask['code'] = $task->getNode()->getResponse()?->getCode();
 
     unset($processData[$task->getStatus()][$taskHash]);
 
@@ -168,12 +178,13 @@ final class FileProcessStore implements ProcessStoreInterface
    */
   private function defaultProcessData(): array
   {
-    return [
-      CrawlingTask::STATUS_FOR_PROCESSING => [],
-      CrawlingTask::STATUS_IN_PROCESS     => [],
-      CrawlingTask::STATUS_PROCESSED      => [],
-      CrawlingTask::STATUS_IGNORED        => [],
-    ];
+    $default = [];
+
+    foreach (CrawlingTask::ALL_STATUSES as $status) {
+      $default[$status] = [];
+    }
+
+    return $default;
   }
 
   private function getProcessFilename(CrawlingProcess $process): string
@@ -201,6 +212,7 @@ final class FileProcessStore implements ProcessStoreInterface
         'type' => $uriType,
         'path' => $task->getNode()->getUri()->getPath(),
       ],
+      'code' => $task->getNode()->getResponse()?->getCode(),
     ];
   }
 

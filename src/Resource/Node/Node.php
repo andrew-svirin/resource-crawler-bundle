@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Node;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Response\Response;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 
 /**
@@ -11,7 +12,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
  */
 abstract class Node implements NodeInterface
 {
-  private string $content;
+  private ?Response $response = null;
 
   public function __construct(private readonly UriInterface $uri)
   {
@@ -22,13 +23,13 @@ abstract class Node implements NodeInterface
     return $this->uri;
   }
 
-  public function getContent(): string
+  public function getResponse(): ?Response
   {
-    return $this->content;
+    return $this->response;
   }
 
-  public function setContent(string $content): void
+  public function setResponse(Response $response): void
   {
-    $this->content = $content;
+    $this->response = $response;
   }
 }

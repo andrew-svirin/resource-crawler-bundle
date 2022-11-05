@@ -3,6 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
+use AndrewSvirin\ResourceCrawlerBundle\Exception\ResourceReaderException;
 use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
@@ -52,9 +53,13 @@ final class NodeCrawler
    */
   private function crawlHtmlNode(CrawlingProcess $process, HtmlNode $node): void
   {
-    $content = $this->resourceManager->readUri($node->getUri());
+    $response = $this->resourceManager->readUri($node->getUri());
 
-    $node->setContent($content);
+    $node->setResponse($response);
+
+    if ($this->resourceManager->isNotSuccessNode($node)) {
+      return;
+    }
 
     $document = $this->documentManager->createDocument($node);
 
@@ -103,8 +108,8 @@ final class NodeCrawler
 
   private function crawlImgNode(ImgNode $node): void
   {
-    $content = $this->resourceManager->readUri($node->getUri());
+    $response = $this->resourceManager->readUri($node->getUri());
 
-    $node->setContent($content);
+    $node->setResponse($response);
   }
 }

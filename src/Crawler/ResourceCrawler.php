@@ -70,7 +70,11 @@ final class ResourceCrawler
     if ($isTaskPerformable) {
       $this->performTask($task);
 
-      $this->processManager->destroyTask($process, $task);
+      if ($this->resourceManager->isNotSuccessNode($task->getNode())) {
+        $this->processManager->errorTask($process, $task);
+      } else {
+        $this->processManager->destroyTask($process, $task);
+      }
     } else {
       $this->processManager->ignoreTask($process, $task);
     }

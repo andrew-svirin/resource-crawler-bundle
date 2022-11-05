@@ -51,6 +51,7 @@
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Response\ResponseFactory" autowire="true" public="false"/>
 
     <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Document\Html\HtmlExtractor" autowire="true" public="false"/>

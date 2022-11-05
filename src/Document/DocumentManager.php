@@ -22,7 +22,7 @@ final class DocumentManager
 
   public function createDocument(Node $node): DOMDocument
   {
-    return $this->documentFactory->create($node->getContent());
+    return $this->documentFactory->create($node->getResponse()->getContent());
   }
 
   /**

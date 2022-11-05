@@ -36,6 +36,5 @@ TODO:
 - Add DbProcessStore
 - Customize path selector rule (randomizer).
 - Customize user agent rule (generator).
-- Handle 400+ error codes.
 - Fix inline images.
 - Handle href for `mailto:`, `tel:`, `#section`, `javascript:`, `file:`

@@ -20,6 +20,16 @@ final class CrawlingTask
 
   public const STATUS_IGNORED = 'ignored';
 
+  public const STATUS_ERRORED = 'errored';
+
+  public const ALL_STATUSES = [
+    self::STATUS_FOR_PROCESSING,
+    self::STATUS_IN_PROCESS,
+    self::STATUS_PROCESSED,
+    self::STATUS_IGNORED,
+    self::STATUS_ERRORED,
+  ];
+
   private string $status;
 
   public function __construct(private readonly CrawlingProcess $process, private readonly NodeInterface $node)

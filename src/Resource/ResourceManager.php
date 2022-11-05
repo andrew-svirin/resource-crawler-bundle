@@ -6,6 +6,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Response\Response;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
@@ -26,7 +27,7 @@ final class ResourceManager
   ) {
   }
 
-  public function readUri(UriInterface $uri): string
+  public function readUri(UriInterface $uri): Response
   {
     return $this->reader->read($uri);
   }
@@ -108,5 +109,10 @@ final class ResourceManager
   public function isMatchingPathRegex(PathRegex $pathRegex, string $path): bool
   {
     return $this->pathRegexMatcher->isMatching($pathRegex, $path);
+  }
+
+  public function isNotSuccessNode(NodeInterface $node): bool
+  {
+    return $node->getResponse()->getCode() >= 400;
   }
 }

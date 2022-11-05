@@ -24,7 +24,7 @@ class ResourceCrawlerTest extends TestCase
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $url = 'http://site.com/index.html';
+    $url = 'https://site.com/index.html';
 
     $resourceCrawler->resetWebResource($url);
 
@@ -36,20 +36,22 @@ class ResourceCrawlerTest extends TestCase
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $url       = 'http://site.com/index.html';
+    $url       = 'https://site.com/index.html';
     $pathMasks = ['+site.com/', '-embed'];
 
     $resourceCrawler->resetWebResource($url);
 
     $expectedPaths = [
-      ['http://site.com/index.html', 'processed'],
-      ['http://site.com/images/img-2.jpg', 'processed'],
-      ['http://site.com/images/img-1.jpg', 'processed'],
-      ['http://site.com/pages/page-2.html', 'processed'],
-      ['http://site.com/pages/page-1.html', 'processed'],
-      ['http://site.com/embed/frame.html', 'ignored'],
-      ['http://site-2.com/pages/page-3.html', 'ignored'],
-      ['http://site.com/', 'processed'],
+      ['https://site.com/index.html', 'processed'],
+      ['https://site.com/images/img-2.jpg', 'processed'],
+      ['https://site.com/images/img-1.jpg', 'processed'],
+      ['https://site.com/pages/page-500', 'errored'],
+      ['https://site.com/pages/page-400', 'errored'],
+      ['https://site.com/pages/page-2.html', 'processed'],
+      ['https://site.com/pages/page-1.html', 'processed'],
+      ['https://site.com/embed/frame.html', 'ignored'],
+      ['https://site-2.com/pages/page-3.html', 'ignored'],
+      ['https://site.com/', 'processed'],
       [null, null],
     ];
 

@@ -36,11 +36,11 @@ class PathRegexMatcherTest extends TestCase
   public function isMatchingProvider(): array
   {
     return [
-      ['http://site.com/', false],
-      ['http://site1.com/', true],
-      ['http://site2.com/', true],
-      ['http://site1.com/embed/index.html', false],
-      ['http://site2.com/page-1.html', false],
+      ['https://site.com/', false],
+      ['https://site1.com/', true],
+      ['https://site2.com/', true],
+      ['https://site1.com/embed/index.html', false],
+      ['https://site2.com/page-1.html', false],
     ];
   }
 }

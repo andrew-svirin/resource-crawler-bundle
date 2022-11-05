@@ -71,4 +71,9 @@ final class ProcessManager
   {
     $this->processStore->pushIgnoredTask($process, $task);
   }
+
+  public function errorTask(CrawlingProcess $process, CrawlingTask $task): void
+  {
+    $this->processStore->pushErroredTask($process, $task);
+  }
 }
