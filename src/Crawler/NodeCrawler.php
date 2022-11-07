@@ -8,8 +8,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use LogicException;
 
@@ -23,9 +21,7 @@ final class NodeCrawler
   public function __construct(
     private readonly ResourceManager $resourceManager,
     private readonly ProcessManager $processManager,
-    private readonly DocumentManager $documentManager,
-    private readonly PathNormalizer $pathNormalizer,
-    private readonly PathValidator $pathValidator
+    private readonly DocumentManager $documentManager
   ) {
   }
 
@@ -81,12 +77,14 @@ final class NodeCrawler
    */
   private function getAnchorPaths(HtmlNode $node): iterable
   {
-    foreach ($this->documentManager->extractAHrefs($node) as $path) {
-      if (!$this->pathValidator->isValid($node->getUri(), $path)) {
+    foreach ($this->documentManager->extractAHrefs($node) as $pathStr) {
+      $path = $this->resourceManager->decomposePath($pathStr);
+
+      if (!$this->resourceManager->isValidPath($node->getUri(), $path)) {
         continue;
       }
 
-      yield $this->pathNormalizer->normalize($node->getUri(), $path);
+      yield $this->resourceManager->normalizePath($node->getUri(), $path);
     }
   }
 
@@ -95,12 +93,14 @@ final class NodeCrawler
    */
   private function getImgPaths(HtmlNode $node): iterable
   {
-    foreach ($this->documentManager->extractImgSrcs($node) as $path) {
-      if (!$this->pathValidator->isValid($node->getUri(), $path)) {
+    foreach ($this->documentManager->extractImgSrcs($node) as $pathStr) {
+      $path = $this->resourceManager->decomposePath($pathStr);
+
+      if (!$this->resourceManager->isValidPath($node->getUri(), $path)) {
         continue;
       }
 
-      yield $this->pathNormalizer->normalize($node->getUri(), $path);
+      yield $this->resourceManager->normalizePath($node->getUri(), $path);
     }
   }
 

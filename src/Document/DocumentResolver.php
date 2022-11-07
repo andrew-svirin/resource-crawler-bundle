@@ -5,13 +5,13 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Document;
 use DOMDocument;
 
 /**
- * Factory for document.
+ * Resolver for document.
  *
  * @interal
  */
-final class DocumentFactory
+final class DocumentResolver
 {
-  public function create(string $html): DOMDocument
+  public function resolve(string $html): DOMDocument
   {
     $dom = new DOMDocument;
 

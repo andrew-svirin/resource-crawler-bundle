@@ -8,6 +8,8 @@ use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 
 /**
  * PathRegexMatcherTest
+ *
+ * @covers \AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher
  */
 class PathRegexMatcherTest extends TestCase
 {
@@ -16,9 +18,8 @@ class PathRegexMatcherTest extends TestCase
    */
   public function testIsMatching(string $path, bool $isMatching): void
   {
-    $matcher = new PathRegexMatcher();
-
-    $creator = new PathRegexCreator();
+    $matcher = $this->getContainer()->get(PathRegexMatcher::class);
+    $creator = $this->getContainer()->get(PathRegexCreator::class);
 
     $pathRegex = $creator->create([
       '+site1.com/',

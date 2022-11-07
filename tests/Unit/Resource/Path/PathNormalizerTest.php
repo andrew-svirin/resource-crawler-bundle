@@ -2,26 +2,31 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Unit\Resource\Path;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathComposer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 
 /**
  * PathNormalizerTest
+ *
+ * @covers \AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer
  */
 class PathNormalizerTest extends TestCase
 {
   /**
    * @dataProvider normalizeHttpProvider
    */
-  public function testNormalizeHttp(string $parentPath, string $path, string $normalizedPath): void
+  public function testNormalizeHttp(string $parentPathStr, string $childPathStr, string $normalizedPath): void
   {
-    $uriFactory = new UriFactory();
-    $normalizer = new PathNormalizer();
+    $uriFactory     = $this->getContainer()->get(UriFactory::class);
+    $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    $pathNormalizer = $this->getContainer()->get(PathNormalizer::class);
 
-    $parentUri = $uriFactory->createHttp($parentPath);
+    $parentUri = $uriFactory->createHttp($parentPathStr);
+    $childPath = $pathComposer->decompose($childPathStr);
 
-    $this->assertEquals($normalizedPath, $normalizer->normalize($parentUri, $path));
+    $this->assertEquals($normalizedPath, $pathNormalizer->normalize($parentUri, $childPath));
   }
 
   /**
@@ -30,7 +35,7 @@ class PathNormalizerTest extends TestCase
   public function normalizeHttpProvider(): array
   {
     return [
-      ['https://site-2.com/', '//site-1.com', '//site-1.com/'],
+      ['https://site-2.com/', '//site-1.com', 'https://site-1.com/'],
       ['https://site-2.com/', 'https://site-1.com/index.html', 'https://site-1.com/index.html'],
       ['https://site-1.com/', 'https://site-1.com/', 'https://site-1.com/'],
       ['https://site-1.com/index.html', '/page-1', 'https://site-1.com/page-1'],
@@ -77,20 +82,27 @@ class PathNormalizerTest extends TestCase
         'level-4',
         'https://site-1.com/level-1/level-2/level-4',
       ],
+      [
+        'https://site-1.com/level-1/level-2/level-3?abc=d',
+        'level-4?def=g',
+        'https://site-1.com/level-1/level-2/level-4?def=g',
+      ],
     ];
   }
 
   /**
    * @dataProvider normalizeFsProvider
    */
-  public function testNormalizeFs(string $parentPath, string $path, string $normalizedPath): void
+  public function testNormalizeFs(string $parentPathStr, string $childPathStr, string $normalizedPath): void
   {
-    $uriFactory = new UriFactory();
-    $normalizer = new PathNormalizer();
+    $uriFactory     = $this->getContainer()->get(UriFactory::class);
+    $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    $pathNormalizer = $this->getContainer()->get(PathNormalizer::class);
 
-    $parentUri = $uriFactory->createFs($parentPath);
+    $parentUri = $uriFactory->createFs($parentPathStr);
+    $childPath = $pathComposer->decompose($childPathStr);
 
-    $this->assertEquals($normalizedPath, $normalizer->normalize($parentUri, $path));
+    $this->assertEquals($normalizedPath, $pathNormalizer->normalize($parentUri, $childPath));
   }
 
   /**

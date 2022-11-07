@@ -62,9 +62,9 @@ final class ResourceCrawler
 
   private function tryPerformTask(Resource $resource, CrawlingProcess $process, CrawlingTask $task): void
   {
-    $isTaskPerformable = $this->resourceManager->isMatchingPathRegex(
-      $resource->pathRegex(),
-      $task->getNode()->getUri()->getPath()
+    $isTaskPerformable = $this->resourceManager->isPerformablePath(
+      $task->getNode()->getUri()->getPath(),
+      $resource->pathRegex()
     );
 
     if ($isTaskPerformable) {

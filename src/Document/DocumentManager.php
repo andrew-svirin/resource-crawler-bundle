@@ -16,13 +16,13 @@ final class DocumentManager
 {
   public function __construct(
     private readonly HtmlExtractor $htmlExtractor,
-    private readonly DocumentFactory $documentFactory
+    private readonly DocumentResolver $documentComposer
   ) {
   }
 
   public function createDocument(Node $node): DOMDocument
   {
-    return $this->documentFactory->create($node->getResponse()->getContent());
+    return $this->documentComposer->resolve($node->getResponse()->getContent());
   }
 
   /**

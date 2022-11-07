@@ -2,26 +2,31 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Unit\Resource\Path;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathComposer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 
 /**
  * PathValidatorTest
+ *
+ * @covers \AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator
  */
 class PathValidatorTest extends TestCase
 {
   /**
    * @dataProvider isValidHttProvider
    */
-  public function testIsValidHttp(string $parentPath, string $path, bool $isValid): void
+  public function testIsValidHttp(string $parentPathStr, string $childPathStr, bool $isValid): void
   {
-    $uriFactory = new UriFactory();
-    $validator  = new PathValidator();
+    $uriFactory     = $this->getContainer()->get(UriFactory::class);
+    $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    $pathValidator = $this->getContainer()->get(PathValidator::class);
 
-    $parentUri = $uriFactory->createHttp($parentPath);
+    $parentUri = $uriFactory->createHttp($parentPathStr);
+    $childPath = $pathComposer->decompose($childPathStr);
 
-    $this->assertEquals($isValid, $validator->isValid($parentUri, $path));
+    $this->assertEquals($isValid, $pathValidator->isValid($parentUri, $childPath));
   }
 
   /**
@@ -30,6 +35,7 @@ class PathValidatorTest extends TestCase
   public function isValidHttProvider(): array
   {
     return [
+      ['https://site-1.com/', 'page-科', false],
       ['https://site-1.com/', 'https://site-1.com/index.html', true],
       ['https://site-1.com/', '//site.com', true],
       ['https://site-1.com/', '//site.com:80', true],
@@ -37,21 +43,25 @@ class PathValidatorTest extends TestCase
       ['https://site-1.com/', 'tel:+12345678', false],
       ['https://site-1.com/', 'javascript:do()', false],
       ['https://site-1.com/', 'file://some/file.it', false],
-      ['https://site-1.com/', 'https://site-1.com/index.html?q=123#abc(aa)+*;=&$1', false],
+      ['https://site-1.com/', 'https://site-1.com/index.html?q=123#abc(aa)+*;=&$1', true],
+      ['https://site-1.com/', 'https://site-1.com/ind ex.html', true],
+      ['https://site-1.com/', 'https://site-1.com/ind%20ex.html', true],
     ];
   }
 
   /**
    * @dataProvider isValidFsProvider
    */
-  public function testIsValidFs(string $parentPath, string $path, bool $isValid): void
+  public function testIsValidFs(string $parentPathStr, string $childPathStr, bool $isValid): void
   {
-    $uriFactory = new UriFactory();
-    $validator  = new PathValidator();
+    $uriFactory     = $this->getContainer()->get(UriFactory::class);
+    $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    $pathValidator = $this->getContainer()->get(PathValidator::class);
 
-    $parentUri = $uriFactory->createFs($parentPath);
+    $parentUri = $uriFactory->createFs($parentPathStr);
+    $childPath = $pathComposer->decompose($childPathStr);
 
-    $this->assertEquals($isValid, $validator->isValid($parentUri, $path));
+    $this->assertEquals($isValid, $pathValidator->isValid($parentUri, $childPath));
   }
 
   /**

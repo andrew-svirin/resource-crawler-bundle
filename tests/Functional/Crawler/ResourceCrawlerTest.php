@@ -7,6 +7,8 @@ use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 
 /**
  * ResourceCrawlerTest
+ *
+ * @covers \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler
  */
 class ResourceCrawlerTest extends TestCase
 {
@@ -43,6 +45,10 @@ class ResourceCrawlerTest extends TestCase
 
     $expectedPaths = [
       ['https://site.com/index.html', 'processed'],
+      [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        'processed',
+      ],
       ['https://site.com/images/img-2.jpg', 'processed'],
       ['https://site.com/images/img-1.jpg', 'processed'],
       ['https://site.com/pages/page-500', 'errored'],

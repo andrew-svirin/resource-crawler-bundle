@@ -29,7 +29,7 @@ final class TaskPacker
 
   public function __construct(
     private readonly UriFactory $uriFactory,
-    private readonly NodeFactory $nodeFactory,
+    private readonly NodeFactory $nodeFactory
   ) {
   }
 

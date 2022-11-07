@@ -36,4 +36,3 @@ TODO:
 - Add DbProcessStore
 - Customize path selector rule (randomizer).
 - Customize user agent rule (generator).
-- Fix inline images.

@@ -2,6 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathExtractor;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Response\Response;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Response\ResponseFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
@@ -20,25 +22,40 @@ final class ResourceReader
 {
   public function __construct(
     private readonly HttpClientInterface $httpClient,
-    private readonly ResponseFactory $responseFactory
+    private readonly ResponseFactory $responseFactory,
+    private readonly PathExtractor $pathExtractor
   ) {
   }
 
   public function read(UriInterface $uri): Response
   {
-    if ($uri instanceof HttpUri) {
-      return $this->readByHttp($uri);
+    $scheme = $this->pathExtractor->extractScheme($uri->getPath());
+
+    if (PathInterface::SCHEME_DATA === $scheme) {
+      return $this->readData($uri->getPath());
+    } elseif ($uri instanceof HttpUri) {
+      return $this->readByHttp($uri->getPath());
     } elseif ($uri instanceof FsUri) {
-      return $this->readByFs($uri);
+      return $this->readByFs($uri->getPath());
     } else {
       throw new LogicException('URI reader missing');
     }
   }
 
-  private function readByHttp(HttpUri $uri): Response
+  private function readData(string $path): Response
+  {
+    $encodedData = $this->pathExtractor->extractBase64EncodedData($path);
+
+    $content = base64_decode($encodedData);
+    $code    = false === $content ? 600 : 200;
+
+    return $this->responseFactory->create($content, $code);
+  }
+
+  private function readByHttp(string $path): Response
   {
     try {
-      $response = $this->httpClient->request('GET', $uri->getPath());
+      $response = $this->httpClient->request('GET', $path);
 
       $code = $response->getStatusCode();
 
@@ -55,8 +72,8 @@ final class ResourceReader
     return $this->responseFactory->create($content, $code);
   }
 
-  private function readByFs(FsUri $uri): Response
+  private function readByFs(string $path): Response
   {
-    return $this->responseFactory->create(file_get_contents($uri->getPath()), 200);
+    return $this->responseFactory->create(file_get_contents($path), 200);
   }
 }

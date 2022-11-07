@@ -6,7 +6,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
-use RuntimeException;
 
 /**
  * Normalizer for path.
@@ -15,7 +14,11 @@ use RuntimeException;
  */
 final class PathNormalizer
 {
-  public function normalize(UriInterface $parentUri, string $childPath): string
+  public function __construct(private readonly PathComposer $pathComposer)
+  {
+  }
+
+  public function normalize(UriInterface $parentUri, Path $childPath): string
   {
     if ($parentUri instanceof HttpUri) {
       $path = $this->normalizePathHttp($parentUri, $childPath);
@@ -28,60 +31,44 @@ final class PathNormalizer
     return $path;
   }
 
-  private function normalizePathHttp(HttpUri $parentUri, string $childPath): string
+  private function normalizePathHttp(HttpUri $parentUri, Path $childPath): string
   {
-    $childParse = parse_url($childPath);
+    if (PathInterface::SCHEME_DATA === $childPath->getScheme()) {
+      return $childPath->getOriginalPath();
+    }
 
-    $childParse['scheme'] ??= '';
-    $childParse['path']   ??= '/';
-
-    if (!empty($childParse['host'])) {
-      $normalizedScheme = $childParse['scheme'];
-      $normalizedHost   = $childParse['host'];
-      $normalizedPath   = $childParse['path'];
+    if ($childPath->isAbsolute()) {
+      $normalizedScheme = $childPath->getScheme();
+      $normalizedHost   = $childPath->getHost();
+      $normalizedPath   = $childPath->getPath();
     } else {
-      $parentParse = parse_url($parentUri->getPath());
+      $parentPath = $this->pathComposer->decompose($parentUri->getPath());
 
-      $parentParse['scheme'] ??= '';
-      $parentParse['path']   ??= '/';
+      $normalizedScheme = $parentPath->getScheme();
+      $normalizedHost   = $parentPath->getHost();
 
-      if (empty($parentParse['host'])) {
-        throw new RuntimeException('Parent Host can not be absent.');
-      }
-
-      $normalizedScheme = $parentParse['scheme'];
-      $normalizedHost   = $parentParse['host'];
-
-      if ($this->isRootPath($childParse['path'])) {
-        $normalizedPath = $childParse['path'];
+      if ($childPath->isRoot()) {
+        $normalizedPath = $childPath->getPath();
       } else {
-        $parentPathDir = rtrim(dirname($parentParse['path']));
+        $parentPathDir = rtrim(dirname($parentPath->getPath()));
 
-        $normalizedPath = $parentPathDir . '/./' . $childParse['path'];
+        $normalizedPath = $parentPathDir . '/./' . $childPath->getPath();
       }
     }
 
-    $normalizedPath = $this->normalizePathAbs($normalizedPath);
+    $normalizedQuery = $childPath->getQuery();
 
-    return sprintf(
-      '%s//%s%s',
-      !empty($normalizedScheme) ? $normalizedScheme . ':' : '',
-      $normalizedHost,
-      $normalizedPath
-    );
+    $normalizedPath = $this->normalizePathAbsolute($normalizedPath);
+
+    return $this->pathComposer->compose($normalizedScheme, $normalizedHost, $normalizedPath, $normalizedQuery);
   }
 
-  private function isRootPath(string $path): bool
+  private function normalizePathAbsolute(string $path): string
   {
-    return str_starts_with($path, '/');
+    return '/' . $this->normalizePathRelative($path);
   }
 
-  private function normalizePathAbs(string $path): string
-  {
-    return '/' . $this->normalizePathRel($path);
-  }
-
-  private function normalizePathRel(string $path): string
+  private function normalizePathRelative(string $path): string
   {
     $explode = explode('/', $path);
 
@@ -101,10 +88,10 @@ final class PathNormalizer
     return implode('/', $pathSegments);
   }
 
-  private function normalizePathFs(FsUri $parentUri, string $path): string
+  private function normalizePathFs(FsUri $parentUri, Path $path): string
   {
-    $normalizedPath = rtrim(dirname($parentUri->getPath())) . '/' . $path;
+    $normalizedPath = rtrim(dirname($parentUri->getPath())) . '/' . $path->getOriginalPath();
 
-    return $this->normalizePathAbs($normalizedPath);
+    return $this->normalizePathAbsolute($normalizedPath);
   }
 }

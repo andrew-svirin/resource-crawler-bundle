@@ -14,7 +14,11 @@ use LogicException;
  */
 final class PathValidator
 {
-  public function isValid(UriInterface $parentUri, string $childPath): bool
+  public function __construct(private readonly PathExtractor $pathExtractor)
+  {
+  }
+
+  public function isValid(UriInterface $parentUri, Path $childPath): bool
   {
     if ($parentUri instanceof HttpUri) {
       $isValid = $this->isValidPathHttp($childPath);
@@ -27,34 +31,30 @@ final class PathValidator
     return $isValid;
   }
 
-  private function isValidPathHttp(string $path): bool
+  private function isValidPathHttp(Path $path): bool
   {
-    if ($this->hasDisallowedCharacters($path)) {
+    if ($this->hasDisallowedCharacters($path->getOriginalPath())) {
       return false;
     }
 
-    if ($this->hasDisallowedProtocol($path)) {
+    if ($this->hasDisallowedScheme($path->getOriginalPath())) {
       return false;
     }
 
     return true;
   }
 
-  private function isValidPathFs(string $path): bool
+  private function isValidPathFs(Path $path): bool
   {
-    if ($this->hasDisallowedCharacters($path)) {
+    if ($this->hasDisallowedCharacters($path->getOriginalPath())) {
       return false;
     }
 
-    if ($this->hasDisallowedProtocol($path)) {
+    if ($this->hasDisallowedScheme($path->getOriginalPath())) {
       return false;
     }
 
-    if (str_starts_with($path, '/')) {
-      return false;
-    }
-
-    if (str_contains($path, '//')) {
+    if ($path->isRoot() || $path->isAbsolute()) {
       return false;
     }
 
@@ -63,21 +63,15 @@ final class PathValidator
 
   private function hasDisallowedCharacters(string $path): bool
   {
-    $pattern = '/^[A-Za-z0-9\-._~!$&\'()*+,;=:@\/?]*$/';
+    $pattern = '/^[A-Za-z0-9\/\'\-~#!?$&@%()*+=.,;:_ ]*$/';
 
     return 0 === preg_match($pattern, $path);
   }
 
-  private function hasDisallowedProtocol(string $path): bool
+  private function hasDisallowedScheme(string $path): bool
   {
-    $pattern = '/^(?<protocol>[a-zA-Z_]*):.*$/';
+    $scheme = $this->pathExtractor->extractScheme($path);
 
-    $matched = preg_match($pattern, $path, $matches);
-
-    if (0 === $matched) {
-      return false;
-    }
-
-    return !in_array($matches['protocol'], ['http', 'https']);
+    return !empty($scheme) && !in_array($scheme, PathInterface::ALL_SCHEMES);
   }
 }

@@ -51,10 +51,13 @@
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathComposer" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathFactory" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathExtractor" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Response\ResponseFactory" autowire="true" public="false"/>
 
     <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Document\Html\HtmlExtractor" autowire="true" public="false"/>
-    <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentFactory" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Document\DocumentResolver" autowire="true" public="false"/>
   </services>
 </container>
