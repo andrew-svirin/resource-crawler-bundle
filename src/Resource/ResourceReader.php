@@ -47,7 +47,7 @@ final class ResourceReader
     $encodedData = $this->pathExtractor->extractBase64EncodedData($path);
 
     $content = base64_decode($encodedData);
-    $code    = false === $content ? 600 : 200;
+    $code    = is_string($content) && !empty($content) ? 200 : 600;
 
     return $this->responseFactory->create($content, $code);
   }
