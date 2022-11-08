@@ -5,18 +5,22 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskPacker;
+use Symfony\Component\Lock\LockFactory;
 
 /**
  * Primitive store in the file.
  * Very limited usage.
  */
-final class FileProcessStore implements ProcessStoreInterface
+final class FileProcessStore extends ProcessStore implements ProcessStoreInterface
 {
   public function __construct(
-    private readonly string $dir,
+    private readonly string $fileStoreDir,
+    readonly bool $isLockable,
     private readonly TaskPacker $taskPacker,
-    private readonly TaskFactory $taskFactory
+    private readonly TaskFactory $taskFactory,
+    readonly ?LockFactory $lockFactory = null
   ) {
+    parent::__construct($isLockable, $lockFactory);
   }
 
   public function taskExists(CrawlingProcess $process, CrawlingTask $task): bool
@@ -133,16 +137,18 @@ final class FileProcessStore implements ProcessStoreInterface
   {
     $filename = $this->getProcessFilename($process);
 
-    return file_exists($filename) ? file_get_contents($filename) : null;
+    return $this->operateStore(function () use ($filename) {
+      return $this->readContent($filename);
+    });
   }
 
   private function deleteProcessContent(CrawlingProcess $process): void
   {
     $filename = $this->getProcessFilename($process);
 
-    if (file_exists($filename)) {
-      unlink($filename);
-    }
+    $this->operateStore(function () use ($filename) {
+      $this->deleteContent($filename);
+    });
   }
 
   /**
@@ -159,18 +165,41 @@ final class FileProcessStore implements ProcessStoreInterface
   {
     $filename = $this->getProcessFilename($process);
 
-    $this->prepareFileDir($filename);
+    $this->prepareFile($filename);
 
-    file_put_contents($filename, $content);
+    $this->operateStore(function () use ($filename, $content) {
+      $this->writeContent($filename, $content);
+    });
   }
 
-  private function prepareFileDir(string $filename): void
+  private function readContent(string $filename): ?string
+  {
+    return file_exists($filename) ? file_get_contents($filename) : null;
+  }
+
+  private function writeContent(string $filename, string $content): void
+  {
+    if (file_exists($filename)) {
+      file_put_contents($filename, $content);
+    }
+  }
+
+  private function deleteContent(string $filename): void
+  {
+    if (file_exists($filename)) {
+      unlink($filename);
+    }
+  }
+
+  private function prepareFile(string $filename): void
   {
     $fileDir = dirname($filename);
 
     if (!file_exists($fileDir)) {
       mkdir($fileDir, 0775, true);
     }
+
+    touch($filename);
   }
 
   /**
@@ -189,7 +218,7 @@ final class FileProcessStore implements ProcessStoreInterface
 
   private function getProcessFilename(CrawlingProcess $process): string
   {
-    return $this->dir . '/' . $process->getId() . '.json';
+    return $this->fileStoreDir . '/' . $process->getId() . '.json';
   }
 
   private function genTaskHash(CrawlingTask $task): string

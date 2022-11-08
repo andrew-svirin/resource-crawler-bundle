@@ -18,8 +18,8 @@
     "ext-dom": "*",
     "ext-libxml": "*",
     "symfony/framework-bundle": "^6.1",
-    "symfony/filesystem": "^6.1",
     "symfony/http-client": "^6.1",
+    "symfony/lock": "^6.1",
     "symfony/yaml": "^6.1"
   },
   "require-dev": {
@@ -45,13 +45,6 @@
       "name": "Andrew Svirin"
     }
   ],
-  "archive": {
-    "exclude": [
-      "/infrastructure",
-      "/tests",
-      "Makefile"
-    ]
-  },
   "config": {
     "preferred-install": {
       "*": "dist"

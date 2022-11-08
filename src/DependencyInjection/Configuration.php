@@ -16,6 +16,7 @@ final class Configuration implements ConfigurationInterface
       ->arrayNode('process')
       ->addDefaultsIfNotSet()
       ->children()
+      ->booleanNode('is_lockable')->defaultNull()->info('Lock process for concurrency.')->end()
       ->scalarNode('store')->defaultNull()->info('Use store for process.')->end()
       ->arrayNode('file_store')
       ->children()
