@@ -22,12 +22,6 @@ interface ProcessStoreInterface
   public function popForProcessingTask(CrawlingProcess $process): ?CrawlingTask;
 
   /**
-   * Pop task from `in_process` stack.
-   * Take a task form `in_process` stack.
-   */
-  public function popInProcessTask(CrawlingProcess $process): ?CrawlingTask;
-
-  /**
    * Push task to `processed` stack.
    * Move task from `in_process` stack to `processed` stack.
    */

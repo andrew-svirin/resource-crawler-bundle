@@ -26,7 +26,7 @@ final class ProcessManager
     $process = $this->processFactory->create($resource);
     $node    = $resource->getRoot();
 
-    $this->pushTaskIfNotExists($process, $node);
+    $this->pushTask($process, $node);
 
     return $process;
   }
@@ -40,16 +40,10 @@ final class ProcessManager
 
   public function popTask(CrawlingProcess $process): ?CrawlingTask
   {
-    $task = $this->processStore->popForProcessingTask($process);
-
-    if (!empty($task)) {
-      return $task;
-    }
-
-    return $this->processStore->popInProcessTask($process);
+    return $this->processStore->popForProcessingTask($process);
   }
 
-  public function pushTaskIfNotExists(CrawlingProcess $process, NodeInterface $node): void
+  public function pushTask(CrawlingProcess $process, NodeInterface $node): void
   {
     $task = $this->taskFactory->create($process, $node);
 

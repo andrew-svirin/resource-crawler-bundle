@@ -62,13 +62,13 @@ final class NodeCrawler
     foreach ($this->getAnchorPaths($node) as $anchorPath) {
       $newNode = $this->resourceManager->createHtmlNode($process->getResource(), $anchorPath);
 
-      $this->processManager->pushTaskIfNotExists($process, $newNode);
+      $this->processManager->pushTask($process, $newNode);
     }
 
     foreach ($this->getImgPaths($node) as $imgPath) {
       $newNode = $this->resourceManager->createImgNode($process->getResource(), $imgPath);
 
-      $this->processManager->pushTaskIfNotExists($process, $newNode);
+      $this->processManager->pushTask($process, $newNode);
     }
   }
 
