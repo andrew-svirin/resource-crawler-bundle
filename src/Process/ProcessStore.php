@@ -29,7 +29,7 @@ abstract class ProcessStore implements ProcessStoreInterface
   {
     $lock = $this->lockFactory->createLock('crawling-process', 30);
 
-    if (!$lock->acquireRead()) {
+    if (!$lock->acquire(true)) {
       throw new RuntimeException('Can not lock file.');
     }
     try {

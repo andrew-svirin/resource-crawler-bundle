@@ -40,30 +40,37 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
   public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): void
   {
-    $processData = $this->readProcessData($process);
+    $taskHash   = $this->genTaskHash($task);
+    $packedTask = $this->packTask($task);
 
-    $taskHash = $this->genTaskHash($task);
+    $this->updateProcessData($process, function (array $processData) use ($taskHash, $packedTask) {
+      $processData[CrawlingTask::STATUS_FOR_PROCESSING][$taskHash] = $packedTask;
 
-    $processData[CrawlingTask::STATUS_FOR_PROCESSING][$taskHash] = $this->packTask($task);
-
-    $this->writeProcessData($process, $processData);
+      return $processData;
+    });
   }
 
   public function popForProcessingTask(CrawlingProcess $process): ?CrawlingTask
   {
-    $processData = $this->readProcessData($process);
+    $packedTask = null;
 
-    $taskHash = array_key_last($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
+    $this->updateProcessData($process, function (array $processData) use (&$packedTask) {
+      $taskHash = array_key_last($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
 
-    if (empty($taskHash)) {
+      if (empty($taskHash)) {
+        return $processData;
+      }
+
+      $packedTask = array_pop($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
+
+      $processData[CrawlingTask::STATUS_IN_PROCESS][$taskHash] = $packedTask;
+
+      return $processData;
+    });
+
+    if (null === $packedTask) {
       return null;
     }
-
-    $packedTask = array_pop($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
-
-    $processData[CrawlingTask::STATUS_IN_PROCESS][$taskHash] = $packedTask;
-
-    $this->writeProcessData($process, $processData);
 
     $task = $this->unpackTask($process, $packedTask);
 
@@ -106,21 +113,33 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
   private function pushTask(CrawlingProcess $process, CrawlingTask $task, string $status): void
   {
-    $processData = $this->readProcessData($process);
-
     $taskHash = $this->genTaskHash($task);
 
-    $packedTask = $processData[$task->getStatus()][$taskHash];
+    $this->updateProcessData($process, function (array $processData) use ($task, $status, $taskHash) {
 
-    $packedTask['code'] = $task->getNode()->getResponse()?->getCode();
+      $packedTask = $processData[$task->getStatus()][$taskHash];
 
-    unset($processData[$task->getStatus()][$taskHash]);
+      $packedTask['code'] = $task->getNode()->getResponse()?->getCode();
 
-    $processData[$status][$taskHash] = $packedTask;
+      unset($processData[$task->getStatus()][$taskHash]);
+
+      $processData[$status][$taskHash] = $packedTask;
+
+      return $processData;
+    });
 
     $task->setStatus($status);
+  }
 
-    $this->writeProcessData($process, $processData);
+  private function updateProcessData(CrawlingProcess $process, callable $closure): void
+  {
+    $this->operateStore(function () use ($process, $closure) {
+      $processData = $this->readProcessData($process);
+
+      $processData = call_user_func_array($closure, [$processData]);
+
+      $this->writeProcessData($process, $processData);
+    });
   }
 
   /**
@@ -133,24 +152,6 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
     return $content ? json_decode($content, true) : $this->defaultProcessData();
   }
 
-  private function readProcessContent(CrawlingProcess $process): ?string
-  {
-    $filename = $this->getProcessFilename($process);
-
-    return $this->operateStore(function () use ($filename) {
-      return $this->readContent($filename);
-    });
-  }
-
-  private function deleteProcessContent(CrawlingProcess $process): void
-  {
-    $filename = $this->getProcessFilename($process);
-
-    $this->operateStore(function () use ($filename) {
-      $this->deleteContent($filename);
-    });
-  }
-
   /**
    * @param array<string, array<string, string|array<string, string>>> $processData
    */
@@ -161,15 +162,27 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
     $this->writeProcessContent($process, $content);
   }
 
+  private function readProcessContent(CrawlingProcess $process): ?string
+  {
+    $filename = $this->getProcessFilename($process);
+
+    return $this->readContent($filename);
+  }
+
   private function writeProcessContent(CrawlingProcess $process, string $content): void
   {
     $filename = $this->getProcessFilename($process);
 
     $this->prepareFile($filename);
 
-    $this->operateStore(function () use ($filename, $content) {
-      $this->writeContent($filename, $content);
-    });
+    $this->writeContent($filename, $content);
+  }
+
+  private function deleteProcessContent(CrawlingProcess $process): void
+  {
+    $filename = $this->getProcessFilename($process);
+
+    $this->deleteContent($filename);
   }
 
   private function readContent(string $filename): ?string
