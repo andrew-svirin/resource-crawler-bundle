@@ -16,7 +16,7 @@ abstract class ProcessStore implements ProcessStoreInterface
   ) {
   }
 
-  protected function operateStore(callable $closure): ?string
+  protected function operateStore(callable $closure): mixed
   {
     if ($this->isLockable) {
       return $this->operateStoreWithLocking($closure);
@@ -25,7 +25,7 @@ abstract class ProcessStore implements ProcessStoreInterface
     }
   }
 
-  private function operateStoreWithLocking(callable $closure): ?string
+  private function operateStoreWithLocking(callable $closure): mixed
   {
     $lock = $this->lockFactory->createLock('crawling-process', 30);
 

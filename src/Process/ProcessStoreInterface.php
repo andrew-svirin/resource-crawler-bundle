@@ -46,11 +46,6 @@ interface ProcessStoreInterface
   public function pushErroredTask(CrawlingProcess $process, CrawlingTask $task): void;
 
   /**
-   * Does task already exists.
-   * Check if stack exists in any of stack.
-   */
-  public function taskExists(CrawlingProcess $process, CrawlingTask $task): bool;
-  /**
    * Delete process.
    * Delete all stacks of tasks.
    */

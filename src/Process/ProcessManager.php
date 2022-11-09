@@ -53,12 +53,6 @@ final class ProcessManager
   {
     $task = $this->taskFactory->create($process, $node);
 
-    $task->setStatus(CrawlingTask::STATUS_FOR_PROCESSING);
-
-    if ($this->processStore->taskExists($process, $task)) {
-      return;
-    }
-
     $this->processStore->pushForProcessingTask($process, $task);
   }
 
