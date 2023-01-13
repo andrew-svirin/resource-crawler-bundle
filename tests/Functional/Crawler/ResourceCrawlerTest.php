@@ -107,4 +107,38 @@ class ResourceCrawlerTest extends TestCase
       $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
     }
   }
+
+  public function testAnalyzeWebResource(): void
+  {
+    /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+    $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+    $url = 'https://site.com/index.html';
+
+    $analyze = $resourceCrawler->analyzeWebResource($url);
+
+    $this->assertArrayHasKey('process', $analyze);
+    $this->assertArrayHasKey('for_processing', $analyze['process']);
+    $this->assertArrayHasKey('in_process', $analyze['process']);
+    $this->assertArrayHasKey('processed', $analyze['process']);
+    $this->assertArrayHasKey('ignored', $analyze['process']);
+    $this->assertArrayHasKey('errored', $analyze['process']);
+  }
+
+  public function testAnalyzeDiskResource(): void
+  {
+    /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+    $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+    $path = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
+
+    $analyze = $resourceCrawler->analyzeDiskResource($path);
+
+    $this->assertArrayHasKey('process', $analyze);
+    $this->assertArrayHasKey('for_processing', $analyze['process']);
+    $this->assertArrayHasKey('in_process', $analyze['process']);
+    $this->assertArrayHasKey('processed', $analyze['process']);
+    $this->assertArrayHasKey('ignored', $analyze['process']);
+    $this->assertArrayHasKey('errored', $analyze['process']);
+  }
 }

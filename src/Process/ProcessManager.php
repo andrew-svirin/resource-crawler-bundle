@@ -64,4 +64,9 @@ final class ProcessManager
   {
     $this->processStore->pushErroredTask($process, $task);
   }
+
+  public function analyzeProcess(CrawlingProcess $process): array
+  {
+    return $this->processStore->countTasks($process);
+  }
 }

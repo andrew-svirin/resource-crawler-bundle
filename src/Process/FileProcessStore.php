@@ -274,4 +274,18 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
     return $this->taskFactory->create($process, $node);
   }
+
+  public function countTasks(CrawlingProcess $process): array
+  {
+    $counts = [];
+
+    $this->operateStore(function () use ($process, &$counts) {
+      $processData = $this->readProcessData($process);
+      foreach (CrawlingTask::ALL_STATUSES as $status) {
+        $counts[$status] = count($processData[$status]);
+      }
+    });
+
+    return $counts;
+  }
 }

@@ -44,4 +44,10 @@ interface ProcessStoreInterface
    * Delete all stacks of tasks.
    */
   public function deleteProcess(CrawlingProcess $process): void;
+
+  /**
+   * Count tasks by status.
+   * @return array<string, int>
+   */
+  public function countTasks(CrawlingProcess $process): array;
 }

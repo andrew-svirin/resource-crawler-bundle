@@ -12,6 +12,8 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 ## Usage
 
 ```php
+    /* @var $resourceCrawler \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler */
+    
     // Resolve service by alias or by class.
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
@@ -20,6 +22,9 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 
     // Do one crawl iteration.
     $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
+    
+    // Take analyze of resource.
+    $analyze = $resourceCrawler->analyzeWebResource($url);
 
     // Reset all crawling related data.
     $resourceCrawler->resetWebResource($url);
@@ -30,6 +35,7 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 1. `make build` to prepare infrastructure
 2. `make stasrt` to start infrastructure
 3. `make install` to install dependencies
+4. Run debug test: `make xdebug filter=value`
 
 TODO:
 

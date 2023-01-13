@@ -106,4 +106,30 @@ final class ResourceCrawler
   {
     $this->processManager->killProcess($resource);
   }
+
+  public function analyzeWebResource(string $url): array
+  {
+    $resource = $this->resourceManager->createWebHtmlResource($url);
+
+    return $this->analyzeResource($resource);
+  }
+
+  public function analyzeDiskResource(string $path): array
+  {
+    $resource = $this->resourceManager->createDiskFsResource($path);
+
+    return $this->analyzeResource($resource);
+  }
+
+  /**
+   * @return array<string, array<string,int>>
+   */
+  private function analyzeResource(Resource $resource): array
+  {
+    $process = $this->processManager->loadProcess($resource);
+
+    return [
+      'process' => $this->processManager->analyzeProcess($process),
+    ];
+  }
 }
