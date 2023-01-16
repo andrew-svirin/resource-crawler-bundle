@@ -7,8 +7,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 
 /**
  * Model implements crawling task.
- *
- * @interal
  */
 final class CrawlingTask
 {
