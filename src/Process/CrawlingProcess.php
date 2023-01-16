@@ -6,8 +6,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
 
 /**
  * Model implements crawling process.
- *
- * @interal
  */
 final class CrawlingProcess
 {
