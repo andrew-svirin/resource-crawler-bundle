@@ -7,8 +7,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 
 /**
  * Resource node.
- *
- * @interal
  */
 interface NodeInterface
 {
