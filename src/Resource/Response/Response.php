@@ -3,9 +3,7 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Response;
 
 /**
- * Response.
- *
- * @interal
+ * Resource reading Response.
  */
 final class Response
 {
