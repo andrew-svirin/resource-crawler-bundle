@@ -4,8 +4,6 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Process\Analyze;
 
 /**
  * Crawling process analyze.
- *
- * @interal
  */
 final class CrawlingAnalyze
 {
