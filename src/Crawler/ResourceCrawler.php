@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
 use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
@@ -107,29 +108,30 @@ final class ResourceCrawler
     $this->processManager->killProcess($resource);
   }
 
-  public function analyzeWebResource(string $url): array
+  /**
+   * Analyze web resource crawling process.
+   */
+  public function analyzeCrawlingWebResource(string $url): CrawlingAnalyze
   {
     $resource = $this->resourceManager->createWebHtmlResource($url);
 
-    return $this->analyzeResource($resource);
-  }
-
-  public function analyzeDiskResource(string $path): array
-  {
-    $resource = $this->resourceManager->createDiskFsResource($path);
-
-    return $this->analyzeResource($resource);
+    return $this->analyzeCrawlingResource($resource);
   }
 
   /**
-   * @return array<string, array<string,int>>
+   * Analyze disk resource crawling process.
    */
-  private function analyzeResource(Resource $resource): array
+  public function analyzeCrawlingDiskResource(string $path): CrawlingAnalyze
+  {
+    $resource = $this->resourceManager->createDiskFsResource($path);
+
+    return $this->analyzeCrawlingResource($resource);
+  }
+
+  private function analyzeCrawlingResource(Resource $resource): CrawlingAnalyze
   {
     $process = $this->processManager->loadProcess($resource);
 
-    return [
-      'process' => $this->processManager->analyzeProcess($process),
-    ];
+    return $this->processManager->analyze($process);
   }
 }

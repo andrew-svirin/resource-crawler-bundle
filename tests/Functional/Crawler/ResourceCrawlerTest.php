@@ -115,14 +115,13 @@ class ResourceCrawlerTest extends TestCase
 
     $url = 'https://site.com/index.html';
 
-    $analyze = $resourceCrawler->analyzeWebResource($url);
+    $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);
 
-    $this->assertArrayHasKey('process', $analyze);
-    $this->assertArrayHasKey('for_processing', $analyze['process']);
-    $this->assertArrayHasKey('in_process', $analyze['process']);
-    $this->assertArrayHasKey('processed', $analyze['process']);
-    $this->assertArrayHasKey('ignored', $analyze['process']);
-    $this->assertArrayHasKey('errored', $analyze['process']);
+    $this->assertArrayHasKey('for_processing', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('in_process', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('processed', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('ignored', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('errored', $analyze->getStatusCounts());
   }
 
   public function testAnalyzeDiskResource(): void
@@ -132,13 +131,12 @@ class ResourceCrawlerTest extends TestCase
 
     $path = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
 
-    $analyze = $resourceCrawler->analyzeDiskResource($path);
+    $analyze = $resourceCrawler->analyzeCrawlingDiskResource($path);
 
-    $this->assertArrayHasKey('process', $analyze);
-    $this->assertArrayHasKey('for_processing', $analyze['process']);
-    $this->assertArrayHasKey('in_process', $analyze['process']);
-    $this->assertArrayHasKey('processed', $analyze['process']);
-    $this->assertArrayHasKey('ignored', $analyze['process']);
-    $this->assertArrayHasKey('errored', $analyze['process']);
+    $this->assertArrayHasKey('for_processing', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('in_process', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('processed', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('ignored', $analyze->getStatusCounts());
+    $this->assertArrayHasKey('errored', $analyze->getStatusCounts());
   }
 }

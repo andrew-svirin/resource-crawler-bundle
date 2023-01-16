@@ -34,6 +34,7 @@
     <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskPacker" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\AnalyzeFactory" autowire="true" public="false"/>
 
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager" autowire="true" public="false">
       <argument key="$reader" type="service" id="resource_crawler.reader"/>

@@ -23,8 +23,8 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     // Do one crawl iteration.
     $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
     
-    // Take analyze of resource.
-    $analyze = $resourceCrawler->analyzeWebResource($url);
+    // Take analyze of resource crawling.
+    $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);
 
     // Reset all crawling related data.
     $resourceCrawler->resetWebResource($url);

@@ -2,6 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\AnalyzeFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
@@ -17,7 +19,8 @@ final class ProcessManager
   public function __construct(
     private readonly ProcessStoreInterface $processStore,
     private readonly ProcessFactory $processFactory,
-    private readonly TaskFactory $taskFactory
+    private readonly TaskFactory $taskFactory,
+    private readonly AnalyzeFactory $analyzeFactory,
   ) {
   }
 
@@ -65,8 +68,10 @@ final class ProcessManager
     $this->processStore->pushErroredTask($process, $task);
   }
 
-  public function analyzeProcess(CrawlingProcess $process): array
+  public function analyze(CrawlingProcess $process): CrawlingAnalyze
   {
-    return $this->processStore->countTasks($process);
+    $counts = $this->processStore->countTasks($process);
+
+    return $this->analyzeFactory->create($counts);
   }
 }
