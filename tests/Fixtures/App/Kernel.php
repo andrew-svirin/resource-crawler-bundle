@@ -37,8 +37,8 @@ class Kernel extends BaseKernel
 
   public function registerContainerConfiguration(LoaderInterface $loader): void
   {
-    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/framework.yml');
-    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/services.yml');
-    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/resource_crawler.yml');
+    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/framework.yaml');
+    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/services.yaml');
+    $loader->load($this->getProjectDir() . '/tests/Fixtures/App/config/resource_crawler.yaml');
   }
 }
