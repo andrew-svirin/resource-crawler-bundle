@@ -3,7 +3,6 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
-use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
@@ -34,7 +33,7 @@ final class NodeCrawler
     $node = $task->getNode();
 
     if ($node instanceof HtmlNode) {
-      $this->crawlHtmlNode($task->getProcess(), $node);
+      $this->crawlHtmlNode($task, $node);
     } elseif ($node instanceof ImgNode) {
       $this->crawlImgNode($node);
     } else {
@@ -45,7 +44,7 @@ final class NodeCrawler
   /**
    * Walk other html nodes graph.
    */
-  private function crawlHtmlNode(CrawlingProcess $process, HtmlNode $node): void
+  private function crawlHtmlNode(CrawlingTask $task, HtmlNode $node): void
   {
     $response = $this->resourceManager->readUri($node->getUri());
 
@@ -60,15 +59,19 @@ final class NodeCrawler
     $node->setDocument($document);
 
     foreach ($this->getAnchorPaths($node) as $anchorPath) {
-      $newNode = $this->resourceManager->createHtmlNode($process->getResource(), $anchorPath);
+      $newNode = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $anchorPath);
 
-      $this->processManager->pushTask($process, $newNode);
+      if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
+        $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
+      }
     }
 
     foreach ($this->getImgPaths($node) as $imgPath) {
-      $newNode = $this->resourceManager->createImgNode($process->getResource(), $imgPath);
+      $newNode = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $imgPath);
 
-      $this->processManager->pushTask($process, $newNode);
+      if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
+        $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
+      }
     }
   }
 

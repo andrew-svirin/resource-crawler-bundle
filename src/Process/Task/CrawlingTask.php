@@ -30,6 +30,11 @@ final class CrawlingTask
 
   private string $status;
 
+  /**
+   * @var string[]
+   */
+  private array $pushedForProcessingPaths = [];
+
   public function __construct(private readonly CrawlingProcess $process, private readonly NodeInterface $node)
   {
   }
@@ -52,5 +57,18 @@ final class CrawlingTask
   public function getStatus(): string
   {
     return $this->status;
+  }
+
+  public function appendPushedForProcessingPath(string $path): void
+  {
+    $this->pushedForProcessingPaths[] = $path;
+  }
+
+  /**
+   * @return string[]
+   */
+  public function getPushedForProcessingPaths(): array
+  {
+    return $this->pushedForProcessingPaths;
   }
 }

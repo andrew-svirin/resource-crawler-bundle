@@ -43,30 +43,57 @@ class ResourceCrawlerTest extends TestCase
 
     $resourceCrawler->resetWebResource($url);
 
-    $expectedPaths = [
-      ['https://site.com/index.html', 'processed'],
-      [
-        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
-        'processed',
-      ],
-      ['https://site.com/images/img-2.jpg', 'processed'],
-      ['https://site.com/images/img-1.jpg', 'processed'],
-      ['https://site.com/pages/page-500', 'errored'],
-      ['https://site.com/pages/page-400', 'errored'],
-      ['https://site.com/pages/page-2.html', 'processed'],
-      ['https://site.com/pages/page-1.html', 'processed'],
-      ['https://site.com/embed/frame.html', 'ignored'],
-      ['https://site-2.com/pages/page-3.html', 'ignored'],
-      ['https://site.com/', 'processed'],
-      [null, null],
-    ];
+    $expectedPaths = $this->crawlWebResourceExpectedPaths();
 
     for ($i = 0; $i < count($expectedPaths); $i++) {
       $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
 
       $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
       $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
+      $this->assertEquals($expectedPaths[$i][2], $task?->getPushedForProcessingPaths());
     }
+  }
+
+  private function crawlWebResourceExpectedPaths(): array
+  {
+    return [
+      [
+        'https://site.com/index.html',
+        'processed',
+        [
+          'https://site.com/',
+          'https://site.com/pages/page-1.html',
+          'https://site.com/pages/page-2.html',
+          'https://site.com/pages/page-400',
+          'https://site.com/pages/page-500',
+          'https://site.com/images/img-1.jpg',
+          'https://site.com/images/img-2.jpg',
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        ],
+      ],
+      [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        'processed',
+        [],
+      ],
+      ['https://site.com/images/img-2.jpg', 'processed', []],
+      ['https://site.com/images/img-1.jpg', 'processed', []],
+      ['https://site.com/pages/page-500', 'errored', []],
+      ['https://site.com/pages/page-400', 'errored', []],
+      ['https://site.com/pages/page-2.html', 'processed', []],
+      [
+        'https://site.com/pages/page-1.html',
+        'processed',
+        [
+          'https://site-2.com/pages/page-3.html',
+          'https://site.com/embed/frame.html',
+        ],
+      ],
+      ['https://site.com/embed/frame.html', 'ignored', []],
+      ['https://site-2.com/pages/page-3.html', 'ignored', []],
+      ['https://site.com/', 'processed', []],
+      [null, null, null],
+    ];
   }
 
   public function testResetDiskResource(): void
@@ -91,21 +118,52 @@ class ResourceCrawlerTest extends TestCase
 
     $resourceCrawler->resetDiskResource($path);
 
-    $expectedPaths = [
-      ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/index.html', 'processed'],
-      ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg', 'processed'],
-      ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg', 'processed'],
-      ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html', 'processed'],
-      ['/var/www/resource-crawler-bundle/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html', 'processed'],
-      [null, null],
-    ];
+    $expectedPaths = $this->crawlDiskResourceExpectedPaths();
 
     for ($i = 0; $i < count($expectedPaths); $i++) {
       $task = $resourceCrawler->crawlDiskResource($path, $pathMasks);
 
       $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
       $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
+      $this->assertEquals($expectedPaths[$i][2], $task?->getPushedForProcessingPaths());
     }
+  }
+
+  private function crawlDiskResourceExpectedPaths(): array
+  {
+    return [
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html',
+        'processed',
+        [
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+        ],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+        'processed',
+        [],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+        'processed',
+        [],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+        'processed',
+        [],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+        'processed',
+        [],
+      ],
+      [null, null, null],
+    ];
   }
 
   public function testAnalyzeWebResource(): void
