@@ -2,8 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
-use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\AnalyzeFactory;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
@@ -34,11 +34,11 @@ final class ProcessManager
     return $process;
   }
 
-  public function killProcess(Resource $resource): void
+  public function killProcess(Resource $resource): bool
   {
     $process = $this->processFactory->create($resource);
 
-    $this->processStore->deleteProcess($process);
+    return $this->processStore->deleteProcess($process);
   }
 
   public function popTask(CrawlingProcess $process): ?CrawlingTask
@@ -46,26 +46,26 @@ final class ProcessManager
     return $this->processStore->popForProcessingTask($process);
   }
 
-  public function pushTask(CrawlingProcess $process, NodeInterface $node): void
+  public function pushTask(CrawlingProcess $process, NodeInterface $node): bool
   {
     $task = $this->taskFactory->create($process, $node);
 
-    $this->processStore->pushForProcessingTask($process, $task);
+    return $this->processStore->pushForProcessingTask($process, $task);
   }
 
-  public function destroyTask(CrawlingProcess $process, CrawlingTask $task): void
+  public function destroyTask(CrawlingProcess $process, CrawlingTask $task): bool
   {
-    $this->processStore->pushProcessedTask($process, $task);
+    return $this->processStore->pushProcessedTask($process, $task);
   }
 
-  public function ignoreTask(CrawlingProcess $process, CrawlingTask $task): void
+  public function ignoreTask(CrawlingProcess $process, CrawlingTask $task): bool
   {
-    $this->processStore->pushIgnoredTask($process, $task);
+    return $this->processStore->pushIgnoredTask($process, $task);
   }
 
-  public function errorTask(CrawlingProcess $process, CrawlingTask $task): void
+  public function errorTask(CrawlingProcess $process, CrawlingTask $task): bool
   {
-    $this->processStore->pushErroredTask($process, $task);
+    return $this->processStore->pushErroredTask($process, $task);
   }
 
   public function analyze(CrawlingProcess $process): CrawlingAnalyze
