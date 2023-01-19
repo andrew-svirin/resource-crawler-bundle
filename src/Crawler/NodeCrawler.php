@@ -3,10 +3,9 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
-use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
-use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use LogicException;
 
@@ -19,7 +18,6 @@ final class NodeCrawler
 {
   public function __construct(
     private readonly ResourceManager $resourceManager,
-    private readonly ProcessManager $processManager,
     private readonly DocumentManager $documentManager
   ) {
   }
@@ -28,12 +26,10 @@ final class NodeCrawler
    * Crawl node.
    * Here is distinguishing task type.
    */
-  public function crawl(CrawlingTask $task): void
+  public function crawl(NodeInterface $node): void
   {
-    $node = $task->getNode();
-
     if ($node instanceof HtmlNode) {
-      $this->crawlHtmlNode($task, $node);
+      $this->crawlHtmlNode($node);
     } elseif ($node instanceof ImgNode) {
       $this->crawlImgNode($node);
     } else {
@@ -44,7 +40,7 @@ final class NodeCrawler
   /**
    * Walk other html nodes graph.
    */
-  private function crawlHtmlNode(CrawlingTask $task, HtmlNode $node): void
+  private function crawlHtmlNode(HtmlNode $node): void
   {
     $response = $this->resourceManager->readUri($node->getUri());
 
@@ -54,57 +50,9 @@ final class NodeCrawler
       return;
     }
 
-    $document = $this->documentManager->createDocument($node);
+    $document = $this->documentManager->createDocument($node->getResponse()->getContent());
 
     $node->setDocument($document);
-
-    foreach ($this->getAnchorPaths($node) as $anchorPath) {
-      $newNode = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $anchorPath);
-
-      if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
-        $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
-      }
-    }
-
-    foreach ($this->getImgPaths($node) as $imgPath) {
-      $newNode = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $imgPath);
-
-      if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
-        $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
-      }
-    }
-  }
-
-  /**
-   * @return string[]
-   */
-  private function getAnchorPaths(HtmlNode $node): iterable
-  {
-    foreach ($this->documentManager->extractAHrefs($node) as $pathStr) {
-      $path = $this->resourceManager->decomposePath($pathStr);
-
-      if (!$this->resourceManager->isValidPath($node->getUri(), $path)) {
-        continue;
-      }
-
-      yield $this->resourceManager->normalizePath($node->getUri(), $path);
-    }
-  }
-
-  /**
-   * @return string[]
-   */
-  private function getImgPaths(HtmlNode $node): iterable
-  {
-    foreach ($this->documentManager->extractImgSrcs($node) as $pathStr) {
-      $path = $this->resourceManager->decomposePath($pathStr);
-
-      if (!$this->resourceManager->isValidPath($node->getUri(), $path)) {
-        continue;
-      }
-
-      yield $this->resourceManager->normalizePath($node->getUri(), $path);
-    }
   }
 
   private function crawlImgNode(ImgNode $node): void
@@ -112,5 +60,51 @@ final class NodeCrawler
     $response = $this->resourceManager->readUri($node->getUri());
 
     $node->setResponse($response);
+  }
+
+  /**
+   * @return array<array<\DOMElement | bool | string | null>>
+   */
+  public function walkNode(NodeInterface $node): iterable
+  {
+    if ($node instanceof HtmlNode) {
+      yield from $this->walkHtmlNode($node);
+    } elseif ($node instanceof ImgNode) {
+      return;
+    } else {
+      throw new LogicException('Incorrect node.');
+    }
+  }
+
+  /**
+   * @return array<array<\DOMElement | bool | string | null>>
+   */
+  private function walkHtmlNode(HtmlNode $node): iterable
+  {
+    $doc = $node->getDocument();
+
+    if (empty($doc)) {
+      return;
+    }
+
+    foreach ($this->documentManager->extractRefs($doc) as $ref) {
+      if ('a' === $ref->nodeName) {
+        $path = $this->resourceManager->decomposePath($ref->getAttribute('href'));
+      } elseif ('img' === $ref->nodeName) {
+        $path = $this->resourceManager->decomposePath($ref->getAttribute('src'));
+      } else {
+        throw new LogicException('Node name not handled.');
+      }
+
+      $isValidPath = $this->resourceManager->isValidPath($node->getUri(), $path);
+
+      if ($isValidPath) {
+        $normalizedPath = $this->resourceManager->normalizePath($node->getUri(), $path);
+      } else {
+        $normalizedPath = null;
+      }
+
+      yield [$ref, $isValidPath, $normalizedPath];
+    }
   }
 }

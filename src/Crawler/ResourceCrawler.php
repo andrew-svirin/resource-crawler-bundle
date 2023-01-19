@@ -8,6 +8,8 @@ use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Resource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
+use DOMElement;
+use RuntimeException;
 
 /**
  * Crawler for resource.
@@ -56,16 +58,16 @@ final class ResourceCrawler
       return null;
     }
 
-    $this->tryPerformTask($resource, $process, $task);
+    $this->tryPerformTask($process, $task);
 
     return $task;
   }
 
-  private function tryPerformTask(Resource $resource, CrawlingProcess $process, CrawlingTask $task): void
+  private function tryPerformTask(CrawlingProcess $process, CrawlingTask $task): void
   {
     $isTaskPerformable = $this->resourceManager->isPerformablePath(
       $task->getNode()->getUri()->getPath(),
-      $resource->pathRegex()
+      $task->getProcess()->getResource()->pathRegex()
     );
 
     if ($isTaskPerformable) {
@@ -83,7 +85,30 @@ final class ResourceCrawler
 
   private function performTask(CrawlingTask $task): void
   {
-    $this->nodeCrawler->crawl($task);
+    $this->nodeCrawler->crawl($task->getNode());
+
+    $op = new CrawlRefHandlerClosure(
+      $this,
+      function (DOMElement $ref, bool $isValidPath, ?string $normalizedPath) use ($task) {
+        if (!$isValidPath) {
+          return;
+        }
+
+        if ('a' === $ref->nodeName) {
+          $newNode = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
+        } elseif ('img' === $ref->nodeName) {
+          $newNode = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $normalizedPath);
+        } else {
+          throw new RuntimeException('Node name not handled.');
+        }
+
+        if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
+          $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
+        }
+      }
+    );
+
+    $this->walkTaskNode($task, $op);
   }
 
   public function resetWebResource(string $url): void
@@ -133,5 +158,26 @@ final class ResourceCrawler
     $process = $this->processManager->loadProcess($resource);
 
     return $this->processManager->analyze($process);
+  }
+
+  /**
+   * Walk task node elements and handle them.
+   */
+  public function walkTaskNode(CrawlingTask $task, RefHandlerClosureInterface $refHandler): void
+  {
+    foreach ($this->nodeCrawler->walkNode($task->getNode()) as $args) {
+      $ref            = &$args[0];
+      $isValidPath    = &$args[1];
+      $normalizedPath = &$args[2];
+
+      if ($isValidPath) {
+        $isPerformablePath = $this->resourceManager->isPerformablePath(
+          $normalizedPath,
+          $task->getProcess()->getResource()->pathRegex()
+        );
+      }
+
+      $refHandler->call($ref, $isValidPath, $normalizedPath, $isPerformablePath ?? null);
+    }
   }
 }

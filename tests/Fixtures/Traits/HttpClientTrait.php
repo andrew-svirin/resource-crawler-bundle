@@ -24,6 +24,7 @@ trait HttpClientTrait
       $responses = [
         'https://site.com/'                  => $this->getMock('/http/site.com/index.html'),
         'https://site.com/index.html'        => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/#anchor'           => $this->getMock('/http/site.com/index.html'),
         'https://site.com/pages/page-1.html' => $this->getMock('/http/site.com/pages/page-1.html'),
         'https://site.com/pages/page-2.html' => $this->getMock('/http/site.com/pages/page-2.html'),
         'https://site.com/pages/page-400'    => $this->getMock('/http/site.com/pages/page-400.html', 400),

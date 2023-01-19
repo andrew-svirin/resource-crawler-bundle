@@ -3,8 +3,6 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Document;
 
 use AndrewSvirin\ResourceCrawlerBundle\Document\Html\HtmlExtractor;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\Node;
 use DOMDocument;
 
 /**
@@ -20,24 +18,17 @@ final class DocumentManager
   ) {
   }
 
-  public function createDocument(Node $node): DOMDocument
+  public function createDocument(string $content): DOMDocument
   {
-    return $this->documentComposer->resolve($node->getResponse()->getContent());
+    return $this->documentComposer->resolve($content);
   }
 
   /**
-   * @return string[]
+   * @return \DOMElement[]
    */
-  public function extractAHrefs(HtmlNode $node): iterable
+  public function extractRefs(DOMDocument $dom): iterable
   {
-    return $this->htmlExtractor->extractAHrefs($node->getDocument());
-  }
-
-  /**
-   * @return string[]
-   */
-  public function extractImgSrcs(HtmlNode $node): iterable
-  {
-    return $this->htmlExtractor->extractImgSrcs($node->getDocument());
+    yield from $this->htmlExtractor->extractAnchors($dom);
+    yield from $this->htmlExtractor->extractImgs($dom);
   }
 }

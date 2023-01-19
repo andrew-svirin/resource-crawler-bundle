@@ -7,9 +7,6 @@ parameters:
         - tests/Fixtures/App/storage/*
     ignoreErrors:
         -
-            message: '#Method [a-zA-Z0-9\\_]+::load\(\) has parameter \$configs with no value type specified in iterable type array.#'
-            path: src/DependencyInjection/ResourceCrawlerExtension.php
-        -
             message: '#Call to an undefined method [a-zA-Z0-9\\_]+::children().#'
             path: src/DependencyInjection/Configuration.php
     tipsOfTheDay: false

@@ -38,29 +38,31 @@ final class PathNormalizer
     }
 
     if ($childPath->isAbsolute()) {
-      $normalizedScheme = $childPath->getScheme();
-      $normalizedHost   = $childPath->getHost();
-      $normalizedPath   = $childPath->getPath();
+      $nmdScheme = $childPath->getScheme();
+      $nmdHost   = $childPath->getHost();
+      $nmdPath   = $childPath->getPath();
     } else {
       $parentPath = $this->pathComposer->decompose($parentUri->getPath());
 
-      $normalizedScheme = $parentPath->getScheme();
-      $normalizedHost   = $parentPath->getHost();
+      $nmdScheme = $parentPath->getScheme();
+      $nmdHost   = $parentPath->getHost();
 
       if ($childPath->isRoot()) {
-        $normalizedPath = $childPath->getPath();
+        $nmdPath = $childPath->getPath();
       } else {
         $parentPathDir = rtrim(dirname($parentPath->getPath()));
 
-        $normalizedPath = $parentPathDir . '/./' . $childPath->getPath();
+        $nmdPath = $parentPathDir . '/./' . $childPath->getPath();
       }
     }
 
-    $normalizedQuery = $childPath->getQuery();
+    $nmdQuery = $childPath->getQuery();
 
-    $normalizedPath = $this->normalizePathAbsolute($normalizedPath);
+    $nmdFragment = $childPath->getFragment();
 
-    return $this->pathComposer->compose($normalizedScheme, $normalizedHost, $normalizedPath, $normalizedQuery);
+    $nmdPath = $this->normalizePathAbsolute($nmdPath);
+
+    return $this->pathComposer->compose($nmdScheme, $nmdHost, $nmdPath, $nmdQuery, $nmdFragment);
   }
 
   private function normalizePathAbsolute(string $path): string

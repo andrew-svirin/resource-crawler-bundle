@@ -25,6 +25,14 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     
     // Take analyze of resource crawling.
     $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);
+    
+    // Walk other task node.
+    $resourceCrawler->walkTaskNode($task, new class() implements RefHandlerClosureInterface {
+      public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
+      {
+        // Here is possible to update reference in task node.
+      }
+    });
 
     // Reset all crawling related data.
     $resourceCrawler->resetWebResource($url);

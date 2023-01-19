@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Document\Html;
 
+use AndrewSvirin\ResourceCrawlerBundle\Document\Element\ElementFactory;
 use DOMDocument;
 use DOMElement;
 
@@ -13,31 +14,31 @@ use DOMElement;
 final class HtmlExtractor
 {
   /**
-   * @return string[]
+   * @return DOMElement[]
    */
-  public function extractAHrefs(DOMDocument $dom): iterable
+  public function extractAnchors(DOMDocument $dom): iterable
   {
     $nodeList = $dom->getElementsByTagName('a');
 
     /** @var \DOMNode|null $node */
     foreach ($nodeList as $node) {
       if ($node instanceof DOMElement) {
-        yield $node->getAttribute('href');
+        yield $node;
       }
     }
   }
 
   /**
-   * @return string[]
+   * @return DOMElement[]
    */
-  public function extractImgSrcs(DOMDocument $dom): iterable
+  public function extractImgs(DOMDocument $dom): iterable
   {
     $nodeList = $dom->getElementsByTagName('img');
 
     /** @var \DOMNode $node */
     foreach ($nodeList as $node) {
       if ($node instanceof DOMElement) {
-        yield $node->getAttribute('src');
+        yield $node;
       }
     }
   }

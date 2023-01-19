@@ -16,16 +16,16 @@ abstract class ProcessStore implements ProcessStoreInterface
   ) {
   }
 
-  protected function operateStore(callable $closure): mixed
+  protected function operateStore(OperateStoreClosure $closure): ?bool
   {
     if ($this->isLockable) {
       return $this->operateStoreWithLocking($closure);
     } else {
-      return call_user_func($closure);
+      return $closure->call();
     }
   }
 
-  private function operateStoreWithLocking(callable $closure): mixed
+  private function operateStoreWithLocking(OperateStoreClosure $closure): bool
   {
     $lock = $this->lockFactory->createLock('crawling-process', 30);
 
@@ -33,7 +33,7 @@ abstract class ProcessStore implements ProcessStoreInterface
       throw new RuntimeException('Can not lock file.');
     }
     try {
-      return call_user_func($closure);
+      return $closure->call();
     } finally {
       $lock->release();
     }

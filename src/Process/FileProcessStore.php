@@ -39,30 +39,29 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
   public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): bool
   {
-    $taskHash   = $this->genTaskHash($task);
-    $packedTask = $this->packTask($task);
+    $taskHash = $this->genTaskHash($task);
+    $pkdTask  = $this->packTask($task);
 
     $task->setStatus(CrawlingTask::STATUS_FOR_PROCESSING);
 
-    return $this->safeUpdateProcessData(
-      $process,
-      function (array $processData) use ($task, $taskHash, $packedTask): ?array {
-        if ($this->taskExists($processData, $taskHash)) {
-          return null;
-        }
-
-        $processData[$task->getStatus()][$taskHash] = $packedTask;
-
-        return $processData;
+    $op = new UpdateProcessDataClosure($this, function (array $processData) use ($task, $taskHash, $pkdTask): ?array {
+      if ($this->taskExists($processData, $taskHash)) {
+        return null;
       }
-    );
+
+      $processData[$task->getStatus()][$taskHash] = $pkdTask;
+
+      return $processData;
+    });
+
+    return $this->safeUpdateProcessData($process, $op);
   }
 
   public function popForProcessingTask(CrawlingProcess $process): ?CrawlingTask
   {
     $packedTask = null;
 
-    $this->safeUpdateProcessData($process, function (array $processData) use (&$packedTask) {
+    $op = new UpdateProcessDataClosure($this, function (array $processData) use (&$packedTask) {
       $taskHash = array_key_last($processData[CrawlingTask::STATUS_FOR_PROCESSING]);
 
       if (empty($taskHash)) {
@@ -75,6 +74,8 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
       return $processData;
     });
+
+    $this->safeUpdateProcessData($process, $op);
 
     if (null === $packedTask) {
       return null;
@@ -106,7 +107,7 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
   {
     $taskHash = $this->genTaskHash($task);
 
-    $update = $this->safeUpdateProcessData($process, function (array $processData) use ($task, $status, $taskHash) {
+    $op = new UpdateProcessDataClosure($this, function (array $processData) use ($task, $status, $taskHash) {
       $packedTask = $processData[$task->getStatus()][$taskHash];
 
       $packedTask['code'] = $task->getNode()->getResponse()?->getCode();
@@ -118,6 +119,8 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
       return $processData;
     });
 
+    $update = $this->safeUpdateProcessData($process, $op);
+
     $task->setStatus($status);
 
     return $update;
@@ -128,12 +131,12 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
     return $this->safeDeleteProcessData($process);
   }
 
-  private function safeUpdateProcessData(CrawlingProcess $process, callable $closure): mixed
+  private function safeUpdateProcessData(CrawlingProcess $process, UpdateProcessDataClosure $closure): bool
   {
-    return $this->operateStore(function () use ($process, $closure): bool {
+    $op = new OperateStoreClosure($this, function () use ($process, $closure): bool {
       $processData = $this->readProcessData($process);
 
-      $processData = call_user_func_array($closure, [$processData]);
+      $processData = $closure->call($processData);
 
       if (null === $processData) {
         return false;
@@ -141,13 +144,17 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
       return $this->writeProcessData($process, $processData);
     });
+
+    return $this->operateStore($op);
   }
 
   private function safeDeleteProcessData(CrawlingProcess $process): bool
   {
-    return $this->operateStore(function () use ($process) {
+    $op = new OperateStoreClosure($this, function () use ($process) {
       return $this->deleteProcessData($process);
     });
+
+    return $this->operateStore($op);
   }
 
   /**
@@ -290,12 +297,16 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
   {
     $counts = [];
 
-    $this->operateStore(function () use ($process, &$counts) {
+    $op = new OperateStoreClosure($this, function () use ($process, &$counts) {
       $processData = $this->readProcessData($process);
       foreach (CrawlingTask::ALL_STATUSES as $status) {
         $counts[$status] = count($processData[$status]);
       }
+
+      return true;
     });
+
+    $this->operateStore($op);
 
     return $counts;
   }

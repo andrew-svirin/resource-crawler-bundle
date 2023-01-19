@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 
@@ -54,6 +55,9 @@ class ResourceCrawlerTest extends TestCase
     }
   }
 
+  /**
+   * @return array<array<string | string[] | null>>
+   */
   private function crawlWebResourceExpectedPaths(): array
   {
     return [
@@ -66,6 +70,8 @@ class ResourceCrawlerTest extends TestCase
           'https://site.com/pages/page-2.html',
           'https://site.com/pages/page-400',
           'https://site.com/pages/page-500',
+          'https://site.com/#anchor',
+          'https://other-site-2.com/',
           'https://site.com/images/img-1.jpg',
           'https://site.com/images/img-2.jpg',
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
@@ -78,6 +84,8 @@ class ResourceCrawlerTest extends TestCase
       ],
       ['https://site.com/images/img-2.jpg', 'processed', []],
       ['https://site.com/images/img-1.jpg', 'processed', []],
+      ['https://other-site-2.com/', 'ignored', []],
+      ['https://site.com/#anchor', 'processed', []],
       ['https://site.com/pages/page-500', 'errored', []],
       ['https://site.com/pages/page-400', 'errored', []],
       ['https://site.com/pages/page-2.html', 'processed', []],
@@ -129,6 +137,9 @@ class ResourceCrawlerTest extends TestCase
     }
   }
 
+  /**
+   * @return array<array<string | string[] | null>>
+   */
   private function crawlDiskResourceExpectedPaths(): array
   {
     return [
@@ -173,6 +184,8 @@ class ResourceCrawlerTest extends TestCase
 
     $url = 'https://site.com/index.html';
 
+    $resourceCrawler->resetWebResource($url);
+
     $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);
 
     $this->assertArrayHasKey('for_processing', $analyze->getStatusCounts());
@@ -189,6 +202,8 @@ class ResourceCrawlerTest extends TestCase
 
     $path = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
 
+    $resourceCrawler->resetDiskResource($path);
+
     $analyze = $resourceCrawler->analyzeCrawlingDiskResource($path);
 
     $this->assertArrayHasKey('for_processing', $analyze->getStatusCounts());
@@ -196,5 +211,137 @@ class ResourceCrawlerTest extends TestCase
     $this->assertArrayHasKey('processed', $analyze->getStatusCounts());
     $this->assertArrayHasKey('ignored', $analyze->getStatusCounts());
     $this->assertArrayHasKey('errored', $analyze->getStatusCounts());
+  }
+
+  public function testWalkTaskNode(): void
+  {
+    /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+    $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+    $url       = 'https://site.com/index.html';
+    $pathMasks = ['+site.com/', '-embed'];
+
+    $resourceCrawler->resetWebResource($url);
+
+    $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
+
+    $nodeCalls = $this->walkTaskNodeCalls();
+    $i         = 0;
+
+    $callable = function (\DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath) use (
+      &$i,
+      $nodeCalls
+    ) {
+      $this->assertEquals($nodeCalls[$i][0], $ref->nodeName);
+      $this->assertEquals($nodeCalls[$i][1], $isValidPath);
+      $this->assertEquals($nodeCalls[$i][2], $normalizedPath);
+      $this->assertEquals($nodeCalls[$i][3], $isPerformablePath);
+
+      $i++;
+    };
+
+    $op = new class($this, $callable) implements RefHandlerClosureInterface {
+
+      private \Closure $closure;
+
+      public function __construct(private ResourceCrawlerTest $newThis, callable $callable)
+      {
+        $this->closure = $callable(...);
+      }
+
+      public function call(\DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
+      {
+        $this->closure->call($this->newThis, $ref, $isValidPath, $normalizedPath, $isPerformablePath);
+      }
+    };
+
+    $resourceCrawler->walkTaskNode($task, $op);
+  }
+
+  /**
+   * @return array<array<string | string[] | null>>
+   */
+  private function walkTaskNodeCalls(): array
+  {
+    return [
+      [
+        'a',
+        true,
+        'https://site.com/index.html',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/index.html',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/pages/page-1.html',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/pages/page-2.html',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/pages/page-400',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/pages/page-500',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/pages/page-2.html',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/#anchor',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://other-site-2.com/',
+        false,
+      ],
+      [
+        'img',
+        true,
+        'https://site.com/images/img-1.jpg',
+        true,
+      ],
+      [
+        'img',
+        true,
+        'https://site.com/images/img-2.jpg',
+        true,
+      ],
+      [
+        'img',
+        true,
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        true,
+      ],
+    ];
   }
 }

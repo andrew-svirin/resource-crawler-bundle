@@ -13,14 +13,20 @@ final class PathComposer
   {
   }
 
-  public function compose(string $scheme, string $host, string $path, string $query = null): string
-  {
+  public function compose(
+    string $scheme,
+    string $host,
+    string $path,
+    string $query = null,
+    string $fragment = null
+  ): string {
     return sprintf(
-      '%s://%s%s%s',
+      '%s://%s%s%s%s',
       $scheme,
       $host,
       $path,
-      $query ? '?' . $query : ''
+      $query ? '?' . $query : '',
+      $fragment ? '#' . $fragment : ''
     );
   }
 
