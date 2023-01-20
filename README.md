@@ -20,7 +20,7 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     $url       = 'https://site.com/index.html';
     $pathMasks = ['+site.com/', '-embed'];
 
-    // Do one crawl iteration.
+    // Do one of multiple crawl iteration.
     $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
     
     // Take analyze of resource crawling.
@@ -30,9 +30,14 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     $resourceCrawler->walkTaskNode($task, new class() implements RefHandlerClosureInterface {
       public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
       {
-        // Here is possible to update reference in task node.
+        // Here is possible to handle reference in task node.
       }
     });
+    
+    if($someExceptionCondition){
+        // Move task back for be crawled again.
+        $resourceCrawler->rollbackTask($task);
+    }
 
     // Reset all crawling related data.
     $resourceCrawler->resetWebResource($url);

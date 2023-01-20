@@ -40,6 +40,11 @@ interface ProcessStoreInterface
   public function pushErroredTask(CrawlingProcess $process, CrawlingTask $task): bool;
 
   /**
+   * Revert task to beginning of `for_processing` stack.
+   */
+  public function revertTask(CrawlingProcess $process, CrawlingTask $task): bool;
+
+  /**
    * Delete process.
    * Delete all stacks of tasks.
    */

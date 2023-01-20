@@ -126,6 +126,15 @@ final class ResourceCrawler
   }
 
   /**
+   * Rollback task.
+   * Revert task back for crawling.
+   */
+  public function rollbackTask(CrawlingTask $task): void
+  {
+    $this->processManager->revertTask($task->getProcess(), $task);
+  }
+
+  /**
    * Reset crawling relating data.
    */
   private function resetResource(Resource $resource): void
@@ -161,7 +170,8 @@ final class ResourceCrawler
   }
 
   /**
-   * Walk task node elements and handle them.
+   * Walk task node elements to handle them.
+   * Possible to modify task node content.
    */
   public function walkTaskNode(CrawlingTask $task, RefHandlerClosureInterface $refHandler): void
   {

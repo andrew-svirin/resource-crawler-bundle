@@ -19,6 +19,7 @@ final class UpdateProcessDataClosure
   /**
    * @param array<string, array<string, string|array<string, string>>> $processData
    * @return array<string, array<string, string|array<string, string>>> | null
+   *  Return `null` - when avoid writing.
    */
   public function call(array $processData): ?array
   {

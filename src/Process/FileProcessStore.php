@@ -39,7 +39,7 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
   public function pushForProcessingTask(CrawlingProcess $process, CrawlingTask $task): bool
   {
-    $taskHash = $this->genTaskHash($task);
+    $taskHash = $this->genPathHash($task->getNode()->getUri()->getPath());
     $pkdTask  = $this->packTask($task);
 
     $task->setStatus(CrawlingTask::STATUS_FOR_PROCESSING);
@@ -103,9 +103,42 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
     return $this->pushTask($process, $task, CrawlingTask::STATUS_ERRORED);
   }
 
+  public function revertTask(CrawlingProcess $process, CrawlingTask $task): bool
+  {
+    $taskHash = $this->genPathHash($task->getNode()->getUri()->getPath());
+
+    $fptHashes = [];
+    foreach ($task->getPushedForProcessingPaths() as $path) {
+      $fptHashes[] = $this->genPathHash($path);
+    }
+
+    $op = new UpdateProcessDataClosure($this, function (array $processData) use ($task, $taskHash, $fptHashes) {
+      $packedTask = $processData[$task->getStatus()][$taskHash];
+
+      unset($processData[$task->getStatus()][$taskHash]);
+
+      // Put indexed element to the beginning of the array.
+      $processData[CrawlingTask::STATUS_FOR_PROCESSING] = [$taskHash => $packedTask] +
+        $processData[CrawlingTask::STATUS_FOR_PROCESSING];
+
+      // Remove tasks those were pushed for processing while crawled.
+      foreach ($fptHashes as $fptHash) {
+        unset($processData[CrawlingTask::STATUS_FOR_PROCESSING][$fptHash]);
+      }
+
+      return $processData;
+    });
+
+    $update = $this->safeUpdateProcessData($process, $op);
+
+    $task->setStatus(CrawlingTask::STATUS_FOR_PROCESSING);
+
+    return $update;
+  }
+
   private function pushTask(CrawlingProcess $process, CrawlingTask $task, string $status): bool
   {
-    $taskHash = $this->genTaskHash($task);
+    $taskHash = $this->genPathHash($task->getNode()->getUri()->getPath());
 
     $op = new UpdateProcessDataClosure($this, function (array $processData) use ($task, $status, $taskHash) {
       $packedTask = $processData[$task->getStatus()][$taskHash];
@@ -258,9 +291,9 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
     return $this->fileStoreDir . '/' . $process->getId() . '.json';
   }
 
-  private function genTaskHash(CrawlingTask $task): string
+  private function genPathHash(string $path): string
   {
-    return hash('sha256', $task->getNode()->getUri()->getPath());
+    return hash('sha256', $path);
   }
 
   /**

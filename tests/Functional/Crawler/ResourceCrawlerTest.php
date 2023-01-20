@@ -5,6 +5,8 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
+use Closure;
+use DOMElement;
 
 /**
  * ResourceCrawlerTest
@@ -228,10 +230,8 @@ class ResourceCrawlerTest extends TestCase
     $nodeCalls = $this->walkTaskNodeCalls();
     $i         = 0;
 
-    $callable = function (\DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath) use (
-      &$i,
-      $nodeCalls
-    ) {
+    $callable = function (DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath)
+    use (&$i, $nodeCalls) {
       $this->assertEquals($nodeCalls[$i][0], $ref->nodeName);
       $this->assertEquals($nodeCalls[$i][1], $isValidPath);
       $this->assertEquals($nodeCalls[$i][2], $normalizedPath);
@@ -242,14 +242,14 @@ class ResourceCrawlerTest extends TestCase
 
     $op = new class($this, $callable) implements RefHandlerClosureInterface {
 
-      private \Closure $closure;
+      private Closure $closure;
 
-      public function __construct(private ResourceCrawlerTest $newThis, callable $callable)
+      public function __construct(private readonly ResourceCrawlerTest $newThis, callable $callable)
       {
         $this->closure = $callable(...);
       }
 
-      public function call(\DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
+      public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
       {
         $this->closure->call($this->newThis, $ref, $isValidPath, $normalizedPath, $isPerformablePath);
       }
@@ -343,5 +343,29 @@ class ResourceCrawlerTest extends TestCase
         true,
       ],
     ];
+  }
+
+  public function testRollbackTask(): void
+  {
+    /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
+    $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
+
+    $url       = 'https://site.com/index.html';
+    $pathMasks = ['+site.com/', '-embed'];
+
+    $resourceCrawler->resetWebResource($url);
+
+    $analyze1 = $resourceCrawler->analyzeCrawlingWebResource($url);
+
+    $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
+
+    $analyze2 = $resourceCrawler->analyzeCrawlingWebResource($url);
+
+    $resourceCrawler->rollbackTask($task);
+
+    $analyze3 = $resourceCrawler->analyzeCrawlingWebResource($url);
+
+    $this->assertNotEquals($analyze1, $analyze2);
+    $this->assertEquals($analyze1, $analyze3);
   }
 }

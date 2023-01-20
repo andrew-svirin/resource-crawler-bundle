@@ -68,6 +68,11 @@ final class ProcessManager
     return $this->processStore->pushErroredTask($process, $task);
   }
 
+  public function revertTask(CrawlingProcess $process, CrawlingTask $task): bool
+  {
+    return $this->processStore->revertTask($process, $task);
+  }
+
   public function analyze(CrawlingProcess $process): CrawlingAnalyze
   {
     $counts = $this->processStore->countTasks($process);
