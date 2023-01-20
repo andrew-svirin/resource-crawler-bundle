@@ -98,11 +98,7 @@ final class NodeCrawler
 
       $isValidPath = $this->resourceManager->isValidPath($node->getUri(), $path);
 
-      if ($isValidPath) {
-        $normalizedPath = $this->resourceManager->normalizePath($node->getUri(), $path);
-      } else {
-        $normalizedPath = null;
-      }
+      $normalizedPath = $isValidPath ? $this->resourceManager->normalizePath($node->getUri(), $path) : null;
 
       yield [$ref, $isValidPath, $normalizedPath];
     }

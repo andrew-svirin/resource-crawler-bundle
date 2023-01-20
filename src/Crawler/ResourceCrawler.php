@@ -170,14 +170,12 @@ final class ResourceCrawler
       $isValidPath    = &$args[1];
       $normalizedPath = &$args[2];
 
-      if ($isValidPath) {
-        $isPerformablePath = $this->resourceManager->isPerformablePath(
-          $normalizedPath,
-          $task->getProcess()->getResource()->pathRegex()
-        );
-      }
+      $isPerformablePath = $isValidPath ? $this->resourceManager->isPerformablePath(
+        $normalizedPath,
+        $task->getProcess()->getResource()->pathRegex()
+      ) : null;
 
-      $refHandler->call($ref, $isValidPath, $normalizedPath, $isPerformablePath ?? null);
+      $refHandler->call($ref, $isValidPath, $normalizedPath, $isPerformablePath);
     }
   }
 }

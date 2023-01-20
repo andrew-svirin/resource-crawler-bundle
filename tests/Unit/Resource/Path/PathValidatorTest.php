@@ -15,12 +15,12 @@ use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 class PathValidatorTest extends TestCase
 {
   /**
-   * @dataProvider isValidHttProvider
+   * @dataProvider isValidHttpProvider
    */
   public function testIsValidHttp(string $parentPathStr, string $childPathStr, bool $isValid): void
   {
-    $uriFactory     = $this->getContainer()->get(UriFactory::class);
-    $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    $uriFactory    = $this->getContainer()->get(UriFactory::class);
+    $pathComposer  = $this->getContainer()->get(PathComposer::class);
     $pathValidator = $this->getContainer()->get(PathValidator::class);
 
     $parentUri = $uriFactory->createHttp($parentPathStr);
@@ -32,10 +32,13 @@ class PathValidatorTest extends TestCase
   /**
    * @return non-empty-array<array>
    */
-  public function isValidHttProvider(): array
+  public function isValidHttpProvider(): array
   {
     return [
-      ['https://site-1.com/', 'page-科', false],
+      ['https://site-1.com/', 'page-'. chr(1), false],
+      ['https://site-1.com/', 'page-科', true],
+      ['https://site-1.com/', 'page-абв', true],
+      ['https://site-1.com/', 'page-äöü', true],
       ['https://site-1.com/', 'https://site-1.com/index.html', true],
       ['https://site-1.com/', '//site.com', true],
       ['https://site-1.com/', '//site.com:80', true],
@@ -54,8 +57,8 @@ class PathValidatorTest extends TestCase
    */
   public function testIsValidFs(string $parentPathStr, string $childPathStr, bool $isValid): void
   {
-    $uriFactory     = $this->getContainer()->get(UriFactory::class);
-    $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    $uriFactory    = $this->getContainer()->get(UriFactory::class);
+    $pathComposer  = $this->getContainer()->get(PathComposer::class);
     $pathValidator = $this->getContainer()->get(PathValidator::class);
 
     $parentUri = $uriFactory->createFs($parentPathStr);
@@ -73,7 +76,7 @@ class PathValidatorTest extends TestCase
       ['/level-1/index.html', 'page-1.html', true],
       ['/level-1/index.html', '/page-1.html', false],
       ['/level-1/index.html', 'https://pages/page-1.html', false],
-      ['/level-1/index.html', 'page-科.html', false],
+      ['/level-1/index.html', 'page-科.html', true],
     ];
   }
 }

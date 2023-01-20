@@ -63,7 +63,7 @@ final class PathValidator
 
   private function hasDisallowedCharacters(string $path): bool
   {
-    $pattern = '/^[A-Za-z0-9\/\'\-~#!?$&@%()*+=.,;:_ ]*$/';
+    $pattern = '/^[\p{L}\d\/\'\-\(\)\[\]"`~#!?$&@%{}*+<>=.,;:_ ]*$/u';
 
     return 0 === preg_match($pattern, $path);
   }
