@@ -113,6 +113,11 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
     }
 
     $op = new UpdateProcessDataClosure($this, function (array $processData) use ($task, $taskHash, $fptHashes) {
+      // Remove tasks those were pushed for processing while crawled.
+      foreach ($fptHashes as $fptHash) {
+        unset($processData[CrawlingTask::STATUS_FOR_PROCESSING][$fptHash]);
+      }
+
       $packedTask = $processData[$task->getStatus()][$taskHash];
 
       unset($processData[$task->getStatus()][$taskHash]);
@@ -120,11 +125,6 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
       // Put indexed element to the beginning of the array.
       $processData[CrawlingTask::STATUS_FOR_PROCESSING] = [$taskHash => $packedTask] +
         $processData[CrawlingTask::STATUS_FOR_PROCESSING];
-
-      // Remove tasks those were pushed for processing while crawled.
-      foreach ($fptHashes as $fptHash) {
-        unset($processData[CrawlingTask::STATUS_FOR_PROCESSING][$fptHash]);
-      }
 
       return $processData;
     });
