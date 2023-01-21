@@ -6,7 +6,10 @@ use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Path;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
+use DOMElement;
 use LogicException;
 
 /**
@@ -88,13 +91,7 @@ final class NodeCrawler
     }
 
     foreach ($this->documentManager->extractRefs($doc) as $ref) {
-      if ('a' === $ref->nodeName) {
-        $path = $this->resourceManager->decomposePath($ref->getAttribute('href'));
-      } elseif ('img' === $ref->nodeName) {
-        $path = $this->resourceManager->decomposePath($ref->getAttribute('src'));
-      } else {
-        throw new LogicException('Node name not handled.');
-      }
+      $path = $this->decomposeRefPath($ref);
 
       $isValidPath = $this->resourceManager->isValidPath($node->getUri(), $path);
 
@@ -102,5 +99,31 @@ final class NodeCrawler
 
       yield [$ref, $isValidPath, $normalizedPath];
     }
+  }
+
+  private function decomposeRefPath(DOMElement $ref): Path
+  {
+    if ('a' === $ref->nodeName) {
+      $path = $this->resourceManager->decomposePath($ref->getAttribute('href'));
+    } elseif ('img' === $ref->nodeName) {
+      $path = $this->resourceManager->decomposePath($ref->getAttribute('src'));
+    } else {
+      throw new LogicException('Node name not handled.');
+    }
+
+    return $path;
+  }
+
+  public function createRefNode(DOMElement $ref, ResourceInterface $resource, string $normalizedPath): NodeInterface
+  {
+    if ('a' === $ref->nodeName) {
+      $node = $this->resourceManager->createHtmlNode($resource, $normalizedPath);
+    } elseif ('img' === $ref->nodeName) {
+      $node = $this->resourceManager->createImgNode($resource, $normalizedPath);
+    } else {
+      throw new LogicException('Node name not handled.');
+    }
+
+    return $node;
   }
 }

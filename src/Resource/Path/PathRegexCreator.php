@@ -22,16 +22,10 @@ final class PathRegexCreator
     $pathRegex = new PathRegex();
 
     foreach ($pathMasks as $pathMask) {
-      $pathMaskOperation  = $this->resolvePathMaskOperation($pathMask);
-      $pathMaskExpression = $this->resolvePathMaskExpression($pathMask);
+      $pathMaskOp   = $this->resolvePathMaskOperation($pathMask);
+      $pathMaskExpr = $this->resolvePathMaskExpression($pathMask);
 
-      if ('+' === $pathMaskOperation) {
-        $pathRegex->addAllowed($pathMaskExpression);
-      } elseif ('-' === $pathMaskOperation) {
-        $pathRegex->addDisallowed($pathMaskExpression);
-      } else {
-        throw new RuntimeException('Path mask first symbol invalid. Allowed: "+", "-"');
-      }
+      $this->addPathMaskOperation($pathMaskOp, $pathMaskExpr, $pathRegex);
     }
 
     $expression = $this->resolveExpression(
@@ -41,6 +35,17 @@ final class PathRegexCreator
     $pathRegex->setExpression($expression);
 
     return $pathRegex;
+  }
+
+  private function addPathMaskOperation(string $pathMaskOp, string $pathMaskExpr, PathRegex $pathRegex): void
+  {
+    if ('+' === $pathMaskOp) {
+      $pathRegex->addAllowed($pathMaskExpr);
+    } elseif ('-' === $pathMaskOp) {
+      $pathRegex->addDisallowed($pathMaskExpr);
+    } else {
+      throw new RuntimeException('Path mask first symbol invalid. Allowed: "+", "-"');
+    }
   }
 
   private function resolvePathMaskOperation(string $pathMask): string

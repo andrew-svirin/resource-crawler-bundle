@@ -9,7 +9,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Resource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use DOMElement;
-use RuntimeException;
 
 /**
  * Crawler for resource.
@@ -94,13 +93,7 @@ final class ResourceCrawler
           return;
         }
 
-        if ('a' === $ref->nodeName) {
-          $newNode = $this->resourceManager->createHtmlNode($task->getProcess()->getResource(), $normalizedPath);
-        } elseif ('img' === $ref->nodeName) {
-          $newNode = $this->resourceManager->createImgNode($task->getProcess()->getResource(), $normalizedPath);
-        } else {
-          throw new RuntimeException('Node name not handled.');
-        }
+        $newNode = $this->nodeCrawler->createRefNode($ref, $task->getProcess()->getResource(), $normalizedPath);
 
         if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
           $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
