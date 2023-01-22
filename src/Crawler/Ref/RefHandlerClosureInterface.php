@@ -1,8 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
-
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+namespace AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref;
 
 /**
  * Reference handler closure interface.

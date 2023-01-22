@@ -6,10 +6,10 @@ services:
     build:
       context: php-cli
     volumes:
-      - ../../:/var/www/resource-crawler-bundle
-      - /var/www/resource-crawler-bundle/.git
-      - /var/www/resource-crawler-bundle/.idea
-      - /var/www/resource-crawler-bundle/infrastructure
+      - ../:/var/www/resource-crawler-bundle
+      - ../.git
+      - ../.idea
+      - ../infrastructure
     expose:
       - 9003
     tty: true

@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
 use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;

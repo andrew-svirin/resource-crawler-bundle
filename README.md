@@ -14,8 +14,7 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 ```php
     /* @var $resourceCrawler \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler */
     
-    use \AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
-    use \AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+    use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefHandlerClosureInterface;use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
     
     // Resolve service by alias or by class.
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');

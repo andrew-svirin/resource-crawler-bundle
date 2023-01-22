@@ -2,8 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 use Closure;
