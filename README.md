@@ -14,6 +14,9 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 ```php
     /* @var $resourceCrawler \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler */
     
+    use \AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
+    use \AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+    
     // Resolve service by alias or by class.
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
@@ -33,7 +36,7 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     
     // Walk other task node.
     $resourceCrawler->walkTaskNode($task, new class() implements RefHandlerClosureInterface {
-      public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
+      public function call(RefPath $refPath): void
       {
         // Here is possible to handle reference in task node.
       }
