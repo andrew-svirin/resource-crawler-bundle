@@ -1,4 +1,4 @@
-DOCKER_DIR := infrastructure/docker
+DOCKER_DIR := infrastructure
 DC := docker-compose -p resource-crawler-bundle
 DC_BUILD := $(DC) build
 DC_UP := $(DC) up
