@@ -2,12 +2,12 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use DOMElement;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 
 /**
  * Reference handler closure interface.
  */
 interface RefHandlerClosureInterface
 {
-  public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void;
+  public function call(RefPath $refPath): void;
 }

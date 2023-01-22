@@ -2,13 +2,13 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
 use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Resource;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
-use DOMElement;
 
 /**
  * Crawler for resource.
@@ -24,20 +24,22 @@ final class ResourceCrawler
 
   /**
    * @param string[]|null $pathMasks
+   * @param array<string,string>|null $substRules Substitution rules.
    */
-  public function crawlWebResource(string $url, ?array $pathMasks = null): ?CrawlingTask
+  public function crawlWebResource(string $url, ?array $pathMasks = null, ?array $substRules = null): ?CrawlingTask
   {
-    $resource = $this->resourceManager->createWebHtmlResource($url, $pathMasks);
+    $resource = $this->resourceManager->createWebResource($url, $pathMasks, $substRules);
 
     return $this->crawlResource($resource);
   }
 
   /**
    * @param string[]|null $pathMasks
+   * @param array<string,string>|null $substRules Substitution rules.
    */
-  public function crawlDiskResource(string $path, ?array $pathMasks = null): ?CrawlingTask
+  public function crawlDiskResource(string $path, ?array $pathMasks = null, ?array $substRules = null): ?CrawlingTask
   {
-    $resource = $this->resourceManager->createDiskFsResource($path, $pathMasks);
+    $resource = $this->resourceManager->createDiskResource($path, $pathMasks, $substRules);
 
     return $this->crawlResource($resource);
   }
@@ -86,34 +88,48 @@ final class ResourceCrawler
   {
     $this->nodeCrawler->crawl($task->getNode());
 
-    $op = new CrawlRefHandlerClosure(
-      $this,
-      function (DOMElement $ref, bool $isValidPath, ?string $normalizedPath) use ($task) {
-        if (!$isValidPath) {
-          return;
-        }
-
-        $newNode = $this->nodeCrawler->createRefNode($ref, $task->getProcess()->getResource(), $normalizedPath);
-
-        if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
-          $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
-        }
+    $substitutePathOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath) use ($task) {
+      if (!$refPath->isValid()) {
+        return;
       }
-    );
 
-    $this->walkTaskNode($task, $op);
+      $refPath->setNormalizedPath(
+        $this->resourceManager->substitutePath(
+          $task->getProcess()->getResource(),
+          $refPath->getNormalizedPath()
+        )
+      );
+    });
+
+    $pushTasksOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath) use ($task) {
+      if (!$refPath->isValid()) {
+        return;
+      }
+
+      $newNode = $this->nodeCrawler->createRefNode(
+        $refPath->getRef(),
+        $task->getProcess()->getResource(),
+        $refPath->getNormalizedPath()
+      );
+
+      if ($this->processManager->pushTask($task->getProcess(), $newNode)) {
+        $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
+      }
+    });
+
+    $this->walkTaskNode($task, $substitutePathOp, $pushTasksOp);
   }
 
   public function resetWebResource(string $url): void
   {
-    $resource = $this->resourceManager->createWebHtmlResource($url);
+    $resource = $this->resourceManager->createWebResource($url);
 
     $this->resetResource($resource);
   }
 
   public function resetDiskResource(string $path): void
   {
-    $resource = $this->resourceManager->createDiskFsResource($path);
+    $resource = $this->resourceManager->createDiskResource($path);
 
     $this->resetResource($resource);
   }
@@ -140,7 +156,7 @@ final class ResourceCrawler
    */
   public function analyzeCrawlingWebResource(string $url): CrawlingAnalyze
   {
-    $resource = $this->resourceManager->createWebHtmlResource($url);
+    $resource = $this->resourceManager->createWebResource($url);
 
     return $this->analyzeCrawlingResource($resource);
   }
@@ -150,7 +166,7 @@ final class ResourceCrawler
    */
   public function analyzeCrawlingDiskResource(string $path): CrawlingAnalyze
   {
-    $resource = $this->resourceManager->createDiskFsResource($path);
+    $resource = $this->resourceManager->createDiskResource($path);
 
     return $this->analyzeCrawlingResource($resource);
   }
@@ -166,19 +182,19 @@ final class ResourceCrawler
    * Walk task node elements to handle them.
    * Possible to modify task node content.
    */
-  public function walkTaskNode(CrawlingTask $task, RefHandlerClosureInterface $refHandler): void
+  public function walkTaskNode(CrawlingTask $task, RefHandlerClosureInterface ...$refHandlers): void
   {
-    foreach ($this->nodeCrawler->walkNode($task->getNode()) as $args) {
-      $ref            = &$args[0];
-      $isValidPath    = &$args[1];
-      $normalizedPath = &$args[2];
+    foreach ($this->nodeCrawler->walkNode($task->getNode()) as $refPath) {
+      if ($refPath->isValid()) {
+        $refPath->setPerformable($this->resourceManager->isPerformablePath(
+          $refPath->getNormalizedPath(),
+          $task->getProcess()->getResource()->pathRegex()
+        ));
+      }
 
-      $isPerformablePath = $isValidPath ? $this->resourceManager->isPerformablePath(
-        $normalizedPath,
-        $task->getProcess()->getResource()->pathRegex()
-      ) : null;
-
-      $refHandler->call($ref, $isValidPath, $normalizedPath, $isPerformablePath);
+      foreach ($refHandlers as $refHandler) {
+        $refHandler->call($refPath);
+      }
     }
   }
 }

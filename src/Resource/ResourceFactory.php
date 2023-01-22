@@ -3,8 +3,8 @@
 namespace AndrewSvirin\ResourceCrawlerBundle\Resource;
 
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegex;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitution;
 
 /**
  * Factory for resource.
@@ -13,42 +13,25 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator;
  */
 final class ResourceFactory
 {
-  public function __construct(
-    private readonly PathRegexCreator $pathRegexCreator
-  ) {
-  }
-
   /**
    * Create Web resource.
-   * @param string[]|null $pathMasks
    */
-  public function createWeb(NodeInterface $node, ?array $pathMasks = null): WebResource
-  {
-    $pathRegex = $this->resolvePathRegex($pathMasks);
-
-    return new WebResource($node, $pathRegex);
+  public function createWebResource(
+    NodeInterface $node,
+    ?PathRegex $pathRegex = null,
+    ?PathSubstitution $pathSubstitution = null
+  ): WebResource {
+    return new WebResource($node, $pathRegex, $pathSubstitution);
   }
 
   /**
    * Create Disk resource.
-   * @param string[]|null $pathMasks
    */
-  public function createDisk(NodeInterface $node, ?array $pathMasks = null): DiskResource
-  {
-    $pathRegex = $this->resolvePathRegex($pathMasks);
-
-    return new DiskResource($node, $pathRegex);
-  }
-
-  /**
-   * @param string[]|null $pathMasks
-   */
-  private function resolvePathRegex(?array $pathMasks = null): ?PathRegex
-  {
-    if (null === $pathMasks) {
-      return null;
-    }
-
-    return $this->pathRegexCreator->create($pathMasks);
+  public function createDiskResource(
+    NodeInterface $node,
+    ?PathRegex $pathRegex = null,
+    ?PathSubstitution $pathSubstitution = null
+  ): DiskResource {
+    return new DiskResource($node, $pathRegex, $pathSubstitution);
   }
 }

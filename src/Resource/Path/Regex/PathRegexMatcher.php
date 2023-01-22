@@ -1,9 +1,10 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path;
+namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex;
 
 /**
  * Path regex matcher.
+ * Matches path with regex.
  *
  * @interal
  */

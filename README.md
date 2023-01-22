@@ -17,11 +17,16 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     // Resolve service by alias or by class.
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $url       = 'https://site.com/index.html';
+    $url = 'https://site.com/index.html';
     $pathMasks = ['+site.com/', '-embed'];
+    $substitutionRules = [
+      '/(#other-anchor)/i' => '', // remove anchor `other-anchor`
+      '/(\?.*)([&*]h=.[^&#]*)(.*)/i' => '$1$3', // remove query param `h`
+      '/(\?.*)([&*]w=.[^&#]*)(.*)/i' => '$1$3', // remove query param `w`
+    ];
 
     // Do one of multiple crawl iteration.
-    $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
+    $task = $resourceCrawler->crawlWebResource($url, $pathMasks, $substitutionRules);
     
     // Take analyze of resource crawling.
     $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);

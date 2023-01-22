@@ -2,7 +2,6 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Document\Html;
 
-use AndrewSvirin\ResourceCrawlerBundle\Document\Element\ElementFactory;
 use DOMDocument;
 use DOMElement;
 

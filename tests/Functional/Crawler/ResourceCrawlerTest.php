@@ -2,11 +2,11 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 use Closure;
-use DOMElement;
 
 /**
  * ResourceCrawlerTest
@@ -41,15 +41,20 @@ class ResourceCrawlerTest extends TestCase
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $url       = 'https://site.com/index.html';
-    $pathMasks = ['+site.com/', '-embed'];
+    $url               = 'https://site.com/index.html';
+    $pathMasks         = ['+site.com/', '-embed'];
+    $substitutionRules = [
+      '/(#other-anchor)/i'           => '', // remove anchor `other-anchor`
+      '/(\?.*)([&*]h=.[^&#]*)(.*)/i' => '$1$3', // remove query param `h`
+      '/(\?.*)([&*]w=.[^&#]*)(.*)/i' => '$1$3', // remove query param `w`
+    ];
 
     $resourceCrawler->resetWebResource($url);
 
     $expectedPaths = $this->crawlWebResourceExpectedPaths();
 
     for ($i = 0; $i < count($expectedPaths); $i++) {
-      $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
+      $task = $resourceCrawler->crawlWebResource($url, $pathMasks, $substitutionRules);
 
       $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
       $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
@@ -74,6 +79,7 @@ class ResourceCrawlerTest extends TestCase
           'https://site.com/pages/page-500',
           'https://site.com/#anchor',
           'https://other-site-2.com/',
+          'https://site.com/index.html?a=1&b=1',
           'https://site.com/images/img-1.jpg',
           'https://site.com/images/img-2.jpg',
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
@@ -86,6 +92,7 @@ class ResourceCrawlerTest extends TestCase
       ],
       ['https://site.com/images/img-2.jpg', 'processed', []],
       ['https://site.com/images/img-1.jpg', 'processed', []],
+      ['https://site.com/index.html?a=1&b=1', 'processed', []],
       ['https://other-site-2.com/', 'ignored', []],
       ['https://site.com/#anchor', 'processed', []],
       ['https://site.com/pages/page-500', 'errored', []],
@@ -230,12 +237,11 @@ class ResourceCrawlerTest extends TestCase
     $nodeCalls = $this->walkTaskNodeCalls();
     $i         = 0;
 
-    $callable = function (DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath)
-    use (&$i, $nodeCalls) {
-      $this->assertEquals($nodeCalls[$i][0], $ref->nodeName);
-      $this->assertEquals($nodeCalls[$i][1], $isValidPath);
-      $this->assertEquals($nodeCalls[$i][2], $normalizedPath);
-      $this->assertEquals($nodeCalls[$i][3], $isPerformablePath);
+    $callable = function (RefPath $refPath) use (&$i, $nodeCalls) {
+      $this->assertEquals($nodeCalls[$i][0], $refPath->getRef()->nodeName);
+      $this->assertEquals($nodeCalls[$i][1], $refPath->isValid());
+      $this->assertEquals($nodeCalls[$i][2], $refPath->getNormalizedPath());
+      $this->assertEquals($nodeCalls[$i][3], $refPath->isPerformable());
 
       $i++;
     };
@@ -249,9 +255,9 @@ class ResourceCrawlerTest extends TestCase
         $this->closure = $callable(...);
       }
 
-      public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
+      public function call(RefPath $refPath): void
       {
-        $this->closure->call($this->newThis, $ref, $isValidPath, $normalizedPath, $isPerformablePath);
+        $this->closure->call($this->newThis, $refPath);
       }
     };
 
@@ -321,8 +327,20 @@ class ResourceCrawlerTest extends TestCase
       [
         'a',
         true,
+        'https://site.com/#other-anchor',
+        true,
+      ],
+      [
+        'a',
+        true,
         'https://other-site-2.com/',
         false,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/index.html?a=1&w=1&h=1&b=1',
+        true,
       ],
       [
         'img',

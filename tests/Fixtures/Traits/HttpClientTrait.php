@@ -22,15 +22,16 @@ trait HttpClientTrait
 
     $responseFactory = function ($method, $url, $options) {
       $responses = [
-        'https://site.com/'                  => $this->getMock('/http/site.com/index.html'),
-        'https://site.com/index.html'        => $this->getMock('/http/site.com/index.html'),
-        'https://site.com/#anchor'           => $this->getMock('/http/site.com/index.html'),
-        'https://site.com/pages/page-1.html' => $this->getMock('/http/site.com/pages/page-1.html'),
-        'https://site.com/pages/page-2.html' => $this->getMock('/http/site.com/pages/page-2.html'),
-        'https://site.com/pages/page-400'    => $this->getMock('/http/site.com/pages/page-400.html', 400),
-        'https://site.com/pages/page-500'    => $this->getMock('/http/site.com/pages/page-500.html', 500),
-        'https://site.com/images/img-1.jpg'  => $this->getMock('/http/site.com/images/img-1.jpg'),
-        'https://site.com/images/img-2.jpg'  => $this->getMock('/http/site.com/images/img-2.jpg'),
+        'https://site.com/'                   => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/index.html'         => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/#anchor'            => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/index.html?a=1&b=1' => $this->getMock('/http/site.com/index.html'),
+        'https://site.com/pages/page-1.html'  => $this->getMock('/http/site.com/pages/page-1.html'),
+        'https://site.com/pages/page-2.html'  => $this->getMock('/http/site.com/pages/page-2.html'),
+        'https://site.com/pages/page-400'     => $this->getMock('/http/site.com/pages/page-400.html', 400),
+        'https://site.com/pages/page-500'     => $this->getMock('/http/site.com/pages/page-500.html', 500),
+        'https://site.com/images/img-1.jpg'   => $this->getMock('/http/site.com/images/img-1.jpg'),
+        'https://site.com/images/img-2.jpg'   => $this->getMock('/http/site.com/images/img-2.jpg'),
       ];
 
       if (empty($responses[$url])) {

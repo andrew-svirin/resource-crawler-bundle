@@ -49,8 +49,14 @@
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeFactory" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer" autowire="true" public="false"/>
-    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator" autowire="true" public="false"/>
-    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher" autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexCreator"
+             autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexMatcher"
+             autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutor"
+             autowire="true" public="false"/>
+    <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutionCreator"
+             autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathComposer" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathFactory" autowire="true" public="false"/>

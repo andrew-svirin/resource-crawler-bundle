@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path;
+namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex;
 
 use RuntimeException;
 

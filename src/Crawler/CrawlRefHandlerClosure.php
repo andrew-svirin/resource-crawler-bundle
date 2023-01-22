@@ -2,8 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use Closure;
-use DOMElement;
 
 /**
  * Crawler for node.
@@ -19,8 +19,8 @@ final class CrawlRefHandlerClosure implements RefHandlerClosureInterface
     $this->closure = $callable(...);
   }
 
-  public function call(DOMElement $ref, bool $isValidPath, ?string $normalizedPath, ?bool $isPerformablePath): void
+  public function call(RefPath $refPath): void
   {
-    $this->closure->call($this->newThis, $ref, $isValidPath, $normalizedPath, $isPerformablePath);
+    $this->closure->call($this->newThis, $refPath);
   }
 }

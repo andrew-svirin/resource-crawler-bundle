@@ -1,15 +1,15 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Unit\Resource\Path;
+namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Unit\Resource\Path\Regex;
 
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexCreator;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexMatcher;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 
 /**
  * PathRegexMatcherTest
  *
- * @covers \AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher
+ * @covers \AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexMatcher
  */
 class PathRegexMatcherTest extends TestCase
 {

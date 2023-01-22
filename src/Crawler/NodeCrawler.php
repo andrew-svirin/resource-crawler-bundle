@@ -2,6 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
@@ -66,7 +67,7 @@ final class NodeCrawler
   }
 
   /**
-   * @return array<array<\DOMElement | bool | string | null>>
+   * @return RefPath[]
    */
   public function walkNode(NodeInterface $node): iterable
   {
@@ -80,7 +81,7 @@ final class NodeCrawler
   }
 
   /**
-   * @return array<array<\DOMElement | bool | string | null>>
+   * @return RefPath[]
    */
   private function walkHtmlNode(HtmlNode $node): iterable
   {
@@ -91,13 +92,17 @@ final class NodeCrawler
     }
 
     foreach ($this->documentManager->extractRefs($doc) as $ref) {
+      $refPath = new RefPath($ref);
+
       $path = $this->decomposeRefPath($ref);
 
-      $isValidPath = $this->resourceManager->isValidPath($node->getUri(), $path);
+      $refPath->setValid($this->resourceManager->isValidPath($node->getUri(), $path));
 
-      $normalizedPath = $isValidPath ? $this->resourceManager->normalizePath($node->getUri(), $path) : null;
+      if ($refPath->isValid()) {
+        $refPath->setNormalizedPath($this->resourceManager->normalizePath($node->getUri(), $path));
+      }
 
-      yield [$ref, $isValidPath, $normalizedPath];
+      yield $refPath;
     }
   }
 

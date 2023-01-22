@@ -9,9 +9,13 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathComposer;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathExtractor;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegex;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegex;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexCreator;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexMatcher;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitution;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutionCreator;
+use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutor;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Response\Response;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
@@ -33,7 +37,10 @@ final class ResourceManager
     private readonly PathComposer $pathComposer,
     private readonly PathValidator $pathValidator,
     private readonly PathNormalizer $pathNormalizer,
-    private readonly PathExtractor $pathExtractor
+    private readonly PathExtractor $pathExtractor,
+    private readonly PathRegexCreator $pathRegexCreator,
+    private readonly PathSubstitutionCreator $pathSubstitutionCreator,
+    private readonly PathSubstitutor $pathSubstitutor
   ) {
   }
 
@@ -44,22 +51,28 @@ final class ResourceManager
 
   /**
    * @param string[]|null $pathMasks
+   * @param array<string,string>|null $substRules
    */
-  public function createWebHtmlResource(string $path, ?array $pathMasks = null): WebResource
+  public function createWebResource(string $path, ?array $pathMasks = null, ?array $substRules = null): WebResource
   {
-    $node = $this->createWebHtmlNode($path);
+    $node             = $this->createWebHtmlNode($path);
+    $pathRegex        = $this->resolvePathRegex($pathMasks);
+    $pathSubstitution = $this->resolvePathSubstitution($substRules);
 
-    return $this->resourceFactory->createWeb($node, $pathMasks);
+    return $this->resourceFactory->createWebResource($node, $pathRegex, $pathSubstitution);
   }
 
   /**
    * @param string[]|null $pathMasks
+   * @param array<string,string>|null $substRules
    */
-  public function createDiskFsResource(string $path, ?array $pathMasks = null): DiskResource
+  public function createDiskResource(string $path, ?array $pathMasks = null, ?array $substRules = null): DiskResource
   {
-    $node = $this->createDiskHtmlNode($path);
+    $node             = $this->createDiskHtmlNode($path);
+    $pathRegex        = $this->resolvePathRegex($pathMasks);
+    $pathSubstitution = $this->resolvePathSubstitution($substRules);
 
-    return $this->resourceFactory->createDisk($node, $pathMasks);
+    return $this->resourceFactory->createDiskResource($node, $pathRegex, $pathSubstitution);
   }
 
   private function createWebHtmlNode(string $path): NodeInterface
@@ -141,5 +154,38 @@ final class ResourceManager
   public function normalizePath(UriInterface $parentUri, Path $path): string
   {
     return $this->pathNormalizer->normalize($parentUri, $path);
+  }
+
+  /**
+   * @param string[]|null $pathMasks
+   */
+  private function resolvePathRegex(?array $pathMasks = null): ?PathRegex
+  {
+    if (null === $pathMasks) {
+      return null;
+    }
+
+    return $this->pathRegexCreator->create($pathMasks);
+  }
+
+  /**
+   * @param array<string,string>|null $substRules
+   */
+  private function resolvePathSubstitution(?array $substRules = null): ?PathSubstitution
+  {
+    if (null === $substRules) {
+      return null;
+    }
+
+    return $this->pathSubstitutionCreator->create($substRules);
+  }
+
+  public function substitutePath(ResourceInterface $resource, ?string $path): string
+  {
+    if (empty($resource->pathSubstitution())) {
+      return $path;
+    }
+
+    return $this->pathSubstitutor->substitute($resource->pathSubstitution(), $path);
   }
 }

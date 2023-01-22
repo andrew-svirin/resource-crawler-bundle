@@ -13,10 +13,16 @@ services:
   AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory:
     public: true
 
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexMatcher:
+  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexMatcher:
     public: true
 
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathRegexCreator:
+  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexCreator:
+    public: true
+
+  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutor:
+    public: true
+
+  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutionCreator:
     public: true
 
   AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer:
