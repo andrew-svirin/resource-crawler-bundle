@@ -2,8 +2,9 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 use Closure;
@@ -253,9 +254,9 @@ class ResourceCrawlerTest extends TestCase
         $this->closure = $callable(...);
       }
 
-      public function call(RefPath $refPath): void
+      public function call(RefPath $refPath, CrawlingTask $task): void
       {
-        $this->closure->call($this->newThis, $refPath);
+        $this->closure->call($this->newThis, $refPath, $task);
       }
     };
 

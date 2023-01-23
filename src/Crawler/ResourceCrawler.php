@@ -2,7 +2,6 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
@@ -67,7 +66,7 @@ final class ResourceCrawler
       return null;
     }
 
-    $substitutePathOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath) use ($task) {
+    $substitutePathOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath, CrawlingTask $task) {
       if (!$refPath->isValid()) {
         return;
       }
@@ -80,7 +79,7 @@ final class ResourceCrawler
       );
     });
 
-    $pushTasksOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath) use ($task) {
+    $pushTasksOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath, CrawlingTask $task) {
       if (!$refPath->isValid()) {
         return;
       }
@@ -198,7 +197,7 @@ final class ResourceCrawler
       }
 
       foreach ($refHandlers as $refHandler) {
-        $refHandler->call($refPath);
+        $refHandler->call($refPath, $task);
       }
     }
   }

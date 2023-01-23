@@ -16,7 +16,7 @@ class PathSubstitutorTest extends TestCase
   /**
    * @dataProvider substituteProvider
    *
-   * @param array<string, string> $subRules
+   * @param array<array<string>> $subRules
    */
   public function testSubstitute(array $subRules, string $path, string $subPath): void
   {
