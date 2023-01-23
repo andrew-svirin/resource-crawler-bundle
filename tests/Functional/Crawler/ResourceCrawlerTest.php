@@ -232,8 +232,6 @@ class ResourceCrawlerTest extends TestCase
 
     $resourceCrawler->resetWebResource($url);
 
-    $task = $resourceCrawler->crawlWebResource($url, $pathMasks);
-
     $nodeCalls = $this->walkTaskNodeCalls();
     $i         = 0;
 
@@ -261,7 +259,7 @@ class ResourceCrawlerTest extends TestCase
       }
     };
 
-    $resourceCrawler->walkTaskNode($task, $op);
+    $resourceCrawler->crawlWebResource($url, $pathMasks, null, $op);
   }
 
   /**

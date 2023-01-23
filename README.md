@@ -26,20 +26,18 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
       ['/(\?.*)([&*]h=[^&#]*)(.*)/i', '$1$3'], // remove query param `h`
       ['/(\?.*)([&*]w=[^&#]*)(.*)/i', '$1$3'], // remove query param `w`
     ];
-
-    // Do one of multiple crawl iteration.
-    $task = $resourceCrawler->crawlWebResource($url, $pathMasks, $substitutionRules);
-    
-    // Take analyze of resource crawling.
-    $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);
-    
-    // Walk other task node.
-    $resourceCrawler->walkTaskNode($task, new class() implements RefHandlerClosureInterface {
+    $op = new class() implements RefHandlerClosureInterface {
       public function call(RefPath $refPath): void
       {
         // Here is possible to handle reference in task node.
       }
-    });
+    };
+
+    // Do one of multiple crawl iteration.
+    $task = $resourceCrawler->crawlWebResource($url, $pathMasks, $substitutionRules, $op);
+    
+    // Take analyze of resource crawling.
+    $analyze = $resourceCrawler->analyzeCrawlingWebResource($url);
     
     if($someExceptionCondition){
         // Move task back for be crawled again.

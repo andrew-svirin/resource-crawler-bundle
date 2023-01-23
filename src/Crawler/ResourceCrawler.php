@@ -5,7 +5,6 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
-use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Resource;
@@ -27,22 +26,30 @@ final class ResourceCrawler
    * @param string[]|null $pathMasks
    * @param array<array<string>>|null $substRules Substitution rules.
    */
-  public function crawlWebResource(string $url, ?array $pathMasks = null, ?array $substRules = null): ?CrawlingTask
-  {
+  public function crawlWebResource(
+    string $url,
+    ?array $pathMasks = null,
+    ?array $substRules = null,
+    RefHandlerClosureInterface ...$refHandlers
+  ): ?CrawlingTask {
     $resource = $this->resourceManager->createWebResource($url, $pathMasks, $substRules);
 
-    return $this->crawlResource($resource);
+    return $this->crawlResource($resource, ...$refHandlers);
   }
 
   /**
    * @param string[]|null $pathMasks
    * @param array<array<string>>|null $substRules Substitution rules.
    */
-  public function crawlDiskResource(string $path, ?array $pathMasks = null, ?array $substRules = null): ?CrawlingTask
-  {
+  public function crawlDiskResource(
+    string $path,
+    ?array $pathMasks = null,
+    ?array $substRules = null,
+    RefHandlerClosureInterface ...$refHandlers
+  ): ?CrawlingTask {
     $resource = $this->resourceManager->createDiskResource($path, $pathMasks, $substRules);
 
-    return $this->crawlResource($resource);
+    return $this->crawlResource($resource, ...$refHandlers);
   }
 
   /**
@@ -50,7 +57,7 @@ final class ResourceCrawler
    * In next iteration will be taken next unique node from the collected stack.
    * As a result task return performed task with link on node that was crawled in iteration.
    */
-  private function crawlResource(Resource $resource): ?CrawlingTask
+  private function crawlResource(Resource $resource, RefHandlerClosureInterface ...$refHandlers): ?CrawlingTask
   {
     $process = $this->processManager->loadProcess($resource);
 
@@ -59,35 +66,6 @@ final class ResourceCrawler
     if (null === $task) {
       return null;
     }
-
-    $this->tryPerformTask($process, $task);
-
-    return $task;
-  }
-
-  private function tryPerformTask(CrawlingProcess $process, CrawlingTask $task): void
-  {
-    $isTaskPerformable = $this->resourceManager->isPerformablePath(
-      $task->getNode()->getUri()->getPath(),
-      $task->getProcess()->getResource()->pathRegex()
-    );
-
-    if ($isTaskPerformable) {
-      $this->performTask($task);
-
-      if ($this->resourceManager->isNotSuccessNode($task->getNode())) {
-        $this->processManager->errorTask($process, $task);
-      } else {
-        $this->processManager->destroyTask($process, $task);
-      }
-    } else {
-      $this->processManager->ignoreTask($process, $task);
-    }
-  }
-
-  private function performTask(CrawlingTask $task): void
-  {
-    $this->nodeCrawler->crawl($task->getNode());
 
     $substitutePathOp = new CrawlRefHandlerClosure($this, function (RefPath $refPath) use ($task) {
       if (!$refPath->isValid()) {
@@ -118,7 +96,33 @@ final class ResourceCrawler
       }
     });
 
-    $this->walkTaskNode($task, $substitutePathOp, $pushTasksOp);
+    array_unshift($refHandlers, $substitutePathOp, $pushTasksOp);
+
+    $this->tryPerformTask($task, ...$refHandlers);
+
+    return $task;
+  }
+
+  private function tryPerformTask(CrawlingTask $task, RefHandlerClosureInterface ...$refHandlers): void
+  {
+    $isTaskPerformable = $this->resourceManager->isPerformablePath(
+      $task->getNode()->getUri()->getPath(),
+      $task->getProcess()->getResource()->pathRegex()
+    );
+
+    if ($isTaskPerformable) {
+      $this->nodeCrawler->crawl($task->getNode());
+
+      $this->walkTaskNode($task, ...$refHandlers);
+
+      if ($this->resourceManager->isNotSuccessNode($task->getNode())) {
+        $this->processManager->errorTask($task->getProcess(), $task);
+      } else {
+        $this->processManager->destroyTask($task->getProcess(), $task);
+      }
+    } else {
+      $this->processManager->ignoreTask($task->getProcess(), $task);
+    }
   }
 
   public function resetWebResource(string $url): bool
@@ -183,7 +187,7 @@ final class ResourceCrawler
    * Walk task node elements to handle them.
    * Possible to modify task node content.
    */
-  public function walkTaskNode(CrawlingTask $task, RefHandlerClosureInterface ...$refHandlers): void
+  private function walkTaskNode(CrawlingTask $task, RefHandlerClosureInterface ...$refHandlers): void
   {
     foreach ($this->nodeCrawler->walkNode($task->getNode()) as $refPath) {
       if ($refPath->isValid()) {
