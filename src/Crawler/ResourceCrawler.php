@@ -121,35 +121,35 @@ final class ResourceCrawler
     $this->walkTaskNode($task, $substitutePathOp, $pushTasksOp);
   }
 
-  public function resetWebResource(string $url): void
+  public function resetWebResource(string $url): bool
   {
     $resource = $this->resourceManager->createWebResource($url);
 
-    $this->resetResource($resource);
+    return $this->resetResource($resource);
   }
 
-  public function resetDiskResource(string $path): void
+  public function resetDiskResource(string $path): bool
   {
     $resource = $this->resourceManager->createDiskResource($path);
 
-    $this->resetResource($resource);
+    return $this->resetResource($resource);
   }
 
   /**
    * Rollback task.
    * Revert task back for crawling.
    */
-  public function rollbackTask(CrawlingTask $task): void
+  public function rollbackTask(CrawlingTask $task): bool
   {
-    $this->processManager->revertTask($task->getProcess(), $task);
+    return $this->processManager->revertTask($task->getProcess(), $task);
   }
 
   /**
    * Reset crawling relating data.
    */
-  private function resetResource(Resource $resource): void
+  private function resetResource(Resource $resource): bool
   {
-    $this->processManager->killProcess($resource);
+    return $this->processManager->killProcess($resource);
   }
 
   /**
