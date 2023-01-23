@@ -10,14 +10,14 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution;
 final class PathSubstitutionCreator
 {
   /**
-   * @param array<string,string> $substRules
+   * @param array<array<string>> $substRules
    */
   public function create(array $substRules): PathSubstitution
   {
     $substitutions = [];
 
-    foreach ($substRules as $fromPattern => $toPattern) {
-      $substitutions[] = new Substitution($fromPattern, $toPattern);
+    foreach ($substRules as $substRule) {
+      $substitutions[] = new Substitution($substRule[0], $substRule[1]);
     }
 
     return new PathSubstitution($substitutions);

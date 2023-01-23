@@ -9,17 +9,17 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution;
  */
 final class Substitution
 {
-  public function __construct(private readonly string $fromPattern, private readonly string $toPattern)
+  public function __construct(private readonly string $pattern, private readonly string $replacement)
   {
   }
 
-  public function fromPattern(): string
+  public function pattern(): string
   {
-    return $this->fromPattern;
+    return $this->pattern;
   }
 
-  public function toPattern(): string
+  public function replacement(): string
   {
-    return $this->toPattern;
+    return $this->replacement;
   }
 }

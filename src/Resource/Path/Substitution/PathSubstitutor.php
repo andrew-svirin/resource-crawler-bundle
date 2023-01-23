@@ -12,14 +12,14 @@ final class PathSubstitutor
 {
   public function substitute(PathSubstitution $pathSubstitution, string $path): string
   {
-    $fromPatterns = [];
-    $toPatterns   = [];
+    $patterns     = [];
+    $replacements = [];
 
     foreach ($pathSubstitution->getSubstitutions() as $substitution) {
-      $fromPatterns[] = $substitution->fromPattern();
-      $toPatterns[]   = $substitution->toPattern();
+      $patterns[]     = $substitution->pattern();
+      $replacements[] = $substitution->replacement();
     }
 
-    return preg_replace($fromPatterns, $toPatterns, $path);
+    return preg_replace($patterns, $replacements, $path);
   }
 }

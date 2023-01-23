@@ -25,7 +25,7 @@ final class ResourceCrawler
 
   /**
    * @param string[]|null $pathMasks
-   * @param array<string,string>|null $substRules Substitution rules.
+   * @param array<array<string>>|null $substRules Substitution rules.
    */
   public function crawlWebResource(string $url, ?array $pathMasks = null, ?array $substRules = null): ?CrawlingTask
   {
@@ -36,7 +36,7 @@ final class ResourceCrawler
 
   /**
    * @param string[]|null $pathMasks
-   * @param array<string,string>|null $substRules Substitution rules.
+   * @param array<array<string>>|null $substRules Substitution rules.
    */
   public function crawlDiskResource(string $path, ?array $pathMasks = null, ?array $substRules = null): ?CrawlingTask
   {

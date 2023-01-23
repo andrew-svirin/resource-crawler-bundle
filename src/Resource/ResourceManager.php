@@ -51,7 +51,7 @@ final class ResourceManager
 
   /**
    * @param string[]|null $pathMasks
-   * @param array<string,string>|null $substRules
+   * @param array<array<string>>|null $substRules
    */
   public function createWebResource(string $path, ?array $pathMasks = null, ?array $substRules = null): WebResource
   {
@@ -64,7 +64,7 @@ final class ResourceManager
 
   /**
    * @param string[]|null $pathMasks
-   * @param array<string,string>|null $substRules
+   * @param array<array<string>>|null $substRules
    */
   public function createDiskResource(string $path, ?array $pathMasks = null, ?array $substRules = null): DiskResource
   {
@@ -169,7 +169,7 @@ final class ResourceManager
   }
 
   /**
-   * @param array<string,string>|null $substRules
+   * @param array<array<string>>|null $substRules
    */
   private function resolvePathSubstitution(?array $substRules = null): ?PathSubstitution
   {

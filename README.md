@@ -22,9 +22,9 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
     $url = 'https://site.com/index.html';
     $pathMasks = ['+site.com/', '-embed'];
     $substitutionRules = [
-      '/(#other-anchor)/i' => '', // remove anchor `other-anchor`
-      '/(\?.*)([&*]h=.[^&#]*)(.*)/i' => '$1$3', // remove query param `h`
-      '/(\?.*)([&*]w=.[^&#]*)(.*)/i' => '$1$3', // remove query param `w`
+      ['/(#other-anchor)/i', ''], // remove anchor `other-anchor`
+      ['/(\?.*)([&*]h=[^&#]*)(.*)/i', '$1$3'], // remove query param `h`
+      ['/(\?.*)([&*]w=[^&#]*)(.*)/i', '$1$3'], // remove query param `w`
     ];
 
     // Do one of multiple crawl iteration.
