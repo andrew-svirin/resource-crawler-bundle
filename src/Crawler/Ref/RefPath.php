@@ -39,7 +39,7 @@ final class RefPath
     $this->normalizedPath = $normalizedPath;
   }
 
-  public function isPerformable(): bool
+  public function isPerformable(): ?bool
   {
     return $this->isPerformable;
   }
