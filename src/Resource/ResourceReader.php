@@ -59,12 +59,12 @@ final class ResourceReader
 
       $code = $response->getStatusCode();
 
-      $headers = $response->getHeaders();
-
       if ($response->getStatusCode() >= 400) {
         $content = 'Response is not correct.';
       } else {
         $content = $response->getContent();
+
+        $headers = $response->getHeaders();
       }
     } catch (Throwable $exception) {
       $content = $exception->getMessage();
