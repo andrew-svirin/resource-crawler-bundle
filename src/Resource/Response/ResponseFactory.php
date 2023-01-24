@@ -11,9 +11,10 @@ final class ResponseFactory
 {
   /**
    * Create response.
+   * @param string[][]|null $headers
    */
-  public function create(string $content, int $code): Response
+  public function create(string $content, int $code, array $headers = null): Response
   {
-    return new Response($content, $code);
+    return new Response($content, $code, $headers);
   }
 }

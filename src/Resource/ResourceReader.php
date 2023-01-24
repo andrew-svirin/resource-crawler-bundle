@@ -59,6 +59,8 @@ final class ResourceReader
 
       $code = $response->getStatusCode();
 
+      $headers = $response->getHeaders();
+
       if ($response->getStatusCode() >= 400) {
         $content = 'Response is not correct.';
       } else {
@@ -69,7 +71,7 @@ final class ResourceReader
       $code    = 600;
     }
 
-    return $this->responseFactory->create($content, $code);
+    return $this->responseFactory->create($content, $code, $headers ?? null);
   }
 
   private function readByFs(string $path): Response

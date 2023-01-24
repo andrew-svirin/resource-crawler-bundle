@@ -141,6 +141,15 @@ final class ResourceManager
     return $node->getResponse()->getCode() >= 400;
   }
 
+  public function isNotHtmlNode(NodeInterface $node): bool
+  {
+    // TODO: check headers.
+    // TODO: check ext.
+    $substr = strtolower(substr($node->getResponse()->getContent(), 0, 200));
+
+    return !str_contains($substr, 'html');
+  }
+
   public function decomposePath(string $path): Path
   {
     return $this->pathComposer->decompose($path);
@@ -188,4 +197,5 @@ final class ResourceManager
 
     return $this->pathSubstitutor->substitute($resource->pathSubstitution(), $path);
   }
+
 }

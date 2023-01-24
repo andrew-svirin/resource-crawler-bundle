@@ -7,8 +7,11 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Response;
  */
 final class Response
 {
-  public function __construct(private readonly string $content, private readonly int $code)
-  {
+  public function __construct(
+    private readonly string $content,
+    private readonly int $code,
+    private readonly ?array $headers = null
+  ) {
   }
 
   /**
@@ -25,5 +28,13 @@ final class Response
   public function getCode(): int
   {
     return $this->code;
+  }
+
+  /**
+   * @return string[][] | null
+   */
+  public function getHeaders(): ?array
+  {
+    return $this->headers;
   }
 }

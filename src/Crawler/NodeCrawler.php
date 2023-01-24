@@ -54,6 +54,10 @@ final class NodeCrawler
       return;
     }
 
+    if ($this->resourceManager->isNotHtmlNode($node)) {
+      return;
+    }
+
     $document = $this->documentManager->createDocument($node->getResponse()->getContent());
 
     $node->setDocument($document);
@@ -131,4 +135,18 @@ final class NodeCrawler
 
     return $node;
   }
+
+//  private function isImagePath(string $path): bool
+//  {
+//    $supported_image = array(
+//      'gif',
+//      'jpg',
+//      'jpeg',
+//      'png'
+//    );
+//
+//    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+//
+//    return in_array()
+//  }
 }
