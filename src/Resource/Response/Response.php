@@ -7,6 +7,9 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Resource\Response;
  */
 final class Response
 {
+  /**
+   * @param string[][] | null $headers
+   */
   public function __construct(
     private readonly string $content,
     private readonly int $code,

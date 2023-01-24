@@ -57,9 +57,9 @@ class ResourceCrawlerTest extends TestCase
     for ($i = 0; $i < count($expectedPaths); $i++) {
       $task = $resourceCrawler->crawlWebResource($url, $pathMasks, $substitutionRules);
 
-//      $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
-//      $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
-//      $this->assertEquals($expectedPaths[$i][2], $task?->getPushedForProcessingPaths());
+      $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
+      $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
+      $this->assertEquals($expectedPaths[$i][2], $task?->getPushedForProcessingPaths());
     }
   }
 
@@ -78,11 +78,11 @@ class ResourceCrawlerTest extends TestCase
           'https://site.com/pages/page-2.html',
           'https://site.com/pages/page-400',
           'https://site.com/pages/page-500',
+          'https://site.com/images/img-2.jpg',
           'https://site.com/#anchor',
           'https://other-site-2.com/',
           'https://site.com/index.html?a=1&b=1',
           'https://site.com/images/img-1.jpg',
-          'https://site.com/images/img-2.jpg',
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
         ],
       ],
@@ -91,11 +91,11 @@ class ResourceCrawlerTest extends TestCase
         'processed',
         [],
       ],
-      ['https://site.com/images/img-2.jpg', 'processed', []],
       ['https://site.com/images/img-1.jpg', 'processed', []],
       ['https://site.com/index.html?a=1&b=1', 'processed', []],
       ['https://other-site-2.com/', 'ignored', []],
       ['https://site.com/#anchor', 'processed', []],
+      ['https://site.com/images/img-2.jpg', 'processed', []],
       ['https://site.com/pages/page-500', 'errored', []],
       ['https://site.com/pages/page-400', 'errored', []],
       ['https://site.com/pages/page-2.html', 'processed', []],
@@ -315,6 +315,12 @@ class ResourceCrawlerTest extends TestCase
         'a',
         true,
         'https://site.com/pages/page-2.html',
+        true,
+      ],
+      [
+        'a',
+        true,
+        'https://site.com/images/img-2.jpg',
         true,
       ],
       [

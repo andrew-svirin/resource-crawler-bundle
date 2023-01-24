@@ -11,7 +11,7 @@ final class ResponseFactory
 {
   /**
    * Create response.
-   * @param string[][]|null $headers
+   * @param string[][] | null $headers
    */
   public function create(string $content, int $code, array $headers = null): Response
   {

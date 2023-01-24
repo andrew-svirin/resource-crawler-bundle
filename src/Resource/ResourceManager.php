@@ -143,11 +143,19 @@ final class ResourceManager
 
   public function isNotHtmlNode(NodeInterface $node): bool
   {
-    // TODO: check headers.
-    // TODO: check ext.
-    $substr = strtolower(substr($node->getResponse()->getContent(), 0, 200));
+    if (str_contains(($node->getResponse()->getHeaders()['content-type'][0] ?? ''), 'html')) {
+      return false;
+    }
 
-    return !str_contains($substr, 'html');
+    if (($node->getResponse()->getHeaders()['content-length'][0] ?? 0) > 1000000) {
+      return true;
+    }
+
+    if (!str_contains(strtolower(substr($node->getResponse()->getContent(), 0, 200)), 'html')) {
+      return true;
+    }
+
+    return false;
   }
 
   public function decomposePath(string $path): Path
@@ -197,5 +205,4 @@ final class ResourceManager
 
     return $this->pathSubstitutor->substitute($resource->pathSubstitution(), $path);
   }
-
 }
