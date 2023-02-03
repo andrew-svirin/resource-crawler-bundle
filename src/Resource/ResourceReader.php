@@ -77,6 +77,8 @@ final class ResourceReader
 
   private function readByFs(string $path): Response
   {
+    $path = urldecode($path);
+
     $content = file_get_contents($path);
 
     if (false === $content) {
