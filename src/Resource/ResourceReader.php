@@ -10,6 +10,7 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\FsUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\HttpUri;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriInterface;
 use LogicException;
+use RuntimeException;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Throwable;
 
@@ -76,6 +77,12 @@ final class ResourceReader
 
   private function readByFs(string $path): Response
   {
-    return $this->responseFactory->create(file_get_contents($path), 200);
+    $content = file_get_contents($path);
+
+    if (false === $content) {
+      throw new RuntimeException('File not read');
+    }
+
+    return $this->responseFactory->create($content, 200);
   }
 }

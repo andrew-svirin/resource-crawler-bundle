@@ -14,7 +14,7 @@ final class PathRegexMatcher
   {
     preg_match_all($pathRegex->getExpression(), $path, $matches, PREG_OFFSET_CAPTURE | PREG_UNMATCHED_AS_NULL);
 
-    /* @var $matches array<int, array<int, array<int, null|string>>> */
+    /** @var array<int, array<int, array<int, null|string>>> $matches */
     $disallowedMatches = &$matches[1];
     $allowedMatches    = &$matches[2];
 

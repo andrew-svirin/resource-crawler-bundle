@@ -20,8 +20,10 @@ class PathSubstitutorTest extends TestCase
    */
   public function testSubstitute(array $subRules, string $path, string $subPath): void
   {
+    /** @var PathSubstitutor $substitutor */
     $substitutor = $this->getContainer()->get(PathSubstitutor::class);
-    $creator     = $this->getContainer()->get(PathSubstitutionCreator::class);
+    /** @var PathSubstitutionCreator $creator */
+    $creator = $this->getContainer()->get(PathSubstitutionCreator::class);
 
     $pathSubstitution = $creator->create($subRules);
 

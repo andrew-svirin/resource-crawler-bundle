@@ -5,6 +5,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskPacker;
+use LogicException;
 use Symfony\Component\Lock\LockFactory;
 
 /**
@@ -207,6 +208,10 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
   {
     $content = json_encode($processData, JSON_PRETTY_PRINT);
 
+    if (false === $content) {
+      throw new LogicException('Process data can not be read');
+    }
+
     return $this->writeProcessContent($process, $content);
   }
 
@@ -240,7 +245,17 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
 
   private function readContent(string $filename): ?string
   {
-    return file_exists($filename) ? file_get_contents($filename) : null;
+    if (!file_exists($filename)) {
+      return null;
+    }
+
+    $content = file_get_contents($filename);
+
+    if (false === $content) {
+      throw new LogicException('Process data can not be read');
+    }
+
+    return $content;
   }
 
   private function writeContent(string $filename, string $content): bool
@@ -297,8 +312,7 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
   }
 
   /**
-   * @param \AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask $task
-   * @return array<string, string|array<string, string>>
+   * @return array{'uri': array{'type': string, 'path': string},'type': string, 'code': null|int}
    */
   private function packTask(CrawlingTask $task): array
   {
@@ -316,7 +330,7 @@ final class FileProcessStore extends ProcessStore implements ProcessStoreInterfa
   }
 
   /**
-   * @param array<string, string|array<string, string>> $packedTask
+   * @param array{'uri': array{'type': string, 'path': string},'type': string} $packedTask
    */
   private function unpackTask(CrawlingProcess $process, array $packedTask): CrawlingTask
   {

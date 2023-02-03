@@ -18,7 +18,9 @@ class PathRegexMatcherTest extends TestCase
    */
   public function testIsMatching(string $path, bool $isMatching): void
   {
+    /** @var PathRegexMatcher $matcher */
     $matcher = $this->getContainer()->get(PathRegexMatcher::class);
+    /** @var PathRegexCreator $creator */
     $creator = $this->getContainer()->get(PathRegexCreator::class);
 
     $pathRegex = $creator->create([

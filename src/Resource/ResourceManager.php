@@ -129,8 +129,12 @@ final class ResourceManager
     return $node;
   }
 
-  public function isPerformablePath(string $path, PathRegex $pathRegex): bool
+  public function isPerformablePath(string $path, ?PathRegex $pathRegex = null): bool
   {
+    if (null === $pathRegex) {
+      return true;
+    }
+
     $scheme = $this->pathExtractor->extractScheme($path);
 
     return PathInterface::SCHEME_DATA === $scheme || $this->pathRegexMatcher->isMatching($pathRegex, $path);

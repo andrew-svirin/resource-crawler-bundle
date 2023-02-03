@@ -19,8 +19,11 @@ class PathValidatorTest extends TestCase
    */
   public function testIsValidHttp(string $parentPathStr, string $childPathStr, bool $isValid): void
   {
+    /** @var UriFactory $uriFactory */
     $uriFactory    = $this->getContainer()->get(UriFactory::class);
+    /** @var PathComposer $pathComposer */
     $pathComposer  = $this->getContainer()->get(PathComposer::class);
+    /** @var PathValidator $pathValidator */
     $pathValidator = $this->getContainer()->get(PathValidator::class);
 
     $parentUri = $uriFactory->createHttp($parentPathStr);
@@ -57,8 +60,11 @@ class PathValidatorTest extends TestCase
    */
   public function testIsValidFs(string $parentPathStr, string $childPathStr, bool $isValid): void
   {
+    /** @var UriFactory $uriFactory */
     $uriFactory    = $this->getContainer()->get(UriFactory::class);
+    /** @var PathComposer $pathComposer */
     $pathComposer  = $this->getContainer()->get(PathComposer::class);
+    /** @var PathValidator $pathValidator */
     $pathValidator = $this->getContainer()->get(PathValidator::class);
 
     $parentUri = $uriFactory->createFs($parentPathStr);

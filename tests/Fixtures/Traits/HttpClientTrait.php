@@ -48,8 +48,12 @@ trait HttpClientTrait
   {
     $resourceDir = $this->getResourcesDir();
 
-    return new MockResponse(file_get_contents($resourceDir . $path), [
-      'http_code' => $code,
-    ]);
+    $content = file_get_contents($resourceDir . $path);
+
+    if (false === $content) {
+      throw new RuntimeException('File not read.');
+    }
+
+    return new MockResponse($content, ['http_code' => $code]);
   }
 }

@@ -19,8 +19,11 @@ class PathNormalizerTest extends TestCase
    */
   public function testNormalizeHttp(string $parentPathStr, string $childPathStr, string $normalizedPath): void
   {
+    /** @var UriFactory $uriFactory */
     $uriFactory     = $this->getContainer()->get(UriFactory::class);
+    /** @var PathComposer $pathComposer */
     $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    /** @var PathNormalizer $pathNormalizer */
     $pathNormalizer = $this->getContainer()->get(PathNormalizer::class);
 
     $parentUri = $uriFactory->createHttp($parentPathStr);
@@ -95,8 +98,11 @@ class PathNormalizerTest extends TestCase
    */
   public function testNormalizeFs(string $parentPathStr, string $childPathStr, string $normalizedPath): void
   {
+    /** @var UriFactory $uriFactory */
     $uriFactory     = $this->getContainer()->get(UriFactory::class);
+    /** @var PathComposer $pathComposer */
     $pathComposer   = $this->getContainer()->get(PathComposer::class);
+    /** @var PathNormalizer $pathNormalizer */
     $pathNormalizer = $this->getContainer()->get(PathNormalizer::class);
 
     $parentUri = $uriFactory->createFs($parentPathStr);

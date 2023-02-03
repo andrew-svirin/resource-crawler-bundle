@@ -264,7 +264,7 @@ class ResourceCrawlerTest extends TestCase
   }
 
   /**
-   * @return array<array<string | string[] | null>>
+   * @return array<int, array<int, bool|string>>.
    */
   private function walkTaskNodeCalls(): array
   {
