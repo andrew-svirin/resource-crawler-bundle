@@ -79,13 +79,13 @@ final class ResourceReader
     $path = urldecode($path);
 
     if (!file_exists($path)) {
-      return $this->responseFactory->create("File ${$path} not found", 404);
+      return $this->responseFactory->create("File `$path` not found", 404);
     }
 
     $content = file_get_contents($path);
 
     if (false === $content) {
-      return $this->responseFactory->create("File ${$path} not read", 403);
+      return $this->responseFactory->create("File `$path` not read", 403);
     }
 
     return $this->responseFactory->create($content, 200);
