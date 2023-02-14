@@ -11,7 +11,7 @@ use DOMDocument;
  */
 final class DocumentResolver
 {
-  public function resolve(string $html): DOMDocument
+  public function resolve(string $html): ?DOMDocument
   {
     $dom = new DOMDocument;
 
@@ -19,7 +19,15 @@ final class DocumentResolver
 
     $sourceUtf8 = mb_convert_encoding($html, 'html-entities', 'utf-8');
 
-    @$dom->loadHTML($sourceUtf8, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+    if (empty($sourceUtf8)) {
+      return null;
+    }
+
+    $load = @$dom->loadHTML($sourceUtf8, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    if (!$load) {
+      return null;
+    }
 
     return $dom;
   }

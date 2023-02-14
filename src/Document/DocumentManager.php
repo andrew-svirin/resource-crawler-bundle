@@ -18,7 +18,7 @@ final class DocumentManager
   ) {
   }
 
-  public function createDocument(string $content): DOMDocument
+  public function createDocument(string $content): ?DOMDocument
   {
     return $this->documentComposer->resolve($content);
   }

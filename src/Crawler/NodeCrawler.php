@@ -60,6 +60,10 @@ final class NodeCrawler
 
     $document = $this->documentManager->createDocument($node->getResponse()->getContent());
 
+    if (null === $document) {
+      return;
+    }
+
     $node->setDocument($document);
   }
 
