@@ -4,6 +4,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Process;
 
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\AnalyzeFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Analyze\CrawlingAnalyze;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Store\ProcessStoreInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
@@ -28,6 +29,8 @@ final class ProcessManager
   {
     $process = $this->processFactory->create($resource);
     $node    = $resource->getRoot();
+
+    $this->processStore->createProcess($process);
 
     $this->pushTask($process, $node);
 

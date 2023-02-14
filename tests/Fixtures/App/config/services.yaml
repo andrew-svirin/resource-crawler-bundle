@@ -4,30 +4,6 @@ services:
     # for tests only
     public: true
 
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathValidator:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathComposer:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Uri\UriFactory:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexMatcher:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Regex\PathRegexCreator:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutor:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Substitution\PathSubstitutionCreator:
-    public: true
-
-  AndrewSvirin\ResourceCrawlerBundle\Resource\Path\PathNormalizer:
-    public: true
-
   http_client_mocker:
     class: Symfony\Component\HttpClient\MockHttpClient
     public: true

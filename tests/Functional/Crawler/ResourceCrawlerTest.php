@@ -4,10 +4,13 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
+use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
+use AndrewSvirin\ResourceCrawlerBundle\Process\Store\File\FileProcessStore;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\Fixtures\Traits\HttpClientTrait;
 use AndrewSvirin\ResourceCrawlerBundle\Tests\TestCase;
 use Closure;
+use ReflectionProperty;
 
 /**
  * ResourceCrawlerTest
@@ -52,7 +55,18 @@ class ResourceCrawlerTest extends TestCase
 
     $resourceCrawler->resetWebResource($url);
 
-    $expectedPaths = $this->crawlWebResourceExpectedPaths();
+    $pm = $this->getContainer()->get(ProcessManager::class);
+
+    $reflectionProperty = new ReflectionProperty($pm, 'processStore');
+    $reflectionProperty->setAccessible(true);
+
+    $ps = $reflectionProperty->getValue($pm);
+
+    if ($ps instanceof FileProcessStore) {
+      $expectedPaths = $this->crawlWebResourceFIleExpectedPaths();
+    } else {
+      $expectedPaths = $this->crawlWebResourceDbExpectedPaths();
+    }
 
     for ($i = 0; $i < count($expectedPaths); $i++) {
       $task = $resourceCrawler->crawlWebResource($url, $pathMasks, $substitutionRules);
@@ -66,7 +80,7 @@ class ResourceCrawlerTest extends TestCase
   /**
    * @return array<array<string | string[] | null>>
    */
-  private function crawlWebResourceExpectedPaths(): array
+  private function crawlWebResourceFIleExpectedPaths(): array
   {
     return [
       [
@@ -114,6 +128,57 @@ class ResourceCrawlerTest extends TestCase
     ];
   }
 
+  /**
+   * @return array<array<string | string[] | null>>
+   */
+  private function crawlWebResourceDbExpectedPaths(): array
+  {
+    return [
+      [
+        'https://site.com/index.html',
+        'processed',
+        [
+          'https://site.com/',
+          'https://site.com/pages/page-1.html',
+          'https://site.com/pages/page-2.html',
+          'https://site.com/pages/page-400',
+          'https://site.com/pages/page-500',
+          'https://site.com/images/img-2.jpg',
+          'https://site.com/#anchor',
+          'https://other-site-2.com/',
+          'https://site.com/index.html?a=1&b=1',
+          'https://site.com/images/img-1.jpg',
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        ],
+      ],
+      ['https://site.com/', 'processed', []],
+      [
+        'https://site.com/pages/page-1.html',
+        'processed',
+        [
+          'https://site-2.com/pages/page-3.html',
+          'https://site.com/embed/frame.html',
+        ],
+      ],
+      ['https://site.com/pages/page-2.html', 'processed', []],
+      ['https://site.com/pages/page-400', 'errored', []],
+      ['https://site.com/pages/page-500', 'errored', []],
+      ['https://site.com/images/img-2.jpg', 'processed', []],
+      ['https://site.com/#anchor', 'processed', []],
+      ['https://other-site-2.com/', 'ignored', []],
+      ['https://site.com/index.html?a=1&b=1', 'processed', []],
+      ['https://site.com/images/img-1.jpg', 'processed', []],
+      [
+        'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+        'processed',
+        [],
+      ],
+      ['https://site-2.com/pages/page-3.html', 'ignored', []],
+      ['https://site.com/embed/frame.html', 'ignored', []],
+      [null, null, null],
+    ];
+  }
+
   public function testResetDiskResource(): void
   {
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
@@ -136,7 +201,18 @@ class ResourceCrawlerTest extends TestCase
 
     $resourceCrawler->resetDiskResource($path);
 
-    $expectedPaths = $this->crawlDiskResourceExpectedPaths();
+    $pm = $this->getContainer()->get(ProcessManager::class);
+
+    $reflectionProperty = new ReflectionProperty($pm, 'processStore');
+    $reflectionProperty->setAccessible(true);
+
+    $ps = $reflectionProperty->getValue($pm);
+
+    if ($ps instanceof FileProcessStore) {
+      $expectedPaths = $this->crawlDiskResourceFileExpectedPaths();
+    } else {
+      $expectedPaths = $this->crawlDiskResourceDbExpectedPaths();
+    }
 
     for ($i = 0; $i < count($expectedPaths); $i++) {
       $task = $resourceCrawler->crawlDiskResource($path, $pathMasks);
@@ -150,7 +226,7 @@ class ResourceCrawlerTest extends TestCase
   /**
    * @return array<array<string | string[] | null>>
    */
-  private function crawlDiskResourceExpectedPaths(): array
+  private function crawlDiskResourceFileExpectedPaths(): array
   {
     return [
       [
@@ -180,6 +256,46 @@ class ResourceCrawlerTest extends TestCase
       ],
       [
         $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+        'processed',
+        [],
+      ],
+      [null, null, null],
+    ];
+  }
+
+  /**
+   * @return array<array<string | string[] | null>>
+   */
+  private function crawlDiskResourceDbExpectedPaths(): array
+  {
+    return [
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html',
+        'processed',
+        [
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+        ],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+        'processed',
+        [],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+        'processed',
+        [],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+        'processed',
+        [],
+      ],
+      [
+        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
         'processed',
         [],
       ],

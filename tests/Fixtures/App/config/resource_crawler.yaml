@@ -4,5 +4,7 @@ resource_crawler:
       mocker: http_client_mocker
   process:
     is_lockable: true
+    store: 'resource_crawler.process_db_store'
+#    store: 'resource_crawler.process_file_store'
     file_store:
       dir: "%kernel.project_dir%/tests/Fixtures/App/storage/saver"

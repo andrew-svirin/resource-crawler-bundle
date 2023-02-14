@@ -2,6 +2,8 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\DependencyInjection;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\Store\ProcessStoreInterface;
+use RuntimeException;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Definition;
@@ -46,19 +48,15 @@ final class ResourceCrawlerExtension extends Extension
    */
   private function loadProcessStore(array $config, ContainerBuilder $container): void
   {
-    if ($config['process']['store']) {
-      $container
-        ->getDefinition('resource_crawler.process_manager')
-        ->setArgument(0, new Reference($config['process']['store']));
-    }
+    $container->setAlias(ProcessStoreInterface::class, new Reference($config['process']['store']));
   }
 
   /**
-   * @param array<string, array<string, array<string, string>>> $config
+   * @param array<string, array<string, array<string, string>|string>> $config
    */
   private function loadProcessFileStore(array $config, ContainerBuilder $container): void
   {
-    if ($container->hasDefinition('resource_crawler.process_file_store')) {
+    if ('resource_crawler.process_file_store' === $config['process']['store']) {
       $definition = $container->getDefinition('resource_crawler.process_file_store');
 
       $fileStoreDir = $config['process']['file_store']['dir'] ?? sys_get_temp_dir();
@@ -73,6 +71,23 @@ final class ResourceCrawlerExtension extends Extension
 
         $definition->setArgument(4, new Reference('resource_crawler.lock_factory'));
       }
+    } elseif ('resource_crawler.process_db_store' === $config['process']['store']) {
+      $definition = $container->getDefinition('resource_crawler.process_db_store');
+
+      $fileStoreDir = $config['process']['file_store']['dir'] ?? sys_get_temp_dir();
+      $fileStoreDir .= '/file_store';
+      $isLockable   = $config['process']['is_lockable'] ?? false;
+
+      $definition->setArgument(1, $isLockable);
+
+      if ($isLockable) {
+        $this->setupLockStoreDefinition($fileStoreDir, $container);
+        $this->setupLockFactoryDefinition($container);
+
+        $definition->setArgument(4, new Reference('resource_crawler.lock_factory'));
+      }
+    } else {
+      throw new RuntimeException('Wrong process.store');
     }
   }
 

@@ -13,6 +13,8 @@ RUN pecl install xdebug
 RUN docker-php-ext-enable xdebug
 RUN docker-php-ext-install bcmath
 RUN docker-php-ext-install zip
+RUN docker-php-ext-install pdo
+RUN docker-php-ext-install pdo_mysql
 
 #Install composer
 RUN ln -sf /usr/local/bin/php /usr/bin/php && \

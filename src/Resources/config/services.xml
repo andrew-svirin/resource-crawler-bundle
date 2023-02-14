@@ -19,17 +19,17 @@
              class="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager"
              autowire="true"
              public="false">
-      <argument key="$processStore"
-                type="service"
-                id="resource_crawler.process_file_store"/>
     </service>
     <service id="resource_crawler.process_file_store"
-             class="AndrewSvirin\ResourceCrawlerBundle\Process\FileProcessStore"
+             class="AndrewSvirin\ResourceCrawlerBundle\Process\Store\File\FileProcessStore"
              autowire="true"
              public="false"
     />
-    <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessStoreInterface"
-             alias="resource_crawler.process_file_store"/>
+    <service id="resource_crawler.process_db_store"
+             class="AndrewSvirin\ResourceCrawlerBundle\Process\Store\Db\DbProcessStore"
+             autowire="true"
+             public="false"
+    />
     <service id="AndrewSvirin\ResourceCrawlerBundle\Process\ProcessFactory" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskFactory" autowire="true" public="false"/>
     <service id="AndrewSvirin\ResourceCrawlerBundle\Process\Task\TaskPacker" autowire="true" public="false"/>

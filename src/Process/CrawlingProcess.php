@@ -9,13 +9,13 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
  */
 final class CrawlingProcess
 {
-  public function __construct(private readonly string $id, private readonly ResourceInterface $resource)
+  public function __construct(private readonly string $name, private readonly ResourceInterface $resource)
   {
   }
 
-  public function getId(): string
+  public function getName(): string
   {
-    return $this->id;
+    return $this->name;
   }
 
   public function getResource(): ResourceInterface

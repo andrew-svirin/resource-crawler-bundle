@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Process;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process\Store;
 
 use RuntimeException;
 use Symfony\Component\Lock\LockFactory;
@@ -16,7 +16,7 @@ abstract class ProcessStore implements ProcessStoreInterface
   ) {
   }
 
-  protected function operateStore(OperateStoreClosure $closure): ?bool
+  protected function operateStore(OperateStoreClosure $closure): bool
   {
     if ($this->isLockable) {
       return $this->operateStoreWithLocking($closure);

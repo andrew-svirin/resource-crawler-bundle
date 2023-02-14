@@ -1,7 +1,8 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Process;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process\Store;
 
+use AndrewSvirin\ResourceCrawlerBundle\Process\CrawlingProcess;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 
 /**
@@ -43,6 +44,11 @@ interface ProcessStoreInterface
    * Revert task to beginning of `for_processing` stack.
    */
   public function revertTask(CrawlingProcess $process, CrawlingTask $task): bool;
+
+  /**
+   * Create process for next add tasks.
+   */
+  public function createProcess(CrawlingProcess $process): bool;
 
   /**
    * Delete process.

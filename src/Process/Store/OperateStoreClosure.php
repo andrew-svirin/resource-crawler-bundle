@@ -1,6 +1,6 @@
 <?php
 
-namespace AndrewSvirin\ResourceCrawlerBundle\Process;
+namespace AndrewSvirin\ResourceCrawlerBundle\Process\Store;
 
 use Closure;
 
@@ -11,11 +11,14 @@ final class OperateStoreClosure
 {
   private Closure $closure;
 
-  public function __construct(private readonly FileProcessStore $newThis, callable $callable)
+  public function __construct(private readonly ProcessStoreInterface $newThis, callable $callable)
   {
     $this->closure = $callable(...);
   }
 
+  /**
+   * @return bool - Is operate was success.
+   */
   public function call(): bool
   {
     return $this->closure->call($this->newThis);
