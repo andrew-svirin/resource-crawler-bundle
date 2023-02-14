@@ -261,13 +261,13 @@ final class DbProcessStore extends ProcessStore implements ProcessStoreInterface
       DELETE n
       FROM `resource_crawler_nodes` n
       INNER JOIN `resource_crawler_processes` p ON n.process_id = p.id
-      WHERE p.name = :name;
+      WHERE p.name = :process_name;
       DELETE p
       FROM `resource_crawler_processes` p
-      WHERE p.name = :name;';
+      WHERE p.name = :process_name;';
 
     $stmtDel = $conn->prepare($sqlDel);
-    $stmtDel->bindValue('name', $process->getName());
+    $stmtDel->bindValue('process_name', $process->getName());
 
     $op = new OperateStoreClosure($this, function () use ($stmtDel): bool {
       $stmtDel->executeStatement();
@@ -283,10 +283,14 @@ final class DbProcessStore extends ProcessStore implements ProcessStoreInterface
     $conn = $this->entityManager->getConnection();
 
     $sqlSel    = '
-      SELECT `status`,COUNT(*)
-      FROM resource_crawler_nodes
+      SELECT `status`, COUNT(*)
+      FROM `resource_crawler_nodes` n
+      INNER JOIN `resource_crawler_processes` p ON n.process_id = p.id
+      WHERE p.name = :process_name
       GROUP BY `status`;';
     $stmtSel   = $conn->prepare($sqlSel);
+    $stmtSel->bindValue('process_name', $process->getName());
+
     $keyValues = $stmtSel->executeQuery()->fetchAllKeyValue();
 
     $counts = [];

@@ -57,9 +57,3 @@ Crawler scan HTML-document extract hyperlinks and push them to the index pool of
 2. `make stasrt` to start infrastructure
 3. `make install` to install dependencies
 4. Run debug test: `make xdebug filter=value`
-
-TODO:
-
-- Add DbProcessStore
-- Customize path selector rule (randomizer).
-- Customize user agent rule (generator).
