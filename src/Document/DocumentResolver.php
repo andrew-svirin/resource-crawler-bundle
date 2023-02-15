@@ -15,19 +15,15 @@ final class DocumentResolver
 
   public function resolve(string $html): ?DOMDocument
   {
-    $dom = new DOMDocument;
-
-    $dom->substituteEntities = false;
-
-    $detect = $this->detectEncoding($html);
-
-    if (self::ENCODING_DEFAULT !== $detect) {
-      $html = mb_convert_encoding($html, self::ENCODING_DEFAULT, $detect);
-    }
-
     if (empty($html)) {
       return null;
     }
+
+    $detect = $this->detectEncoding($html);
+
+    $dom = new DOMDocument('1.0', $detect);
+
+    $dom->substituteEntities = false;
 
     $load = @$dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
