@@ -15,6 +15,18 @@ doctrine:
     dbal:
         schema_filter: ~^(?!resource_crawler_)~
 ```
+
+Add to `resource_crawler.yaml` to avoid table to be associated with entities.
+```
+resource_crawler:
+  process:
+    is_lockable: true
+    store: 'resource_crawler.process_db_store'
+#    store: 'resource_crawler.process_file_store'
+    file_store:
+      dir: "%kernel.project_dir%/storage/saver"
+```
+
 Add migration `Version20230101010000.php`:
 ```php
 <?php
