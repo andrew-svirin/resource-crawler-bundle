@@ -23,9 +23,8 @@ final class DocumentResolver
 
     $dom = new DOMDocument('1.0', $detect);
 
-    $dom->substituteEntities = false;
-
-    $html = "<?xml version='1.0' encoding=\'$detect'?>" . $html;
+    $dom->preserveWhiteSpace = false;
+    $dom->substituteEntities = true;
 
     $load = @$dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
