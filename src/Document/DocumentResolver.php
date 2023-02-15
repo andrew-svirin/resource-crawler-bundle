@@ -36,8 +36,16 @@ final class DocumentResolver
 
   private function detectEncoding(string $html): string
   {
-    preg_match('/charset=([^ \"]*)/', $html, $matches);
+    preg_match('/charset=\"?([^ >"]*)/', $html, $matches);
 
-    return isset($matches[1]) ? strtolower($matches[1]) : self::ENCODING_DEFAULT;
+    if (!empty($matches[1])) {
+      $matches[1] = trim($matches[1]);
+    }
+
+    if (empty($matches[1])) {
+      return self::ENCODING_DEFAULT;
+    } else {
+      return strtolower($matches[1]);
+    }
   }
 }
