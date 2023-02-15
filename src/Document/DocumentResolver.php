@@ -25,6 +25,8 @@ final class DocumentResolver
 
     $dom->substituteEntities = false;
 
+    $html = "<?xml version='1.0' encoding=\'$detect'?>" . $html;
+
     $load = @$dom->loadHTML($html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
 
     if (!$load) {
