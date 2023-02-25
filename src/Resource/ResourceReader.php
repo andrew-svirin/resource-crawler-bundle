@@ -82,10 +82,14 @@ final class ResourceReader
       return $this->responseFactory->create("File `$path` not found", 404);
     }
 
+    if (is_dir($path)) {
+      return $this->responseFactory->create("File `$path` is dir", 405);
+    }
+
     $content = file_get_contents($path);
 
     if (false === $content) {
-      return $this->responseFactory->create("File `$path` not read", 403);
+      return $this->responseFactory->create("File `$path` is empty", 403);
     }
 
     return $this->responseFactory->create($content, 200);
