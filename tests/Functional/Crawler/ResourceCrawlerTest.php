@@ -2,7 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Tests\Functional\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\Ref;
 use AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Process\ProcessManager;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Store\File\FileProcessStore;
@@ -184,7 +184,7 @@ class ResourceCrawlerTest extends TestCase
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $path = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
+    $path = $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/index.html';
 
     $resourceCrawler->resetDiskResource($path);
 
@@ -196,9 +196,9 @@ class ResourceCrawlerTest extends TestCase
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $path      = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
-    $pathMasks = ['+site.com/', '-embed'];
-    $substRules =  [["/(#.*)/i", ""], ["/(\\?[^#]*)/i", ""]];
+    $path       = $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/index.html';
+    $pathMasks  = ['+site.com/', '-embed'];
+    $substRules = [["/(#.*)/i", ""], ["/(\\?[^#]*)/i", ""]];
 
     $resourceCrawler->resetDiskResource($path);
 
@@ -231,32 +231,32 @@ class ResourceCrawlerTest extends TestCase
   {
     return [
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/index.html',
         'processed',
         [
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
         ],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
         'processed',
         [],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
         'processed',
         [],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
         'processed',
         [],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
         'processed',
         [],
       ],
@@ -271,32 +271,32 @@ class ResourceCrawlerTest extends TestCase
   {
     return [
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/index.html',
         'processed',
         [
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
-          $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+          $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
         ],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-1.html',
         'processed',
         [],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/pages/page-2.html',
         'processed',
         [],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-2.jpg',
         'processed',
         [],
       ],
       [
-        $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
+        $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/images/img-1.jpg',
         'processed',
         [],
       ],
@@ -327,7 +327,7 @@ class ResourceCrawlerTest extends TestCase
     /** @var \AndrewSvirin\ResourceCrawlerBundle\Crawler\ResourceCrawler $resourceCrawler */
     $resourceCrawler = $this->getContainer()->get('resource_crawler.crawler');
 
-    $path = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
+    $path = $this->kernel->getProjectDir().'/tests/Fixtures/resources/filesystem/site.com/index.html';
 
     $resourceCrawler->resetDiskResource($path);
 
@@ -353,11 +353,10 @@ class ResourceCrawlerTest extends TestCase
     $nodeCalls = $this->walkTaskNodeCalls();
     $i         = 0;
 
-    $callable = function (RefPath $refPath) use (&$i, $nodeCalls) {
-      $this->assertEquals($nodeCalls[$i][0], $refPath->getRef()->nodeName);
-      $this->assertEquals($nodeCalls[$i][1], $refPath->isValid());
-      $this->assertEquals($nodeCalls[$i][2], $refPath->getNormalizedPath());
-      $this->assertEquals($nodeCalls[$i][3], $refPath->isPerformable());
+    $callable = function (Ref $ref) use (&$i, $nodeCalls) {
+      $this->assertEquals($nodeCalls[$i][0], $ref->getElement()->nodeName);
+      $this->assertEquals($nodeCalls[$i][1], $ref->getElement()->getAttribute('src'));
+      $this->assertEquals($nodeCalls[$i][2], $ref->getElement()->getAttribute('href'));
 
       $i++;
     };
@@ -371,9 +370,9 @@ class ResourceCrawlerTest extends TestCase
         $this->closure = $callable(...);
       }
 
-      public function call(RefPath $refPath, CrawlingTask $task): void
+      public function call(Ref $ref, CrawlingTask $task): void
       {
-        $this->closure->call($this->newThis, $refPath, $task);
+        $this->closure->call($this->newThis, $ref, $task);
       }
     };
 
@@ -388,99 +387,83 @@ class ResourceCrawlerTest extends TestCase
     return [
       [
         'a',
-        true,
-        'https://site.com/index.html',
-        true,
+        '',
+        '/index.html',
       ],
       [
         'a',
-        true,
-        'https://site.com/index.html',
-        true,
+        '',
+        'index.html',
       ],
       [
         'a',
-        true,
+        '',
         'https://site.com/',
-        true,
       ],
       [
         'a',
-        true,
-        'https://site.com/pages/page-1.html',
-        true,
+        '',
+        '/pages/page-1.html',
       ],
       [
         'a',
-        true,
+        '',
+        '/pages/page-2.html',
+      ],
+      [
+        'a',
+        '',
+        '/pages/page-400',
+      ],
+      [
+        'a',
+        '',
+        '/pages/page-500',
+      ],
+      [
+        'a',
+        '',
         'https://site.com/pages/page-2.html',
-        true,
       ],
       [
         'a',
-        true,
-        'https://site.com/pages/page-400',
-        true,
+        '',
+        '/images/img-2.jpg',
       ],
       [
         'a',
-        true,
-        'https://site.com/pages/page-500',
-        true,
+        '',
+        '#anchor',
       ],
       [
         'a',
-        true,
-        'https://site.com/pages/page-2.html',
-        true,
+        '',
+        '#other-anchor',
       ],
       [
         'a',
-        true,
-        'https://site.com/images/img-2.jpg',
-        true,
+        '',
+        'https://other-site-2.com',
       ],
       [
         'a',
-        true,
-        'https://site.com/#anchor',
-        true,
-      ],
-      [
-        'a',
-        true,
-        'https://site.com/#other-anchor',
-        true,
-      ],
-      [
-        'a',
-        true,
-        'https://other-site-2.com/',
-        false,
-      ],
-      [
-        'a',
-        true,
-        'https://site.com/index.html?a=1&w=1&h=1&b=1',
-        true,
+        '',
+        'index.html?a=1&w=1&h=1&b=1',
       ],
       [
         'img',
-        true,
         'https://site.com/images/img-1.jpg',
-        true,
+        '',
       ],
       [
         'img',
-        true,
-        'https://site.com/images/img-2.jpg',
-        true,
+        '/images/img-2.jpg',
+        '',
       ],
       [
         'img',
-        true,
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
-        true,
+        '',
       ],
     ];
   }

@@ -2,12 +2,12 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\Ref;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefManager;
 use AndrewSvirin\ResourceCrawlerBundle\Document\DocumentManager;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\HtmlNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
-use AndrewSvirin\ResourceCrawlerBundle\Resource\Path\Path;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
 use DOMElement;
@@ -22,7 +22,8 @@ final class NodeCrawler
 {
   public function __construct(
     private readonly ResourceManager $resourceManager,
-    private readonly DocumentManager $documentManager
+    private readonly DocumentManager $documentManager,
+    private readonly RefManager $refManager,
   ) {
   }
 
@@ -75,7 +76,7 @@ final class NodeCrawler
   }
 
   /**
-   * @return RefPath[]
+   * @return Ref[]
    */
   public function walkNode(NodeInterface $node): iterable
   {
@@ -89,7 +90,7 @@ final class NodeCrawler
   }
 
   /**
-   * @return RefPath[]
+   * @return Ref[]
    */
   private function walkHtmlNode(HtmlNode $node): iterable
   {
@@ -99,39 +100,16 @@ final class NodeCrawler
       return;
     }
 
-    foreach ($this->documentManager->extractRefs($doc) as $ref) {
-      $refPath = new RefPath($ref);
-
-      $path = $this->decomposeRefPath($ref);
-
-      $refPath->setValid($this->resourceManager->isValidPath($node->getUri(), $path));
-
-      if ($refPath->isValid()) {
-        $refPath->setNormalizedPath($this->resourceManager->normalizePath($node->getUri(), $path));
-      }
-
-      yield $refPath;
+    foreach ($this->documentManager->extractRefElements($doc) as $element) {
+      yield $this->refManager->createRef($element);
     }
-  }
-
-  private function decomposeRefPath(DOMElement $ref): Path
-  {
-    if ('a' === $ref->nodeName) {
-      $path = $this->resourceManager->decomposePath($ref->getAttribute('href'));
-    } elseif ('img' === $ref->nodeName) {
-      $path = $this->resourceManager->decomposePath($ref->getAttribute('src'));
-    } else {
-      throw new LogicException('Node name not handled.');
-    }
-
-    return $path;
   }
 
   public function createRefNode(DOMElement $ref, ResourceInterface $resource, string $normalizedPath): NodeInterface
   {
-    if ('a' === $ref->nodeName) {
+    if ($this->documentManager->isElementAnchor($ref)) {
       $node = $this->resourceManager->createHtmlNode($resource, $normalizedPath);
-    } elseif ('img' === $ref->nodeName) {
+    } elseif ($this->documentManager->isElementImg($ref)) {
       $node = $this->resourceManager->createImgNode($resource, $normalizedPath);
     } else {
       throw new LogicException('Node name not handled.');
@@ -139,18 +117,4 @@ final class NodeCrawler
 
     return $node;
   }
-
-//  private function isImagePath(string $path): bool
-//  {
-//    $supported_image = array(
-//      'gif',
-//      'jpg',
-//      'jpeg',
-//      'png'
-//    );
-//
-//    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-//
-//    return in_array()
-//  }
 }

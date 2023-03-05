@@ -81,7 +81,7 @@ final class Version20230101010000 extends AbstractMigration
 
 ```php
 
-    use \AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;  
+    use \AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\Ref;  
     use \AndrewSvirin\ResourceCrawlerBundle\Crawler\RefHandlerClosureInterface;  
     use \AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;  
     
@@ -98,7 +98,7 @@ final class Version20230101010000 extends AbstractMigration
       ['/(\?.*)([&*]w=[^&#]*)(.*)/i', '$1$3'], // remove query param `w`
     ];
     $op = new class() implements RefHandlerClosureInterface {
-      public function call(RefPath $refPath, CrawlingTask $task): void
+      public function call(Ref $ref, CrawlingTask $task): void
       {
         // Here is possible to handle reference in task node.
       }

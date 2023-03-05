@@ -201,7 +201,7 @@ final class ResourceManager
     return $this->pathSubstitutionCreator->create($substRules);
   }
 
-  public function substitutePath(ResourceInterface $resource, ?string $path): string
+  public function substitutePath(ResourceInterface $resource, string $path): string
   {
     if (empty($resource->pathSubstitution())) {
       return $path;

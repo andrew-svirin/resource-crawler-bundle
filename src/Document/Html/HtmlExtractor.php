@@ -4,6 +4,7 @@ namespace AndrewSvirin\ResourceCrawlerBundle\Document\Html;
 
 use DOMDocument;
 use DOMElement;
+use LogicException;
 
 /**
  * Service to extract elements from nodes.
@@ -40,5 +41,39 @@ final class HtmlExtractor
         yield $node;
       }
     }
+  }
+
+  public function getElementPath(DOMElement $dom): string
+  {
+    if ($this->isElementAnchor($dom)) {
+      $path = $dom->getAttribute('href');
+    } elseif ($this->isElementImg($dom)) {
+      $path = $dom->getAttribute('src');
+    } else {
+      throw new LogicException('Node name not handled.');
+    }
+
+    return $path;
+  }
+
+  public function setElementPath(DOMElement $dom, string $path): void
+  {
+    if ($this->isElementAnchor($dom)) {
+      $dom->setAttribute('href', $path);
+    } elseif ($this->isElementImg($dom)) {
+      $dom->setAttribute('src', $path);
+    } else {
+      throw new LogicException('Node name not handled.');
+    }
+  }
+
+  public function isElementImg(DOMElement $dom): bool
+  {
+    return 'img' === $dom->nodeName;
+  }
+
+  public function isElementAnchor(DOMElement $dom): bool
+  {
+    return 'a' === $dom->nodeName;
   }
 }

@@ -2,7 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\Ref;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 use Closure;
 
@@ -20,8 +20,8 @@ final class CrawlRefHandlerClosure implements RefHandlerClosureInterface
     $this->closure = $callable(...);
   }
 
-  public function call(RefPath $refPath, CrawlingTask $task): void
+  public function call(Ref $ref, CrawlingTask $task): void
   {
-    $this->closure->call($this->newThis, $refPath, $task);
+    $this->closure->call($this->newThis, $ref, $task);
   }
 }

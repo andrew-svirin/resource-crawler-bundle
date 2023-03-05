@@ -2,7 +2,7 @@
 
 namespace AndrewSvirin\ResourceCrawlerBundle\Crawler;
 
-use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\RefPath;
+use AndrewSvirin\ResourceCrawlerBundle\Crawler\Ref\Ref;
 use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
 
 /**
@@ -10,5 +10,5 @@ use AndrewSvirin\ResourceCrawlerBundle\Process\Task\CrawlingTask;
  */
 interface RefHandlerClosureInterface
 {
-  public function call(RefPath $refPath, CrawlingTask $task): void;
+  public function call(Ref $ref, CrawlingTask $task): void;
 }
