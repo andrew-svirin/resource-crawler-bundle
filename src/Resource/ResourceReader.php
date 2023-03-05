@@ -78,8 +78,6 @@ final class ResourceReader
   {
     $path = urldecode($path);
 
-    $path = preg_replace('/(^[^\?\#]*).*$/u', '$1', $path);
-
     if (!file_exists($path)) {
       return $this->responseFactory->create("File `$path` not found", 404);
     }
