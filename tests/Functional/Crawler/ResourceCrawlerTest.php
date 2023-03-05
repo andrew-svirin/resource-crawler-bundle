@@ -94,7 +94,6 @@ class ResourceCrawlerTest extends TestCase
           'https://site.com/pages/page-500',
           'https://site.com/images/img-2.jpg',
           'https://site.com/#anchor',
-          'https://other-site-2.com/',
           'https://site.com/index.html?a=1&b=1',
           'https://site.com/images/img-1.jpg',
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
@@ -107,7 +106,6 @@ class ResourceCrawlerTest extends TestCase
       ],
       ['https://site.com/images/img-1.jpg', 'processed', []],
       ['https://site.com/index.html?a=1&b=1', 'processed', []],
-      ['https://other-site-2.com/', 'ignored', []],
       ['https://site.com/#anchor', 'processed', []],
       ['https://site.com/images/img-2.jpg', 'processed', []],
       ['https://site.com/pages/page-500', 'errored', []],
@@ -116,13 +114,8 @@ class ResourceCrawlerTest extends TestCase
       [
         'https://site.com/pages/page-1.html',
         'processed',
-        [
-          'https://site-2.com/pages/page-3.html',
-          'https://site.com/embed/frame.html',
-        ],
+        [],
       ],
-      ['https://site.com/embed/frame.html', 'ignored', []],
-      ['https://site-2.com/pages/page-3.html', 'ignored', []],
       ['https://site.com/', 'processed', []],
       [null, null, null],
     ];
@@ -145,7 +138,6 @@ class ResourceCrawlerTest extends TestCase
           'https://site.com/pages/page-500',
           'https://site.com/images/img-2.jpg',
           'https://site.com/#anchor',
-          'https://other-site-2.com/',
           'https://site.com/index.html?a=1&b=1',
           'https://site.com/images/img-1.jpg',
           'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
@@ -155,17 +147,13 @@ class ResourceCrawlerTest extends TestCase
       [
         'https://site.com/pages/page-1.html',
         'processed',
-        [
-          'https://site-2.com/pages/page-3.html',
-          'https://site.com/embed/frame.html',
-        ],
+        [],
       ],
       ['https://site.com/pages/page-2.html', 'processed', []],
       ['https://site.com/pages/page-400', 'errored', []],
       ['https://site.com/pages/page-500', 'errored', []],
       ['https://site.com/images/img-2.jpg', 'processed', []],
       ['https://site.com/#anchor', 'processed', []],
-      ['https://other-site-2.com/', 'ignored', []],
       ['https://site.com/index.html?a=1&b=1', 'processed', []],
       ['https://site.com/images/img-1.jpg', 'processed', []],
       [
@@ -173,8 +161,6 @@ class ResourceCrawlerTest extends TestCase
         'processed',
         [],
       ],
-      ['https://site-2.com/pages/page-3.html', 'ignored', []],
-      ['https://site.com/embed/frame.html', 'ignored', []],
       [null, null, null],
     ];
   }
@@ -355,8 +341,9 @@ class ResourceCrawlerTest extends TestCase
 
     $callable = function (Ref $ref) use (&$i, $nodeCalls) {
       $this->assertEquals($nodeCalls[$i][0], $ref->getElement()->nodeName);
-      $this->assertEquals($nodeCalls[$i][1], $ref->getElement()->getAttribute('src'));
-      $this->assertEquals($nodeCalls[$i][2], $ref->getElement()->getAttribute('href'));
+      $this->assertEquals($nodeCalls[$i][1], $ref->getNormalizedPath());
+      $this->assertEquals($nodeCalls[$i][2], $ref->isValid());
+      $this->assertEquals($nodeCalls[$i][3], $ref->isPerformable());
 
       $i++;
     };
@@ -387,83 +374,99 @@ class ResourceCrawlerTest extends TestCase
     return [
       [
         'a',
-        '',
-        '/index.html',
+        'https://site.com/index.html',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        'index.html',
+        'https://site.com/index.html',
+        true,
+        true,
       ],
       [
         'a',
-        '',
         'https://site.com/',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        '/pages/page-1.html',
+        'https://site.com/pages/page-1.html',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        '/pages/page-2.html',
-      ],
-      [
-        'a',
-        '',
-        '/pages/page-400',
-      ],
-      [
-        'a',
-        '',
-        '/pages/page-500',
-      ],
-      [
-        'a',
-        '',
         'https://site.com/pages/page-2.html',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        '/images/img-2.jpg',
+        'https://site.com/pages/page-400',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        '#anchor',
+        'https://site.com/pages/page-500',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        '#other-anchor',
+        'https://site.com/pages/page-2.html',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        'https://other-site-2.com',
+        'https://site.com/images/img-2.jpg',
+        true,
+        true,
       ],
       [
         'a',
-        '',
-        'index.html?a=1&w=1&h=1&b=1',
+        'https://site.com/#anchor',
+        true,
+        true,
+      ],
+      [
+        'a',
+        'https://site.com/#other-anchor',
+        true,
+        true,
+      ],
+      [
+        'a',
+        'https://other-site-2.com/',
+        true,
+        false,
+      ],
+      [
+        'a',
+        'https://site.com/index.html?a=1&w=1&h=1&b=1',
+        true,
+        true,
       ],
       [
         'img',
         'https://site.com/images/img-1.jpg',
-        '',
+        true,
+        true,
       ],
       [
         'img',
-        '/images/img-2.jpg',
-        '',
+        'https://site.com/images/img-2.jpg',
+        true,
+        true,
       ],
       [
         'img',
         'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
-        '',
+        true,
+        true,
       ],
     ];
   }

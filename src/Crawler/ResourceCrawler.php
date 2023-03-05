@@ -69,8 +69,8 @@ final class ResourceCrawler
     }
 
     $substitutePathOp = new CrawlRefHandlerClosure($this, function (Ref $ref, CrawlingTask $task) {
-      $element  = $ref->getElement();
-      $path = $this->documentManager->getElementPath($element);
+      $element = $ref->getElement();
+      $path    = $this->documentManager->getElementPath($element);
 
       if (empty($path)) {
         return;
@@ -81,26 +81,42 @@ final class ResourceCrawler
       $this->documentManager->setElementPath($element, $substitutedPath);
     });
 
-    $pushTasksOp = new CrawlRefHandlerClosure($this, function (Ref $ref, CrawlingTask $task) {
-      $element  = $ref->getElement();
-      $path = $this->resourceManager->decomposePath($this->documentManager->getElementPath($element));
-      $uri  = $task->getNode()->getUri();
+    $resolveRefOp = new CrawlRefHandlerClosure($this, function (Ref $ref, CrawlingTask $task) {
+      $element = $ref->getElement();
+      $path    = $this->resourceManager->decomposePath($this->documentManager->getElementPath($element));
+      $uri     = $task->getNode()->getUri();
 
-      if (!$this->resourceManager->isValidPath($uri, $path)) {
+      $ref->setValid($this->resourceManager->isValidPath($uri, $path));
+
+      if (!$ref->isValid()) {
         return;
       }
 
-      $process        = $task->getProcess();
-      $normalizedPath = $this->resourceManager->normalizePath($uri, $path);
+      $ref->setNormalizedPath($this->resourceManager->normalizePath($uri, $path));
 
-      $newNode = $this->nodeCrawler->createRefNode($element, $process->getResource(), $normalizedPath);
+      $ref->setPerformable(
+        $this->resourceManager->isPerformablePath(
+          $ref->getNormalizedPath(),
+          $task->getProcess()->getResource()->pathRegex()
+        )
+      );
+    });
+
+    $pushTasksOp = new CrawlRefHandlerClosure($this, function (Ref $ref, CrawlingTask $task) {
+      if (!$ref->isPerformable()) {
+        return;
+      }
+
+      $process = $task->getProcess();
+
+      $newNode = $this->nodeCrawler->createRefNode($ref, $process->getResource());
 
       if ($this->processManager->pushTask($process, $newNode)) {
         $task->appendPushedForProcessingPath($newNode->getUri()->getPath());
       }
     });
 
-    array_unshift($refHandlers, $substitutePathOp);
+    array_unshift($refHandlers, $substitutePathOp, $resolveRefOp);
     $refHandlers[] = $pushTasksOp;
 
     $this->tryPerformTask($task, ...$refHandlers);

@@ -10,7 +10,6 @@ use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\ImgNode;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\Node\NodeInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceInterface;
 use AndrewSvirin\ResourceCrawlerBundle\Resource\ResourceManager;
-use DOMElement;
 use LogicException;
 
 /**
@@ -105,12 +104,12 @@ final class NodeCrawler
     }
   }
 
-  public function createRefNode(DOMElement $ref, ResourceInterface $resource, string $normalizedPath): NodeInterface
+  public function createRefNode(Ref $ref, ResourceInterface $resource): NodeInterface
   {
-    if ($this->documentManager->isElementAnchor($ref)) {
-      $node = $this->resourceManager->createHtmlNode($resource, $normalizedPath);
-    } elseif ($this->documentManager->isElementImg($ref)) {
-      $node = $this->resourceManager->createImgNode($resource, $normalizedPath);
+    if ($this->documentManager->isElementAnchor($ref->getElement())) {
+      $node = $this->resourceManager->createHtmlNode($resource, $ref->getNormalizedPath());
+    } elseif ($this->documentManager->isElementImg($ref->getElement())) {
+      $node = $this->resourceManager->createImgNode($resource, $ref->getNormalizedPath());
     } else {
       throw new LogicException('Node name not handled.');
     }
