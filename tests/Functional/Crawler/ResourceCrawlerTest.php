@@ -198,6 +198,7 @@ class ResourceCrawlerTest extends TestCase
 
     $path      = $this->kernel->getProjectDir() . '/tests/Fixtures/resources/filesystem/site.com/index.html';
     $pathMasks = ['+site.com/', '-embed'];
+    $substRules =  [["/(#.*)/i", ""], ["/(\\?[^#]*)/i", ""]];
 
     $resourceCrawler->resetDiskResource($path);
 
@@ -215,7 +216,7 @@ class ResourceCrawlerTest extends TestCase
     }
 
     for ($i = 0; $i < count($expectedPaths); $i++) {
-      $task = $resourceCrawler->crawlDiskResource($path, $pathMasks);
+      $task = $resourceCrawler->crawlDiskResource($path, $pathMasks, $substRules);
 
       $this->assertEquals($expectedPaths[$i][0], $task?->getNode()->getUri()->getPath());
       $this->assertEquals($expectedPaths[$i][1], $task?->getStatus());
